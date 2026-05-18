@@ -1,0 +1,1512 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#06060f"/>
+<title>AlSaeb — Neon City</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{neo:{bg:'#06060f',surface:'#0c0c1e',card:'#111130',cyan:'#00e5ff',blue:'#2979ff',purple:'#7c4dff',pink:'#ff1867',green:'#00e676',amber:'#ffab00',text:'#e2e8f0',muted:'#334155'}},fontFamily:{display:['Chakra Petch','IBM Plex Sans Arabic','sans-serif'],body:['IBM Plex Sans Arabic','Chakra Petch','sans-serif']}}}}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+:root{--cyan:#00e5ff;--blue:#2979ff;--purple:#7c4dff;--pink:#ff1867;--green:#00e676;--bg:#06060f}
+body{font-family:'IBM Plex Sans Arabic','Chakra Petch',sans-serif;background:var(--bg);overflow-x:hidden;overscroll-behavior:none;margin:0}
+
+/* ── HUD ── */
+.hud{position:sticky;top:0;z-index:50;background:rgba(6,6,15,.92);backdrop-filter:blur(16px);border-bottom:1px solid rgba(0,229,255,.08)}
+.hud-inner{max-width:540px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:10px}
+
+/* ── Stat pills ── */
+.pill{background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.12);border-radius:999px;padding:3px 12px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px;white-space:nowrap}
+
+/* ── Map viewport ── */
+.map-viewport{width:100%;max-width:540px;margin:0 auto;position:relative;overflow:hidden}
+
+/* ── Neon flicker on signs ── */
+@keyframes flicker{0%,100%{opacity:1}4%{opacity:.7}8%{opacity:1}42%{opacity:.85}44%{opacity:1}82%{opacity:.92}84%{opacity:1}}
+.neon-flicker{animation:flicker 4s ease-in-out infinite}
+
+/* ── Building window twinkle ── */
+@keyframes twinkle{0%,100%{opacity:.15}50%{opacity:.7}}
+
+/* ── Car glow ── */
+@keyframes car-glow{0%,100%{filter:drop-shadow(0 0 6px rgba(0,229,255,.7))}50%{filter:drop-shadow(0 0 14px rgba(0,229,255,1)) drop-shadow(0 0 28px rgba(0,229,255,.35))}}
+#car-group{animation:car-glow 2s ease-in-out infinite}
+
+/* ── Headlight beams ── */
+@keyframes headlight{0%,100%{opacity:.25}50%{opacity:.5}}
+.headlight-beam{animation:headlight 1.5s ease-in-out infinite}
+
+/* ── Pulse on current milestone ── */
+@keyframes m-pulse{0%,100%{r:8;opacity:.5}50%{r:16;opacity:0}}
+
+/* ── Fog ── */
+.fog-block{transition:opacity 1.2s ease-out}
+.fog-block.cleared{opacity:0!important}
+
+/* ── Tooltip ── */
+.city-tooltip{position:fixed;z-index:60;background:rgba(12,12,30,.95);border:1px solid rgba(0,229,255,.25);border-radius:10px;padding:10px 14px;pointer-events:none;opacity:0;transition:opacity .15s;max-width:200px;box-shadow:0 0 24px rgba(0,229,255,.08)}
+.city-tooltip.show{opacity:1}
+
+/* ── Modal ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:70;display:flex;align-items:flex-end;justify-content:center;backdrop-filter:blur(4px)}
+.modal-card{background:#0c0c1e;border-top:1px solid rgba(0,229,255,.15);border-radius:18px 18px 0 0;padding:24px;width:100%;max-width:540px;box-shadow:0 -8px 40px rgba(0,229,255,.08)}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:rgba(0,229,255,.12);border-radius:4px}
+
+/* ── Mobile D-Pad ── */
+[id="map-dpad"]{display:none;position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:40;touch-action:none}
+@media(pointer:coarse){[id="map-dpad"]{display:flex}}
+.map-dpad-btn{width:56px;height:56px;border-radius:14px;background:rgba(0,229,255,.1);border:1px solid rgba(0,229,255,.2);color:#00e5ff;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation;transition:background .15s}
+.map-dpad-btn:active{background:rgba(0,229,255,.3)}
+
+/* ── Neon pulse for signs ── */
+@keyframes neonPulse{0%,100%{text-shadow:0 0 4px currentColor,0 0 8px currentColor}50%{text-shadow:0 0 8px currentColor,0 0 16px currentColor,0 0 24px currentColor}}
+/* ── Ambient ground glow ── */
+@keyframes groundGlow{0%,100%{opacity:.03}50%{opacity:.07}}
+/* ── Smoke drift ── */
+@keyframes smokeDrift{0%{opacity:.06;transform:translateY(0)}100%{opacity:0;transform:translateY(-20px)}}
+
+/* ── Reduced motion ── */
+@media(prefers-reduced-motion:reduce){
+  #car-group,.neon-flicker{animation:none!important}
+  .fog-block{transition:none!important}
+}
+</style>
+</head>
+<body class="bg-neo-bg text-neo-text min-h-screen">
+
+<!-- ═══ HUD ═══ -->
+<header class="hud">
+  <div class="hud-inner">
+    <a href="/agent" class="text-neo-cyan/60 hover:text-neo-cyan transition-colors cursor-pointer" style="display:flex;align-items:center;gap:2px">
+      <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+    </a>
+    <h1 class="font-display font-bold text-xs tracking-widest text-neo-cyan flex-shrink-0" style="letter-spacing:3px">NEON CITY</h1>
+    <div class="flex-1"></div>
+    <div class="pill text-neo-cyan"><svg width="10" height="10" fill="currentColor" viewBox="0 0 20 20"><polygon points="10,1 12.5,7.5 19.5,8 14,12.5 15.5,19.5 10,15.5 4.5,19.5 6,12.5 0.5,8 7.5,7.5"/></svg> Lv <span id="hud-lv">1</span></div>
+    <div class="pill text-neo-green"><span id="hud-xp">0</span> XP</div>
+    <div class="pill text-neo-purple"><span id="hud-coins">0</span> C</div>
+    <div class="pill text-neo-pink" style="font-size:9px"><span id="hud-chapter">Ch.0</span></div>
+  </div>
+  <!-- XP bar -->
+  <div style="max-width:540px;margin:0 auto;padding:0 16px 8px">
+    <div style="height:3px;background:rgba(0,229,255,.08);border-radius:4px;overflow:hidden">
+      <div id="xp-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#00e5ff,#2979ff);border-radius:4px;transition:width .6s ease-out"></div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ MAP ═══ -->
+<div class="map-viewport" id="map-viewport">
+<svg id="city" viewBox="0 0 600 3200" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid meet" style="width:100%;height:auto;display:block">
+<defs>
+  <!-- Glow filters -->
+  <filter id="gl-cyan" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b"/><feFlood flood-color="#00e5ff" flood-opacity=".5"/><feComposite in2="b" operator="in" result="s"/><feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gl-pink" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur in="SourceGraphic" stdDeviation="3"/><feFlood flood-color="#ff1867" flood-opacity=".4"/><feComposite in2="SourceGraphic" operator="in" result="s"/><feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gl-purple" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur in="SourceGraphic" stdDeviation="3"/><feFlood flood-color="#7c4dff" flood-opacity=".4"/><feComposite in2="SourceGraphic" operator="in" result="s"/><feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gl-green" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur in="SourceGraphic" stdDeviation="3"/><feFlood flood-color="#00e676" flood-opacity=".4"/><feComposite in2="SourceGraphic" operator="in" result="s"/><feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gl-blue" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur in="SourceGraphic" stdDeviation="4"/><feFlood flood-color="#2979ff" flood-opacity=".4"/><feComposite in2="SourceGraphic" operator="in" result="s"/><feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <filter id="gl-amber" x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur in="SourceGraphic" stdDeviation="3"/><feFlood flood-color="#ffab00" flood-opacity=".4"/><feComposite in2="SourceGraphic" operator="in" result="s"/><feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <!-- Street glow -->
+  <filter id="street-glow" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b"/><feFlood flood-color="#00e5ff" flood-opacity=".18"/><feComposite in2="b" operator="in" result="s"/><feMerge><feMergeNode in="s"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <!-- Road pattern -->
+  <pattern id="road-dash" patternUnits="userSpaceOnUse" width="20" height="20" patternTransform="rotate(0)">
+    <rect width="20" height="20" fill="none"/>
+    <line x1="10" y1="0" x2="10" y2="8" stroke="#ffab00" stroke-width="1" opacity=".25"/>
+  </pattern>
+  <!-- Sky gradient (extended for 3200) -->
+  <linearGradient id="sky-grad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#0a0820"/>
+    <stop offset="30%" stop-color="#06060f"/>
+    <stop offset="100%" stop-color="#06060f"/>
+  </linearGradient>
+  <!-- Zone background gradients -->
+  <linearGradient id="z-grad-0" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#0a2530"/>
+    <stop offset="100%" stop-color="#061520"/>
+  </linearGradient>
+  <linearGradient id="z-grad-1" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#1a0e35"/>
+    <stop offset="100%" stop-color="#0e0828"/>
+  </linearGradient>
+  <linearGradient id="z-grad-2" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#350a28"/>
+    <stop offset="100%" stop-color="#200818"/>
+  </linearGradient>
+  <linearGradient id="z-grad-3" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#0a3520"/>
+    <stop offset="100%" stop-color="#082518"/>
+  </linearGradient>
+  <linearGradient id="z-grad-4" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#352a08"/>
+    <stop offset="100%" stop-color="#251c06"/>
+  </linearGradient>
+  <!-- Zone clip paths -->
+  <clipPath id="clip-z0"><rect x="0" y="2680" width="600" height="520"/></clipPath>
+  <clipPath id="clip-z1"><rect x="0" y="2080" width="600" height="520"/></clipPath>
+  <clipPath id="clip-z2"><rect x="0" y="1480" width="600" height="520"/></clipPath>
+  <clipPath id="clip-z3"><rect x="0" y="720" width="600" height="680"/></clipPath>
+  <clipPath id="clip-z4"><rect x="0" y="40" width="600" height="600"/></clipPath>
+</defs>
+
+<!-- Sky background -->
+<rect width="600" height="3200" fill="url(#sky-grad)"/>
+
+<!-- Zone background tint rects -->
+<rect x="0" y="2680" width="600" height="520" fill="url(#z-grad-0)"/>
+<rect x="0" y="2080" width="600" height="520" fill="url(#z-grad-1)"/>
+<rect x="0" y="1480" width="600" height="520" fill="url(#z-grad-2)"/>
+<rect x="0" y="720" width="600" height="680" fill="url(#z-grad-3)"/>
+<rect x="0" y="40" width="600" height="600" fill="url(#z-grad-4)"/>
+
+<!-- ═══════════════════════════════════════════════════════════
+     CITY BACKGROUND — zone-specific procedural elements
+     ═══════════════════════════════════════════════════════════ -->
+<g id="bg-city"></g>
+
+<!-- ═══════════════════════════════════════════════════════════
+     ZONE TRANSITIONS
+     ═══════════════════════════════════════════════════════════ -->
+<g id="transitions"></g>
+
+<!-- ═══════════════════════════════════════════════════════════
+     THE MAIN ROAD
+     ═══════════════════════════════════════════════════════════ -->
+<!-- Road surface (wide) -->
+<path id="road-surface" d="" stroke="#12123a" stroke-width="56" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+<!-- Road outer glow — always visible -->
+<path id="road-outer-glow" d="" stroke="#00e5ff" stroke-width="62" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".06"/>
+<!-- Road inner ambient glow -->
+<path id="road-inner-glow" d="" stroke="#00e5ff" stroke-width="40" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity=".03"/>
+<!-- Road edge lines — brighter -->
+<path id="road-edge-L" d="" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" fill="none" opacity=".45" stroke-dasharray="8 12"/>
+<path id="road-edge-R" d="" stroke="#00e5ff" stroke-width="2" stroke-linecap="round" fill="none" opacity=".45" stroke-dasharray="8 12"/>
+<!-- Road center dashes -->
+<path id="road-center" d="" stroke="#ffab00" stroke-width="1.2" stroke-linecap="round" fill="none" opacity=".35" stroke-dasharray="10 14"/>
+<!-- Zone-colored road glow paths (revealed portion) — brighter -->
+<path id="road-glow-z0" d="" stroke="#00e5ff" stroke-width="6" stroke-linecap="round" fill="none" filter="url(#street-glow)" opacity=".7" clip-path="url(#clip-z0)" stroke-dasharray="6000" stroke-dashoffset="6000"/>
+<path id="road-glow-z1" d="" stroke="#7c4dff" stroke-width="6" stroke-linecap="round" fill="none" filter="url(#street-glow)" opacity=".7" clip-path="url(#clip-z1)" stroke-dasharray="6000" stroke-dashoffset="6000"/>
+<path id="road-glow-z2" d="" stroke="#ff1867" stroke-width="6" stroke-linecap="round" fill="none" filter="url(#street-glow)" opacity=".8" clip-path="url(#clip-z2)" stroke-dasharray="6000" stroke-dashoffset="6000"/>
+<path id="road-glow-z3" d="" stroke="#00e676" stroke-width="6" stroke-linecap="round" fill="none" filter="url(#street-glow)" opacity=".7" clip-path="url(#clip-z3)" stroke-dasharray="6000" stroke-dashoffset="6000"/>
+<path id="road-glow-z4" d="" stroke="#ffab00" stroke-width="6" stroke-linecap="round" fill="none" filter="url(#street-glow)" opacity=".9" clip-path="url(#clip-z4)" stroke-dasharray="6000" stroke-dashoffset="6000"/>
+
+<!-- ═══════════════════════════════════════════════════════════
+     LANDMARK BUILDINGS (placed at milestones)
+     ═══════════════════════════════════════════════════════════ -->
+<g id="landmarks"></g>
+
+<!-- ═══════════════════════════════════════════════════════════
+     MILESTONE MARKERS on the road
+     ═══════════════════════════════════════════════════════════ -->
+<g id="milestones"></g>
+
+<!-- ═══════════════════════════════════════════════════════════
+     FOG OF WAR
+     ═══════════════════════════════════════════════════════════ -->
+<g id="fog-layer"></g>
+
+<!-- ═══════════════════════════════════════════════════════════
+     THE CAR
+     ═══════════════════════════════════════════════════════════ -->
+<polyline id="car-trail" points="" fill="none" stroke="#00e5ff" stroke-width="2" opacity=".15" stroke-linecap="round"/>
+<g id="car-group" transform="translate(300,3050)">
+  <!-- Headlight beams -->
+  <polygon class="headlight-beam" points="-4,-18 -8,-40 0,-42" fill="#00e5ff" opacity=".25"/>
+  <polygon class="headlight-beam" points="4,-18 8,-40 0,-42" fill="#00e5ff" opacity=".25"/>
+  <!-- Car shadow -->
+  <ellipse cx="0" cy="2" rx="11" ry="5" fill="#000" opacity=".4"/>
+  <!-- Car body -->
+  <rect x="-9" y="-20" width="18" height="36" rx="5" fill="#0c0c1e" stroke="#00e5ff" stroke-width="1.5"/>
+  <!-- Windshield -->
+  <rect x="-6" y="-16" width="12" height="8" rx="2" fill="#0a1628" stroke="#2979ff" stroke-width=".7" opacity=".8"/>
+  <!-- Roof detail -->
+  <rect x="-4" y="-6" width="8" height="6" rx="1.5" fill="#111130"/>
+  <!-- Rear window -->
+  <rect x="-5" y="4" width="10" height="5" rx="1.5" fill="#0a1628" stroke="#7c4dff" stroke-width=".5" opacity=".6"/>
+  <!-- Taillights -->
+  <rect x="-8" y="12" width="4" height="2" rx="1" fill="#ff1867" filter="url(#gl-pink)"/>
+  <rect x="4"  y="12" width="4" height="2" rx="1" fill="#ff1867" filter="url(#gl-pink)"/>
+  <!-- Headlights -->
+  <rect x="-7" y="-19" width="3" height="2" rx="1" fill="#00e5ff" filter="url(#gl-cyan)"/>
+  <rect x="4"  y="-19" width="3" height="2" rx="1" fill="#00e5ff" filter="url(#gl-cyan)"/>
+  <!-- Side neon strips -->
+  <line x1="-9" y1="-8" x2="-9" y2="8" stroke="#00e5ff" stroke-width="1" opacity=".5"/>
+  <line x1="9"  y1="-8" x2="9"  y2="8" stroke="#00e5ff" stroke-width="1" opacity=".5"/>
+</g>
+
+</svg>
+</div>
+
+<!-- ═══ TOOLTIP ═══ -->
+<div id="tooltip" class="city-tooltip">
+  <div id="tt-name" class="font-display font-bold text-xs text-neo-cyan"></div>
+  <div id="tt-desc" class="text-[10px] text-slate-400 mt-1"></div>
+  <div id="tt-xp" class="text-[10px] text-neo-cyan/50 mt-1 font-display"></div>
+</div>
+
+<!-- ═══ MODAL ═══ -->
+<div id="modal" class="modal-bg hidden" onclick="if(event.target===this)closeModal()">
+  <div class="modal-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+      <h3 id="m-title" class="font-display font-bold text-neo-cyan"></h3>
+      <button onclick="closeModal()" class="text-slate-600 hover:text-neo-cyan transition-colors cursor-pointer"><svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg></button>
+    </div>
+    <div id="m-chapter" class="font-display text-[10px] tracking-[3px] text-slate-500" style="text-align:center;margin-bottom:4px"></div>
+    <div id="m-icon" style="text-align:center;font-size:40px;margin-bottom:8px"></div>
+    <p id="m-desc" class="text-sm text-slate-400" style="text-align:center;margin-bottom:8px"></p>
+    <div id="m-story" class="text-xs text-slate-500" style="text-align:center;margin-bottom:12px;line-height:1.7;font-style:italic;padding:0 8px;border-right:2px solid rgba(0,229,255,.15);direction:rtl"></div>
+    <div style="display:flex;justify-content:center;gap:16px">
+      <div style="background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.12);border-radius:10px;padding:8px 18px;text-align:center"><div class="text-[10px] text-neo-cyan/50 font-display">XP NEEDED</div><div id="m-xp" class="font-display font-bold text-neo-cyan"></div></div>
+      <div style="background:rgba(124,77,255,.06);border:1px solid rgba(124,77,255,.12);border-radius:10px;padding:8px 18px;text-align:center"><div class="text-[10px] text-neo-purple/50 font-display">REWARD</div><div id="m-reward" class="font-display font-bold text-neo-purple text-sm"></div></div>
+    </div>
+    <div id="m-status" class="font-display text-xs" style="text-align:center;margin-top:10px"></div>
+  </div>
+</div>
+
+<!-- MOBILE TAP (milestone info only) -->
+<div id="map-dpad">
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="map-dpad-btn" style="width:160px;font-size:13px;font-weight:700;font-family:'Chakra Petch';letter-spacing:1px;border-radius:14px" onclick="mapDpadInteract()">📍 تفاصيل المرحلة</button>
+  </div>
+</div>
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  DATA — MILESTONES (EXACT SAME)
+// ════════════════════════════════════════════════════════════
+const MS = [
+  { id:0,  title:'بداية الرحلة',     bld:'Starter Garage',     icon:'🚀', desc:'مرآب البداية — رحلتك تبدأ هنا',                xp:0,     reward:'—',            color:'#00e5ff',  ch:'Chapter 0: The Rookie', story:'وصلت المدينة لأول مرة. مرآب صغير، حلم كبير. كل أسطورة بدأت من هنا — خطوتك الأولى في عالم الصفقات.' },
+  { id:1,  title:'أول رسالة',        bld:'Chat Tower',         icon:'💬', desc:'برج الرسائل — ابعت أول رسالة',                 xp:100,   reward:'+50 C',        color:'#00e5ff',  ch:'Chapter 1: First Contact', story:'صعدت برج الرسائل وبعت أول رسالة. الشاشات حواليك بتنور — العملاء بدأوا يسمعوك.' },
+  { id:2,  title:'المتصل',           bld:'Signal Station',     icon:'📞', desc:'محطة الإشارة — ٥ مكالمات',                     xp:300,   reward:'+100 C',       color:'#2979ff',  ch:'Chapter 2: The Caller', story:'محطة الإشارة اتفتحت ليك. ٥ مكالمات — صوتك بقى معروف في المدينة. الأنتينات بتبعت إشاراتك لكل مكان.' },
+  { id:3,  title:'صائد الليدز',      bld:'Hunter Plaza',       icon:'🎯', desc:'ساحة الصيد — تواصل مع ١٠ ليدز',               xp:600,   reward:'Badge',        color:'#7c4dff',  ch:'Chapter 3: The Hunter', story:'دخلت ساحة الصيد. ١٠ ليدز في شبكتك — بقيت صياد حقيقي. شاشات التتبع بتتابع كل تحركاتك.' },
+  { id:4,  title:'أول ميتنج',        bld:'Meeting Hub',        icon:'📅', desc:'مركز الاجتماعات — أول ميتنج',                  xp:1000,  reward:'+200 C',       color:'#00e5ff',  ch:'Chapter 4: Face to Face', story:'القبة النيون اتنورت — أول ميتنج وجهاً لوجه. مفيش رسائل هنا، دي لعبة الإقناع الحقيقية.' },
+  { id:5,  title:'أول صفقة',         bld:'Deal Arena',         icon:'🏆', desc:'حلبة الصفقات — مبروك أول صفقة!',               xp:1500,  reward:'Badge',        color:'#00e676',  ch:'Chapter 5: First Blood', story:'حلبة الصفقات! أول صفقة اتقفلت. الكأس بيلمع والمدينة كلها عرفت اسمك. ده مجرد البداية.' },
+  { id:6,  title:'الماكينة',          bld:'Power Plant',        icon:'⚡', desc:'محطة الطاقة — ٢٥ رسالة في يوم',               xp:2200,  reward:'+300 C',       color:'#ffab00',  ch:'Chapter 6: The Machine', story:'محطة الطاقة شغالة على الآخر! ٢٥ رسالة في يوم واحد — إنت ماكينة مش بني آدم. البرق بينور المدينة.' },
+  { id:7,  title:'المقنع',           bld:'Persuasion Lab',     icon:'🎭', desc:'معمل الإقناع — ٥ عملاء مهتمين',                xp:3000,  reward:'Badge',        color:'#7c4dff',  ch:'Chapter 7: The Persuader', story:'معمل الإقناع السري. ٥ عملاء بقوا مهتمين — إنت بتعرف تقنع الحجر. الفقاعات بتطلع من التجارب.' },
+  { id:8,  title:'نجم الأسبوع',      bld:'Star Tower',         icon:'⭐', desc:'برج النجوم — أعلى XP أسبوعي',                 xp:4000,  reward:'+500 C',       color:'#ffab00',  ch:'Chapter 8: Rising Star', story:'برج النجوم — اسمك بيلمع فوق المدينة. أعلى XP الأسبوع ده. النجمة بتدور وإنت في القمة.' },
+  { id:9,  title:'المفاوض',          bld:'Nexus Bridge',       icon:'🤝', desc:'جسر التفاوض — ٣ عملاء في تفاوض',              xp:5000,  reward:'Badge',        color:'#2979ff',  ch:'Chapter 9: The Negotiator', story:'جسر التفاوض — الكابلات بتربطك بأقوى العملاء. ٣ صفقات في مرحلة التفاوض. المدينة بتثق فيك.' },
+  { id:10, title:'نصف الطريق',       bld:'Midtown Obelisk',    icon:'🔥', desc:'مسلة ميدتاون — نص المشوار!',                   xp:6500,  reward:'+750 C',       color:'#ff1867',  ch:'Chapter 10: The Obelisk', story:'مسلة ميدتاون — نصف الطريق! العين الماسية في القمة بتراقب. من هنا المدينة بتتغير — النخبة بتبدأ.' },
+  { id:11, title:'القناص',           bld:'Sniper Deck',        icon:'🎯', desc:'منصة القناص — ١٠ صفقات',                       xp:8000,  reward:'Badge',        color:'#00e676',  ch:'Chapter 11: The Sniper', story:'منصة القناص — العدسة بتكبر وإنت بتشوف الفرص من فوق. ١٠ صفقات! كل طلقة في الهدف.' },
+  { id:12, title:'عضو النخبة',       bld:'Elite Club',         icon:'💎', desc:'نادي النخبة — Level 10',                       xp:10000, reward:'Badge',        color:'#7c4dff',  ch:'Chapter 12: Elite Access', story:'نادي النخبة — الماسة VIP بتفتحلك الباب. Level 10! القليلين اللي وصلوا هنا. المدينة تحتك.' },
+  { id:13, title:'الأسطورة',         bld:'Legend Gate',         icon:'👑', desc:'بوابة الأساطير — #1 ليدربورد',                 xp:12500, reward:'+1000 C',      color:'#ffab00',  ch:'Chapter 13: Legend\'s Gate', story:'بوابة الأساطير اتفتحت! التاج في القمة — #1 في الليدربورد. الأساطير القديمة بتنحني ليك.' },
+  { id:14, title:'صانع الملايين',    bld:'Vault Bank',         icon:'💰', desc:'خزنة البنك — صفقات مليون+',                    xp:15000, reward:'Badge',        color:'#00e676',  ch:'Chapter 14: The Millionaire', story:'خزنة البنك — الباب الدائري بيتفتح. صفقات مليون+! الفلوس مش الهدف — القوة هي.' },
+  { id:15, title:'المعلم',           bld:'Academy',            icon:'🧠', desc:'الأكاديمية — أفضل تحويل بالفريق',              xp:18000, reward:'+1500 C',      color:'#2979ff',  ch:'Chapter 15: The Mentor', story:'الأكاديمية — الأعمدة بتحمل العلم. أفضل نسبة تحويل بالفريق — إنت بقيت المعلم. الجيل الجديد بيتعلم منك.' },
+  { id:16, title:'القائد',           bld:'Command HQ',         icon:'🦅', desc:'القيادة — أفضل أداء ٣ أسابيع',                 xp:22000, reward:'Badge',        color:'#00e5ff',  ch:'Chapter 16: Commander', story:'القيادة العامة — العلم بيرفرف والنجمة بتلمع. ٣ أسابيع متواصلة في القمة. إنت القائد.' },
+  { id:17, title:'نجم الشهر',        bld:'Neon Colosseum',     icon:'🌟', desc:'الكولوسيوم — أفضل موظف بالشهر',                xp:27000, reward:'+2000 C',      color:'#ff1867',  ch:'Chapter 17: Champion', story:'الكولوسيوم النيون — الأضواء كلها عليك. أفضل موظف بالشهر! الجمهور بيهتف اسمك في الأرينا.' },
+  { id:18, title:'ساموراي',          bld:'Dojo Fortress',      icon:'⚔️', desc:'قلعة الدوجو — ٥٠ صفقة!',                      xp:35000, reward:'Badge',        color:'#ff1867',  ch:'Chapter 18: The Samurai', story:'قلعة الدوجو — السقف المنحني والمنارة بتنادي. ٥٠ صفقة! إنت ساموراي — السيف بتاعك هو الإقناع.' },
+  { id:19, title:'أسطورة AlSaeb',   bld:'AlSaeb Skyscraper', icon:'🏅', desc:'ناطحة سحاب AlSaeb — إنت الأسطورة',            xp:50000, reward:'LEGENDARY',    color:'#ffab00',  ch:'Chapter 19: The Legend', story:'ناطحة سحاب AlSaeb — القمة المطلقة. الأجنحة والتاج — ALSAEB مكتوبة بالنيون. إنت الأسطورة. المدينة كلها ملكك.' },
+];
+
+// ════════════════════════════════════════════════════════════
+//  DATA — ZONES
+// ════════════════════════════════════════════════════════════
+const ZONES = [
+  { id:0, name:'The Underground', chapters:[0,1,2,3], yTop:2680, yBot:3200,
+    accent:'#00e5ff', accent2:'#334155', roadGlow:'#00e5ff', roadGlowOp:0.4,
+    bgStyle:'industrial' },
+  { id:1, name:'The Streets', chapters:[4,5,6,7], yTop:2080, yBot:2600,
+    accent:'#7c4dff', accent2:'#2979ff', roadGlow:'#7c4dff', roadGlowOp:0.6,
+    bgStyle:'street' },
+  { id:2, name:'The Turning Point', chapters:[8,9,10], yTop:1480, yBot:2000,
+    accent:'#ff1867', accent2:'#ff4444', roadGlow:'#ff1867', roadGlowOp:0.8,
+    bgStyle:'monument' },
+  { id:3, name:'The Skyline', chapters:[11,12,13,14,15], yTop:720, yBot:1400,
+    accent:'#00e676', accent2:'#ffab00', roadGlow:'#00e676', roadGlowOp:0.7,
+    bgStyle:'elevated' },
+  { id:4, name:'The Summit', chapters:[16,17,18,19], yTop:40, yBot:640,
+    accent:'#ffab00', accent2:'#ffd54f', roadGlow:'#ffab00', roadGlowOp:0.9,
+    bgStyle:'celestial' },
+];
+
+// ════════════════════════════════════════════════════════════
+//  DATA — ROAD WAYPOINTS (~46 points, bottom→top)
+// ════════════════════════════════════════════════════════════
+const ROAD = [
+  // Zone 0: The Underground (y 3200→2680) — mostly left, cramped
+  {x:300,y:3180},                                                     // 0
+  {x:280,y:3120},{x:240,y:3060},{x:200,y:3000},                      // 1-3
+  {x:170,y:2940},{x:160,y:2870},{x:180,y:2800},                      // 4-6
+  {x:220,y:2740},{x:280,y:2700},                                     // 7-8
+  // Zone 1: The Streets (y 2600→2080) — widens, sweeps
+  {x:320,y:2600},{x:380,y:2540},{x:420,y:2470},                      // 9-11
+  {x:440,y:2400},{x:420,y:2330},{x:360,y:2280},                      // 12-14
+  {x:280,y:2240},{x:200,y:2200},{x:160,y:2140},                      // 15-17
+  {x:180,y:2080},                                                     // 18
+  // Zone 2: The Turning Point (y 2000→1480) — curves around center
+  {x:220,y:2000},{x:300,y:1940},{x:400,y:1900},                      // 19-21
+  {x:460,y:1840},{x:460,y:1770},{x:420,y:1710},                      // 22-24
+  {x:340,y:1660},{x:260,y:1620},{x:200,y:1560},                      // 25-27
+  {x:200,y:1500},                                                     // 28
+  // Zone 3: The Skyline (y 1400→720) — sweeps wide
+  {x:240,y:1400},{x:300,y:1340},{x:380,y:1280},                      // 29-31
+  {x:450,y:1210},{x:480,y:1130},{x:460,y:1050},                      // 32-34
+  {x:400,y:980},{x:320,y:930},{x:240,y:890},                         // 35-37
+  {x:170,y:840},{x:140,y:770},                                        // 38-39
+  // Zone 4: The Summit (y 640→40) — approaches center summit
+  {x:180,y:640},{x:240,y:570},{x:320,y:510},                         // 40-42
+  {x:400,y:450},{x:430,y:370},{x:400,y:290},                         // 43-45
+  {x:340,y:220},{x:300,y:150},{x:300,y:100},                         // 46-48
+];
+
+// Which road-waypoint index each milestone sits at
+const MS_ROAD_IDX = [0, 2, 4, 7, 10, 13, 15, 17, 20, 24, 27, 30, 33, 36, 38, 39, 41, 43, 45, 48];
+
+// ════════════════════════════════════════════════════════════
+//  SVG HELPERS
+// ════════════════════════════════════════════════════════════
+const SVG_NS = 'http://www.w3.org/2000/svg';
+function S(tag, attrs={}) {
+  const el = document.createElementNS(SVG_NS, tag);
+  for (const [k,v] of Object.entries(attrs)) el.setAttribute(k,v);
+  return el;
+}
+
+// Build a smooth SVG path from waypoints using Catmull-Rom → cubic bezier
+function waypointsToPath(pts) {
+  if (pts.length < 2) return '';
+  let d = `M ${pts[0].x} ${pts[0].y}`;
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(i-1, 0)];
+    const p1 = pts[i];
+    const p2 = pts[i+1];
+    const p3 = pts[Math.min(i+2, pts.length-1)];
+    const cp1x = p1.x + (p2.x - p0.x) / 6;
+    const cp1y = p1.y + (p2.y - p0.y) / 6;
+    const cp2x = p2.x - (p3.x - p1.x) / 6;
+    const cp2y = p2.y - (p3.y - p1.y) / 6;
+    d += ` C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p2.x} ${p2.y}`;
+  }
+  return d;
+}
+
+// Offset a path left/right by shifting control-point normals (approximation)
+function offsetWaypoints(pts, offset) {
+  return pts.map((p, i) => {
+    const prev = pts[Math.max(i-1,0)];
+    const next = pts[Math.min(i+1,pts.length-1)];
+    const dx = next.x - prev.x;
+    const dy = next.y - prev.y;
+    const len = Math.sqrt(dx*dx+dy*dy) || 1;
+    return { x: p.x + (-dy/len)*offset, y: p.y + (dx/len)*offset };
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  BUILD THE CITY
+// ════════════════════════════════════════════════════════════
+let pathEl, pathLen;
+let playerXP=0, playerLevel=1, playerCoins=0, playerDeals=0, currentNode=0;
+let supabaseClient=null, accessToken=null;
+
+function buildCity() {
+  const svg = document.getElementById('city');
+
+  // ── Draw road ──
+  const roadD = waypointsToPath(ROAD);
+  document.getElementById('road-outer-glow').setAttribute('d', roadD);
+  document.getElementById('road-inner-glow').setAttribute('d', roadD);
+  document.getElementById('road-surface').setAttribute('d', roadD);
+  document.getElementById('road-center').setAttribute('d', roadD);
+  document.getElementById('road-edge-L').setAttribute('d', waypointsToPath(offsetWaypoints(ROAD, 24)));
+  document.getElementById('road-edge-R').setAttribute('d', waypointsToPath(offsetWaypoints(ROAD, -24)));
+
+  // Set road path on all 5 zone glow paths
+  for (let z = 0; z < 5; z++) {
+    document.getElementById('road-glow-z'+z).setAttribute('d', roadD);
+  }
+
+  // Use road-surface as the reference path for car positioning
+  pathEl = document.getElementById('road-surface');
+  pathLen = pathEl.getTotalLength();
+
+  // Set dasharray/offset on all zone glow paths
+  for (let z = 0; z < 5; z++) {
+    const gp = document.getElementById('road-glow-z'+z);
+    gp.style.strokeDasharray = pathLen;
+    gp.style.strokeDashoffset = pathLen;
+  }
+
+  // ── Zone-specific backgrounds ──
+  ZONES.forEach(z => generateZoneBG(z));
+
+  // ── Zone transitions ──
+  for (let i = 0; i < 4; i++) drawTransition(i);
+
+  // ── Stars (zones 2-4 only, denser toward 4) — bright! ──
+  const bgCity = document.getElementById('bg-city');
+  for (let i = 0; i < 80; i++) {
+    const zy = (i < 20) ? (1480 + Math.random()*520) : // zone 2
+              (i < 50) ? (720 + Math.random()*680) :   // zone 3
+              (40 + Math.random()*600);                  // zone 4
+    const sr = (Math.random()*1.2+0.3).toFixed(1);
+    const star = S('circle', {cx:(Math.random()*600).toFixed(0), cy:zy.toFixed(0), r:sr, fill:'#fff', opacity:(Math.random()*0.35+0.08).toFixed(2)});
+    star.style.animation = `twinkle ${3+Math.random()*6}s ease-in-out ${Math.random()*5}s infinite`;
+    bgCity.appendChild(star);
+  }
+
+  // ── Street lamps (zones 0-1 only) ──
+  for (let i = 2; i < 18; i += 3) {
+    const p = ROAD[i];
+    if (p.y < 2080) continue; // only zones 0-1
+    const prev = ROAD[Math.max(i-1,0)];
+    const next = ROAD[Math.min(i+1,ROAD.length-1)];
+    const dx = next.x - prev.x, dy = next.y - prev.y;
+    const len = Math.sqrt(dx*dx+dy*dy)||1;
+    const side = (i%2===0) ? 1 : -1;
+    const lx = p.x + (-dy/len)*32*side;
+    const ly = p.y + (dx/len)*32*side;
+    const lg = S('g');
+    lg.appendChild(S('line', {x1:lx, y1:ly, x2:lx, y2:ly-16, stroke:'#2a2a50', 'stroke-width':'1.2'}));
+    lg.appendChild(S('circle', {cx:lx, cy:ly-17, r:3, fill:'#ffab00', opacity:'.4'}));
+    lg.appendChild(S('circle', {cx:lx, cy:ly-17, r:12, fill:'#ffab00', opacity:'.06'}));
+    lg.appendChild(S('circle', {cx:lx, cy:ly-17, r:20, fill:'#ffab00', opacity:'.02'}));
+    bgCity.appendChild(lg);
+  }
+
+  // ── Helper: add window grid to a building ──
+  function addBldWindows(g, x, y, w, h, color) {
+    const cols = Math.floor(w / 10), rows = Math.floor(h / 12);
+    for (let r=0; r<rows; r++) for (let c=0; c<cols; c++) {
+      if(Math.random()>.25){
+        const wOp = (.15+Math.random()*.3).toFixed(2);
+        const win = S('rect', {x:x+4+c*10, y:y+6+r*12, width:4.5, height:5, rx:.5, fill:color, opacity:wOp});
+        win.style.animation=`twinkle ${4+Math.random()*6}s ease-in-out ${Math.random()*5}s infinite`;
+        g.appendChild(win);
+      }
+    }
+  }
+
+  // ── Helper: draw unique landmark building per milestone ──
+  function drawLandmark(g, idx, cx, cy, w, h, L, T, col, fl) {
+    switch(idx) {
+    case 0: { // Starter Garage — corrugated rect body, half-open rolling door, bare bulb
+      g.appendChild(S('rect', {x:L, y:T, width:w, height:h, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Corrugation lines
+      for(let l=0;l<5;l++) g.appendChild(S('line', {x1:L+2, y1:T+6+l*((h-12)/4), x2:L+w-2, y2:T+6+l*((h-12)/4), stroke:col, 'stroke-width':.4, opacity:'.15'}));
+      // Rolling door (half-open)
+      const dw=w*.55, dx=cx-dw/2, dy=T+h*.4;
+      g.appendChild(S('rect', {x:dx, y:dy, width:dw, height:h*.5, rx:1, fill:'#080818', stroke:col, 'stroke-width':.7, opacity:.6}));
+      // Door slats
+      for(let l=0;l<3;l++) g.appendChild(S('line', {x1:dx+2, y1:dy+4+l*7, x2:dx+dw-2, y2:dy+4+l*7, stroke:col, 'stroke-width':.3, opacity:'.2'}));
+      // Bare bulb above door
+      g.appendChild(S('circle', {cx, cy:T-4, r:2.5, fill:col, opacity:'.25', filter:fl}));
+      g.appendChild(S('line', {x1:cx, y1:T, x2:cx, y2:T-2, stroke:col, 'stroke-width':.5, opacity:'.3'}));
+      break; }
+    case 1: { // Chat Tower — squat building + thick antenna + 3 signal arcs
+      g.appendChild(S('rect', {x:L+w*.1, y:T, width:w*.8, height:h, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Thick antenna
+      g.appendChild(S('line', {x1:cx, y1:T, x2:cx, y2:T-20, stroke:col, 'stroke-width':2, filter:fl}));
+      g.appendChild(S('circle', {cx, cy:T-21, r:2, fill:col, filter:fl}));
+      // 3 signal arcs
+      for(let a=1;a<=3;a++) {
+        const r=a*5;
+        g.appendChild(S('path', {d:`M${cx+4},${T-20-a*2} A${r},${r} 0 0,1 ${cx+4+r*.6},${T-20+a*2}`, fill:'none', stroke:col, 'stroke-width':'.6', opacity:(.35-a*.08).toFixed(2)}));
+      }
+      addBldWindows(g, L+w*.1, T, w*.8, h, col);
+      break; }
+    case 2: { // Signal Station — industrial shed + 3 antenna poles with blinking tips
+      g.appendChild(S('rect', {x:L, y:T+h*.3, width:w, height:h*.7, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Sloped roof
+      g.appendChild(S('polygon', {points:`${L},${T+h*.3} ${cx},${T} ${L+w},${T+h*.3}`, fill:'#0e0e2a', stroke:col, 'stroke-width':.8}));
+      // 3 antenna poles
+      for(let a=-1;a<=1;a++){
+        const ax=cx+a*(w*.25);
+        const ah=14+Math.abs(a)*6;
+        g.appendChild(S('line', {x1:ax, y1:T, x2:ax, y2:T-ah, stroke:col, 'stroke-width':1}));
+        g.appendChild(S('circle', {cx:ax, cy:T-ah-1, r:1.5, fill:col, filter:fl, opacity:'.6'}));
+      }
+      addBldWindows(g, L, T+h*.35, w, h*.6, col);
+      break; }
+    case 3: { // Hunter Plaza — warehouse courtyard + large target crosshair on ground
+      g.appendChild(S('rect', {x:L, y:T, width:w, height:h, rx:3, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Target crosshair
+      for(let r=8;r>=3;r-=2.5) g.appendChild(S('circle', {cx, cy, r, fill:'none', stroke:col, 'stroke-width':'.7', opacity:(.2+(8-r)*.06).toFixed(2)}));
+      g.appendChild(S('line', {x1:cx-10, y1:cy, x2:cx+10, y2:cy, stroke:col, 'stroke-width':'.5', opacity:'.35'}));
+      g.appendChild(S('line', {x1:cx, y1:cy-10, x2:cx, y2:cy+10, stroke:col, 'stroke-width':'.5', opacity:'.35'}));
+      // Corner pillars
+      for(let dx of [-1,1]) for(let dy of [-1,1]) {
+        g.appendChild(S('rect', {x:cx+dx*(w/2-4)-2, y:cy+dy*(h/2-4)-2, width:4, height:4, rx:.5, fill:col, opacity:'.08'}));
+      }
+      break; }
+    case 4: { // Meeting Hub — glass dome (semicircle ellipse) + revolving door
+      g.appendChild(S('rect', {x:L, y:T+h*.3, width:w, height:h*.7, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Dome
+      g.appendChild(S('ellipse', {cx, cy:T+h*.3, rx:w/2, ry:h*.3, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Glass reflections
+      g.appendChild(S('ellipse', {cx, cy:T+h*.2, rx:w*.25, ry:h*.1, fill:'none', stroke:col, 'stroke-width':'.4', opacity:'.15'}));
+      // Revolving door
+      g.appendChild(S('circle', {cx, cy:T+h*.75, r:5, fill:'#080818', stroke:col, 'stroke-width':.7}));
+      g.appendChild(S('line', {x1:cx-4, y1:T+h*.75, x2:cx+4, y2:T+h*.75, stroke:col, 'stroke-width':.4, opacity:'.3'}));
+      g.appendChild(S('line', {x1:cx, y1:T+h*.75-4, x2:cx, y2:T+h*.75+4, stroke:col, 'stroke-width':.4, opacity:'.3'}));
+      // Top beacon
+      g.appendChild(S('circle', {cx, cy:T+h*.02, r:2, fill:col, filter:fl, opacity:'.4'}));
+      addBldWindows(g, L, T+h*.35, w, h*.6, col);
+      break; }
+    case 5: { // Deal Arena — colosseum shape (ellipses) + trophy silhouette above + spotlights
+      g.appendChild(S('ellipse', {cx, cy:cy+h*.05, rx:w/2, ry:h*.35, fill:'#0e0e2a', stroke:col, 'stroke-width':1.2}));
+      g.appendChild(S('ellipse', {cx, cy:cy-h*.08, rx:w*.4, ry:h*.22, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Pillar lines
+      for(let p=0;p<4;p++){const px=L+5+p*((w-10)/3);
+        g.appendChild(S('line', {x1:px, y1:cy-h*.15, x2:px, y2:cy+h*.25, stroke:col, 'stroke-width':1, opacity:'.2'}));}
+      // Trophy silhouette
+      g.appendChild(S('path', {d:`M${cx-5},${T-4} L${cx-3},${T-12} L${cx+3},${T-12} L${cx+5},${T-4}`, fill:'none', stroke:col, 'stroke-width':1, filter:fl}));
+      g.appendChild(S('line', {x1:cx, y1:T-4, x2:cx, y2:T-1, stroke:col, 'stroke-width':1, filter:fl}));
+      g.appendChild(S('line', {x1:cx-4, y1:T-1, x2:cx+4, y2:T-1, stroke:col, 'stroke-width':.8, filter:fl}));
+      // Spotlights
+      g.appendChild(S('line', {x1:L+4, y1:T, x2:cx-6, y2:T-18, stroke:col, 'stroke-width':'.4', opacity:'.12'}));
+      g.appendChild(S('line', {x1:L+w-4, y1:T, x2:cx+6, y2:T-18, stroke:col, 'stroke-width':'.4', opacity:'.12'}));
+      break; }
+    case 6: { // Power Plant — 2 smokestacks + lightning bolt between them + pipe base
+      g.appendChild(S('rect', {x:L, y:T+h*.25, width:w, height:h*.75, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Pipe base
+      g.appendChild(S('line', {x1:L-4, y1:T+h*.25, x2:L+w+4, y2:T+h*.25, stroke:col, 'stroke-width':1.5, opacity:'.3'}));
+      // 2 smokestacks
+      for(let s of [-1,1]){const sx=cx+s*w*.22;
+        g.appendChild(S('rect', {x:sx-4, y:T, width:8, height:h*.32, rx:1, fill:'#0e0e2a', stroke:col, 'stroke-width':'.8'}));
+        // Smoke puffs
+        g.appendChild(S('circle', {cx:sx, cy:T-4, r:3, fill:col, opacity:'.04'}));
+        g.appendChild(S('circle', {cx:sx+2, cy:T-9, r:4, fill:col, opacity:'.02'}));}
+      // Lightning bolt between stacks
+      g.appendChild(S('path', {d:`M${cx+1},${T+h*.15} L${cx-3},${T+h*.35} L${cx+3},${T+h*.35} L${cx-1},${T+h*.55}`, fill:'none', stroke:col, 'stroke-width':1.5, filter:fl}));
+      addBldWindows(g, L, T+h*.3, w, h*.65, col);
+      break; }
+    case 7: { // Persuasion Lab — lab building + flask outline on facade + bubbles
+      g.appendChild(S('rect', {x:L, y:T, width:w, height:h, rx:3, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Flask outline
+      const fy=cy-4;
+      g.appendChild(S('path', {d:`M${cx-3},${fy-10} L${cx-3},${fy-3} L${cx-8},${fy+8} Q${cx-7},${fy+13} ${cx},${fy+13} Q${cx+7},${fy+13} ${cx+8},${fy+8} L${cx+3},${fy-3} L${cx+3},${fy-10}`, fill:'none', stroke:col, 'stroke-width':'.8', filter:fl}));
+      // Bubbles rising
+      g.appendChild(S('circle', {cx:cx-2, cy:fy+5, r:1.5, fill:col, opacity:'.2'}));
+      g.appendChild(S('circle', {cx:cx+3, cy:fy+2, r:1, fill:col, opacity:'.15'}));
+      g.appendChild(S('circle', {cx:cx, cy:fy-1, r:.8, fill:col, opacity:'.2'}));
+      g.appendChild(S('circle', {cx:cx+1, cy:fy-5, r:.6, fill:col, opacity:'.12'}));
+      addBldWindows(g, L, T, w, h, col);
+      break; }
+    case 8: { // Star Tower — narrow tower narrowing upward + star beacon + light beams
+      // Tower body narrows
+      g.appendChild(S('path', {d:`M${L+w*.15},${T+h} L${L+w*.25},${T} L${L+w*.75},${T} L${L+w*.85},${T+h} Z`, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Spire
+      g.appendChild(S('line', {x1:cx, y1:T, x2:cx, y2:T-16, stroke:col, 'stroke-width':1.5, filter:fl}));
+      // Star beacon
+      const sy=T-20;
+      g.appendChild(S('polygon', {points:`${cx},${sy-6} ${cx+2},${sy-2} ${cx+6},${sy-1} ${cx+3},${sy+2} ${cx+4},${sy+6} ${cx},${sy+4} ${cx-4},${sy+6} ${cx-3},${sy+2} ${cx-6},${sy-1} ${cx-2},${sy-2}`, fill:col, filter:fl, opacity:'.7'}));
+      // Light beams
+      g.appendChild(S('line', {x1:cx, y1:T-20, x2:cx-18, y2:T-35, stroke:col, 'stroke-width':'.4', opacity:'.1'}));
+      g.appendChild(S('line', {x1:cx, y1:T-20, x2:cx+18, y2:T-35, stroke:col, 'stroke-width':'.4', opacity:'.1'}));
+      addBldWindows(g, L+w*.2, T, w*.6, h, col);
+      break; }
+    case 9: { // Nexus Bridge — suspension bridge (2 pylons + catenary cable + deck)
+      // 2 pylons
+      g.appendChild(S('rect', {x:L, y:T+h*.2, width:w*.16, height:h*.8, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      g.appendChild(S('rect', {x:L+w*.84, y:T+h*.2, width:w*.16, height:h*.8, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Deck
+      g.appendChild(S('rect', {x:L, y:T+h*.3, width:w, height:h*.08, rx:1, fill:'#0e0e2a', stroke:col, 'stroke-width':'.8'}));
+      // Catenary cable (parabolic arch)
+      g.appendChild(S('path', {d:`M${L+w*.08},${T+h*.2} Q${cx},${T-8} ${L+w*.92},${T+h*.2}`, fill:'none', stroke:col, 'stroke-width':1.5, filter:fl}));
+      // Suspension cables
+      for(let c=1;c<=4;c++){const cx2=L+c*w/5;
+        g.appendChild(S('line', {x1:cx2, y1:T+h*.3, x2:cx2, y2:T+h*.05+Math.abs(c-2.5)*6, stroke:col, 'stroke-width':'.4', opacity:'.3'}));}
+      break; }
+    case 10: { // Midtown Obelisk — 1.5x tall tapered + diamond eye + glow base + energy bands
+      const oW=w*.4;
+      // Tapered body
+      g.appendChild(S('path', {d:`M${cx-oW/2},${T+h} L${cx-oW*.3},${T} L${cx+oW*.3},${T} L${cx+oW/2},${T+h} Z`, fill:'#0e0e2a', stroke:col, 'stroke-width':1.5}));
+      // Pointed tip
+      g.appendChild(S('polygon', {points:`${cx},${T-22} ${cx-oW*.3},${T} ${cx+oW*.3},${T}`, fill:'#0e0e2a', stroke:col, 'stroke-width':1.2, filter:fl}));
+      // Diamond eye at center
+      g.appendChild(S('path', {d:`M${cx},${cy-10} L${cx+8},${cy} L${cx},${cy+10} L${cx-8},${cy} Z`, fill:'none', stroke:col, 'stroke-width':1.2, filter:fl}));
+      g.appendChild(S('circle', {cx, cy, r:3.5, fill:col, opacity:'.2', filter:fl}));
+      // Energy bands
+      for(let l=0;l<5;l++){const ly=T+h*.15+l*h*.17, lw=oW*.5*(1-l*.06);
+        g.appendChild(S('line', {x1:cx-lw, y1:ly, x2:cx+lw, y2:ly, stroke:col, 'stroke-width':'.6', opacity:'.18'}));}
+      // Glow base
+      g.appendChild(S('ellipse', {cx, cy:T+h+2, rx:w*.45, ry:10, fill:col, opacity:'.06'}));
+      break; }
+    case 11: { // Sniper Deck — thin tower + wide observation platform + scope lens
+      // Thin tower
+      g.appendChild(S('rect', {x:cx-w*.12, y:T+h*.18, width:w*.24, height:h*.82, rx:1, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Wide platform
+      g.appendChild(S('rect', {x:L, y:T, width:w, height:h*.18, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Railing
+      g.appendChild(S('line', {x1:L+2, y1:T-2, x2:L+w-2, y2:T-2, stroke:col, 'stroke-width':'.8', opacity:'.35'}));
+      // Scope lens
+      g.appendChild(S('circle', {cx:cx+w*.3, cy:T+h*.09, r:5, fill:'#0e0e2a', stroke:col, 'stroke-width':'.8'}));
+      g.appendChild(S('circle', {cx:cx+w*.3, cy:T+h*.09, r:2, fill:col, opacity:'.3', filter:fl}));
+      // Crosshair in scope
+      g.appendChild(S('line', {x1:cx+w*.3-4, y1:T+h*.09, x2:cx+w*.3+4, y2:T+h*.09, stroke:col, 'stroke-width':'.3', opacity:'.25'}));
+      g.appendChild(S('line', {x1:cx+w*.3, y1:T+h*.09-4, x2:cx+w*.3, y2:T+h*.09+4, stroke:col, 'stroke-width':'.3', opacity:'.25'}));
+      break; }
+    case 12: { // Elite Club — luxurious rect + diamond motif + VIP text + rope lines
+      g.appendChild(S('rect', {x:L, y:T, width:w, height:h, rx:4, fill:'#0e0e2a', stroke:col, 'stroke-width':1.2}));
+      // Diamond motif
+      const dy2=cy-h*.08;
+      g.appendChild(S('path', {d:`M${cx},${dy2-9} L${cx+9},${dy2} L${cx},${dy2+9} L${cx-9},${dy2} Z`, fill:'none', stroke:col, 'stroke-width':1.2, filter:fl}));
+      g.appendChild(S('path', {d:`M${cx},${dy2-4} L${cx+4},${dy2} L${cx},${dy2+4} L${cx-4},${dy2} Z`, fill:col, opacity:'.12'}));
+      // VIP text
+      const vip=S('text', {x:cx, y:T+h-5, 'text-anchor':'middle', 'font-size':'5.5', fill:col, 'font-family':'Chakra Petch', 'font-weight':'700', opacity:'.4'});
+      vip.textContent='VIP'; g.appendChild(vip);
+      // Rope lines (entrance)
+      g.appendChild(S('line', {x1:cx-8, y1:T+h, x2:cx-8, y2:T+h+6, stroke:col, 'stroke-width':'.6', opacity:'.25'}));
+      g.appendChild(S('line', {x1:cx+8, y1:T+h, x2:cx+8, y2:T+h+6, stroke:col, 'stroke-width':'.6', opacity:'.25'}));
+      g.appendChild(S('path', {d:`M${cx-8},${T+h+4} Q${cx},${T+h+7} ${cx+8},${T+h+4}`, fill:'none', stroke:col, 'stroke-width':'.5', opacity:'.2'}));
+      addBldWindows(g, L, T, w, h*.5, col);
+      break; }
+    case 13: { // Legend Gate — grand archway (2 pillars + arch path) + crown at apex
+      const pw=w*.18;
+      // 2 pillars
+      g.appendChild(S('rect', {x:L, y:T+h*.25, width:pw, height:h*.75, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1.2}));
+      g.appendChild(S('rect', {x:L+w-pw, y:T+h*.25, width:pw, height:h*.75, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1.2}));
+      // Arch
+      g.appendChild(S('path', {d:`M${L+pw},${T+h*.25} Q${cx},${T-10} ${L+w-pw},${T+h*.25}`, fill:'none', stroke:col, 'stroke-width':2, filter:fl}));
+      // Crown at apex
+      const crY=T-15;
+      g.appendChild(S('path', {d:`M${cx-8},${crY+6} L${cx-6},${crY} L${cx-2},${crY+4} L${cx},${crY-2} L${cx+2},${crY+4} L${cx+6},${crY} L${cx+8},${crY+6}`, fill:'none', stroke:col, 'stroke-width':1, filter:fl}));
+      // Threshold line
+      g.appendChild(S('line', {x1:L+pw, y1:T+h*.55, x2:L+w-pw, y2:T+h*.55, stroke:col, 'stroke-width':'.5', opacity:'.15'}));
+      break; }
+    case 14: { // Vault Bank — rect + circular vault door + $ text + columns
+      g.appendChild(S('rect', {x:L, y:T, width:w, height:h, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1.5}));
+      // Cornice
+      g.appendChild(S('rect', {x:L-3, y:T, width:w+6, height:5, rx:1, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Columns
+      for(let c=0;c<3;c++){const colX=L+w*.15+c*(w*.35);
+        g.appendChild(S('line', {x1:colX, y1:T+5, x2:colX, y2:T+h, stroke:col, 'stroke-width':1.2, opacity:'.2'}));}
+      // Vault door
+      g.appendChild(S('circle', {cx, cy:cy+4, r:h*.22, fill:'#080818', stroke:col, 'stroke-width':1.5}));
+      g.appendChild(S('circle', {cx, cy:cy+4, r:h*.15, fill:'none', stroke:col, 'stroke-width':'.5', opacity:'.3'}));
+      // Handle
+      g.appendChild(S('line', {x1:cx-5, y1:cy+4, x2:cx+5, y2:cy+4, stroke:col, 'stroke-width':1, opacity:'.4'}));
+      g.appendChild(S('line', {x1:cx, y1:cy-1, x2:cx, y2:cy+9, stroke:col, 'stroke-width':1, opacity:'.4'}));
+      // $ text
+      const dl=S('text', {x:cx, y:T+11, 'text-anchor':'middle', 'font-size':'8', fill:col, 'font-family':'Chakra Petch', 'font-weight':'700', filter:fl, opacity:'.4'});
+      dl.textContent='$'; g.appendChild(dl);
+      break; }
+    case 15: { // Academy — rect + triangular pediment + 4 columns + book icon
+      g.appendChild(S('rect', {x:L+w*.1, y:T+h*.18, width:w*.8, height:h*.82, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Triangular pediment
+      g.appendChild(S('polygon', {points:`${L},${T+h*.18} ${cx},${T-6} ${L+w},${T+h*.18}`, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // 4 columns
+      for(let c=0;c<4;c++){const colX=L+w*.15+c*(w*.7/3);
+        g.appendChild(S('line', {x1:colX, y1:T+h*.18, x2:colX, y2:T+h, stroke:col, 'stroke-width':1.5, opacity:'.35'}));}
+      // Book icon
+      g.appendChild(S('rect', {x:cx-5, y:cy+2, width:10, height:7, rx:1, fill:'none', stroke:col, 'stroke-width':'.6', opacity:'.3'}));
+      g.appendChild(S('line', {x1:cx, y1:cy+2, x2:cx, y2:cy+9, stroke:col, 'stroke-width':'.4', opacity:'.25'}));
+      break; }
+    case 16: { // Command HQ — angular rect + flagpole with flag + star insignia
+      g.appendChild(S('rect', {x:L, y:T, width:w, height:h, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1.2}));
+      // Angular roof accent
+      g.appendChild(S('line', {x1:L, y1:T, x2:L+w, y2:T, stroke:col, 'stroke-width':2, opacity:'.3'}));
+      // Flagpole
+      g.appendChild(S('line', {x1:L+w*.75, y1:T, x2:L+w*.75, y2:T-24, stroke:'#8888aa', 'stroke-width':'.8'}));
+      // Flag
+      g.appendChild(S('path', {d:`M${L+w*.75},${T-24} L${L+w*.75+12},${T-19} L${L+w*.75},${T-14}`, fill:col, opacity:'.45', filter:fl}));
+      // Star insignia
+      const sx=cx, sy2=cy;
+      g.appendChild(S('polygon', {points:`${sx},${sy2-5} ${sx+1.5},${sy2-2} ${sx+5},${sy2-1} ${sx+2.5},${sy2+1.5} ${sx+3},${sy2+5} ${sx},${sy2+3} ${sx-3},${sy2+5} ${sx-2.5},${sy2+1.5} ${sx-5},${sy2-1} ${sx-1.5},${sy2-2}`, fill:col, opacity:'.2'}));
+      // Horizontal detail lines
+      for(let b=0;b<3;b++) g.appendChild(S('line', {x1:L+3, y1:T+10+b*h*.25, x2:L+w-3, y2:T+10+b*h*.25, stroke:col, 'stroke-width':'.5', opacity:'.12'}));
+      addBldWindows(g, L, T, w, h, col);
+      break; }
+    case 17: { // Neon Colosseum — oval arena (2 ellipses) + spotlights + glow center
+      g.appendChild(S('ellipse', {cx, cy:cy+h*.08, rx:w/2, ry:h*.35, fill:'#0e0e2a', stroke:col, 'stroke-width':1.5}));
+      g.appendChild(S('ellipse', {cx, cy:cy-h*.1, rx:w*.38, ry:h*.22, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Arch openings
+      for(let a of [-1,1]){const ax=cx+a*w*.28;
+        g.appendChild(S('path', {d:`M${ax-4},${cy+h*.18} Q${ax},${cy+h*.04} ${ax+4},${cy+h*.18}`, fill:'none', stroke:col, 'stroke-width':'.7', opacity:'.35'}));}
+      // Spotlights
+      g.appendChild(S('line', {x1:cx-w*.3, y1:cy-h*.3, x2:cx-w*.08, y2:cy-h*.55, stroke:col, 'stroke-width':'.5', opacity:'.12'}));
+      g.appendChild(S('line', {x1:cx+w*.3, y1:cy-h*.3, x2:cx+w*.08, y2:cy-h*.55, stroke:col, 'stroke-width':'.5', opacity:'.12'}));
+      // Glow center
+      g.appendChild(S('ellipse', {cx, cy, rx:w*.3, ry:h*.1, fill:col, opacity:'.04', filter:fl}));
+      break; }
+    case 18: { // Dojo Fortress — 3-tiered Japanese castle + curved roofs + lantern spire
+      // 3 tiers
+      g.appendChild(S('rect', {x:L+w*.05, y:T+h*.55, width:w*.9, height:h*.45, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      g.appendChild(S('rect', {x:L+w*.15, y:T+h*.28, width:w*.7, height:h*.3, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      g.appendChild(S('rect', {x:L+w*.3, y:T+h*.08, width:w*.4, height:h*.24, rx:2, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      // Curved roofs
+      g.appendChild(S('path', {d:`M${L-3},${T+h*.55} Q${cx},${T+h*.4} ${L+w+3},${T+h*.55}`, fill:'none', stroke:col, 'stroke-width':1.2}));
+      g.appendChild(S('path', {d:`M${L+w*.08},${T+h*.28} Q${cx},${T+h*.15} ${L+w*.92},${T+h*.28}`, fill:'none', stroke:col, 'stroke-width':1}));
+      g.appendChild(S('path', {d:`M${L+w*.22},${T+h*.08} Q${cx},${T-8} ${L+w*.78},${T+h*.08}`, fill:'none', stroke:col, 'stroke-width':1, filter:fl}));
+      // Lantern spire
+      g.appendChild(S('line', {x1:cx, y1:T+h*.08, x2:cx, y2:T-16, stroke:col, 'stroke-width':1.2, filter:fl}));
+      g.appendChild(S('circle', {cx, cy:T-17, r:2, fill:col, opacity:'.3', filter:fl}));
+      break; }
+    case 19: { // AlSaeb Skyscraper — 1.5x massive tall rect + wing paths + beacon + orb + ALSAEB text + crown + window grid + glow base
+      // Main tower
+      g.appendChild(S('rect', {x:L+w*.1, y:T, width:w*.8, height:h, rx:3, fill:'#0e0e2a', stroke:col, 'stroke-width':1.5}));
+      // Wing sections
+      g.appendChild(S('rect', {x:L, y:T+h*.3, width:w*.14, height:h*.45, rx:1, fill:'#0e0e2a', stroke:col, 'stroke-width':'.8'}));
+      g.appendChild(S('rect', {x:L+w*.86, y:T+h*.3, width:w*.14, height:h*.45, rx:1, fill:'#0e0e2a', stroke:col, 'stroke-width':'.8'}));
+      // Beacon line up
+      g.appendChild(S('line', {x1:cx, y1:T, x2:cx, y2:T-28, stroke:col, 'stroke-width':2, filter:fl}));
+      // Orb
+      g.appendChild(S('circle', {cx, cy:T-30, r:3.5, fill:col, filter:fl}));
+      // Wing path decorations
+      g.appendChild(S('polygon', {points:`${cx},${T-24} ${cx-10},${T-8} ${cx-7},${T-8} ${cx},${T-19} ${cx+7},${T-8} ${cx+10},${T-8}`, fill:'none', stroke:col, 'stroke-width':1, filter:fl}));
+      // Crown
+      const crY2=T-36;
+      g.appendChild(S('path', {d:`M${cx-6},${crY2+5} L${cx-4},${crY2} L${cx-1},${crY2+3} L${cx},${crY2-1} L${cx+1},${crY2+3} L${cx+4},${crY2} L${cx+6},${crY2+5}`, fill:'none', stroke:col, 'stroke-width':'.8', filter:fl}));
+      // Window grid horizontal lines
+      for(let n=0;n<5;n++) g.appendChild(S('line', {x1:L+w*.15, y1:T+14+n*h*.16, x2:L+w*.85, y2:T+14+n*h*.16, stroke:col, 'stroke-width':'.7', opacity:'.18'}));
+      // ALSAEB text
+      const logo=S('text', {x:cx, y:cy-4, 'text-anchor':'middle', 'font-size':'7', fill:col, 'font-family':'Chakra Petch', 'font-weight':'700', filter:fl, opacity:'.35'});
+      logo.textContent='ALSAEB'; g.appendChild(logo);
+      // Windows
+      addBldWindows(g, L+w*.1, T, w*.8, h, col);
+      // Glow base
+      g.appendChild(S('ellipse', {cx, cy:T+h+2, rx:w*.55, ry:10, fill:col, opacity:'.05'}));
+      break; }
+    default: {
+      g.appendChild(S('rect', {x:L, y:T, width:w, height:h, rx:3, fill:'#0e0e2a', stroke:col, 'stroke-width':1}));
+      addBldWindows(g, L, T, w, h, col);
+    }}
+  }
+
+  // ── Landmark buildings at milestones ──
+  const landmarksG = document.getElementById('landmarks');
+  const milestonesG = document.getElementById('milestones');
+
+  MS.forEach((m, i) => {
+    const ridx = Math.min(MS_ROAD_IDX[i], ROAD.length-1);
+    const pos = ROAD[ridx];
+    const prev = ROAD[Math.max(ridx-1,0)];
+    const next = ROAD[Math.min(ridx+1,ROAD.length-1)];
+    const dx = next.x - prev.x, dy = next.y - prev.y;
+    const len = Math.sqrt(dx*dx+dy*dy)||1;
+    const side = (i % 2 === 0) ? 1 : -1;
+    const offDist = 65 + Math.random()*20;
+    const bx = pos.x + (-dy/len)*offDist*side;
+    const by = pos.y + (dx/len)*offDist*side;
+    const bw = (i===19)?85:(i===10)?72:(i%5===0)?60:46;
+    const bh = (i===19)?120:(i===10)?95:(i%5===0)?78:56;
+    const bLeft = bx - bw/2;
+    const bTop = by - bh/2;
+    const filt = {'#00e5ff':'url(#gl-cyan)','#2979ff':'url(#gl-blue)','#7c4dff':'url(#gl-purple)','#ff1867':'url(#gl-pink)','#00e676':'url(#gl-green)','#ffab00':'url(#gl-amber)'}[m.color]||'url(#gl-cyan)';
+
+    const g = S('g', {'data-ms':i, class:'cursor-pointer', style:'pointer-events:all'});
+
+    // Draw unique building shape
+    drawLandmark(g, i, bx, by, bw, bh, bLeft, bTop, m.color, filt);
+
+    // Ground glow beneath building — visible
+    g.appendChild(S('ellipse', {cx:bx, cy:bTop+bh+3, rx:bw*.55, ry:8, fill:m.color, opacity:'.08'}));
+    g.appendChild(S('ellipse', {cx:bx, cy:bTop+bh+3, rx:bw*.35, ry:4, fill:m.color, opacity:'.12'}));
+
+    // Neon sign (building name) — bright
+    const signY = bTop - (i===19?38:i===10?28:i%5===0?24:10);
+    const sign = S('text', {x:bx, y:signY, 'text-anchor':'middle', 'font-size':(i===19?'12':i===10?'10.5':'8'), fill:m.color, 'font-family':'Chakra Petch,sans-serif', 'font-weight':'700', filter:filt, class:'neon-flicker', opacity:'.9'});
+    sign.textContent = m.bld;
+    g.appendChild(sign);
+    // Sign glow halo
+    const signW = m.bld.length * (i===19?7:i===10?6:4.5);
+    g.appendChild(S('rect', {x:bx-signW/2-4, y:signY-10, width:signW+8, height:14, rx:3, fill:m.color, opacity:'.04'}));
+
+    g.addEventListener('click', () => showModal(i));
+    landmarksG.appendChild(g);
+
+    // ── Road milestone marker ──
+    const mg = S('g', {'data-marker':i});
+    mg.appendChild(S('circle', {cx:pos.x, cy:pos.y, r:16, fill:'none', stroke:m.color, 'stroke-width':1.2, opacity:'.35'}));
+    mg.appendChild(S('circle', {cx:pos.x, cy:pos.y, r:10, fill:'#0c0c28', stroke:m.color, 'stroke-width':2}));
+    const numT = S('text', {x:pos.x, y:pos.y+4, 'text-anchor':'middle', 'font-size':'8', fill:m.color, 'font-family':'Chakra Petch', 'font-weight':'700'});
+    numT.textContent = i;
+    mg.appendChild(numT);
+    mg.addEventListener('click', () => showModal(i));
+    milestonesG.appendChild(mg);
+  });
+
+  // ── Fog of war ──
+  buildFog();
+}
+
+// ════════════════════════════════════════════════════════════
+//  ZONE BACKGROUND GENERATION
+// ════════════════════════════════════════════════════════════
+function generateZoneBG(zone) {
+  const bgCity = document.getElementById('bg-city');
+  const {yTop, yBot, accent, accent2, bgStyle} = zone;
+  const h = yBot - yTop;
+
+  switch(bgStyle) {
+    case 'industrial': {
+      // Pipes (horizontal + vertical lines)
+      for(let i=0;i<10;i++){
+        const py = yTop + 30 + Math.random()*(h-60);
+        const px = Math.random() > 0.5 ? 5+Math.random()*80 : 500+Math.random()*80;
+        const pw = 40+Math.random()*80;
+        bgCity.appendChild(S('line', {x1:px, y1:py, x2:px+pw, y2:py, stroke:accent2, 'stroke-width':(1.5+Math.random()*2.5).toFixed(1), opacity:'.25'}));
+      }
+      for(let i=0;i<6;i++){
+        const px = Math.random() > 0.5 ? 15+Math.random()*60 : 520+Math.random()*60;
+        const py = yTop + 20 + Math.random()*(h-100);
+        bgCity.appendChild(S('line', {x1:px, y1:py, x2:px, y2:py+50+Math.random()*80, stroke:accent2, 'stroke-width':(1.5+Math.random()*2).toFixed(1), opacity:'.2'}));
+      }
+      // Concrete pillars
+      for(let i=0;i<8;i++){
+        const px = Math.random() > 0.5 ? 8+Math.random()*70 : 510+Math.random()*70;
+        const py = yTop + 40 + Math.random()*(h-80);
+        const pw = 14+Math.random()*14, ph = 40+Math.random()*60;
+        bgCity.appendChild(S('rect', {x:px, y:py, width:pw, height:ph, rx:1, fill:'#0c0c22', stroke:'#1a1a40', 'stroke-width':'1'}));
+        // Pillar window lights
+        for(let w2=0;w2<3;w2++){bgCity.appendChild(S('rect',{x:px+3,y:py+6+w2*14,width:pw-6,height:4,rx:.5,fill:accent,opacity:(.06+Math.random()*.1).toFixed(2)}));}
+      }
+      // Amber bulbs with glow
+      for(let i=0;i<8;i++){
+        const bx = 20+Math.random()*560;
+        const by = yTop + 20 + Math.random()*(h-40);
+        bgCity.appendChild(S('circle', {cx:bx, cy:by, r:2.5, fill:'#ffab00', opacity:(.15+Math.random()*.15).toFixed(2)}));
+        bgCity.appendChild(S('circle', {cx:bx, cy:by, r:8, fill:'#ffab00', opacity:'.04'}));
+      }
+      break;
+    }
+    case 'street': {
+      // Medium buildings on margins
+      const sides = [{base:5, range:80},{base:495, range:80}];
+      sides.forEach(s => {
+        for(let i=0;i<6;i++){
+          const bx = s.base + Math.random()*s.range;
+          const by = yTop + 15 + i*(h/6);
+          const bw = 30+Math.random()*35;
+          const bh = 45+Math.random()*65;
+          const g = S('g');
+          g.appendChild(S('rect', {x:bx, y:by, width:bw, height:bh, rx:1.5, fill:'#0c0c22', stroke:accent, 'stroke-width':'1', opacity:'.7'}));
+          // Roof neon line
+          g.appendChild(S('line', {x1:bx, y1:by, x2:bx+bw, y2:by, stroke:accent, 'stroke-width':(1.2+Math.random()*1.5).toFixed(1), opacity:(.3+Math.random()*.25).toFixed(2)}));
+          // Windows — brighter
+          const cols = Math.floor(bw/9), rows = Math.floor(bh/11);
+          for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
+            if(Math.random()>.3){
+              const wColor = Math.random()>.7 ? accent2 : accent;
+              const win = S('rect', {x:bx+3+c*9, y:by+4+r*11, width:4.5, height:5.5, rx:.4, fill:wColor, opacity:(.12+Math.random()*.25).toFixed(2)});
+              win.style.animation=`twinkle ${3+Math.random()*5}s ease-in-out ${Math.random()*4}s infinite`;
+              g.appendChild(win);
+            }
+          }
+          bgCity.appendChild(g);
+        }
+      });
+      // Neon signs — bigger and brighter
+      const signTexts = ['BAR','CYBER','RAMEN','NEON','CLUB','24/7','VR','DATA','HOTEL','JAZZ'];
+      for(let i=0;i<10;i++){
+        const sx = Math.random()>0.5 ? 8+Math.random()*80 : 500+Math.random()*80;
+        const sy = yTop + 30 + Math.random()*(h-60);
+        const sColor = [accent, accent2, '#00e5ff','#ff1867','#ffab00'][Math.floor(Math.random()*5)];
+        const txt = signTexts[Math.floor(Math.random()*signTexts.length)];
+        const sW = txt.length*6+8;
+        const sg = S('g');
+        sg.appendChild(S('rect', {x:sx, y:sy-9, width:sW, height:14, rx:2, fill:'#08081a', stroke:sColor, 'stroke-width':'1', opacity:'.7'}));
+        const st = S('text', {x:sx+sW/2, y:sy+2, 'text-anchor':'middle', 'font-size':'6.5', fill:sColor, 'font-family':'Chakra Petch', 'font-weight':'700', opacity:'.85', class:'neon-flicker'});
+        st.textContent = txt;
+        sg.appendChild(st);
+        // Neon glow halo
+        sg.appendChild(S('rect', {x:sx-2, y:sy-11, width:sW+4, height:18, rx:3, fill:sColor, opacity:'.04'}));
+        bgCity.appendChild(sg);
+      }
+      break;
+    }
+    case 'monument': {
+      // Energy lines radiating from center — brighter
+      for(let i=0;i<12;i++){
+        const angle = (i/12)*Math.PI*2;
+        const r1 = 30, r2 = 140+Math.random()*100;
+        const cx2 = 300+Math.cos(angle)*r1, cy2 = yTop+h/2+Math.sin(angle)*r1;
+        const ex = 300+Math.cos(angle)*r2, ey = yTop+h/2+Math.sin(angle)*r2;
+        bgCity.appendChild(S('line', {x1:cx2, y1:cy2, x2:ex, y2:ey, stroke:accent, 'stroke-width':'1', opacity:(.12+Math.random()*.12).toFixed(2)}));
+      }
+      // Concentric energy rings
+      for(let r=1;r<=4;r++){
+        bgCity.appendChild(S('circle', {cx:300, cy:yTop+h/2, r:r*50, fill:'none', stroke:accent, 'stroke-width':'.6', opacity:(.06+r*.02).toFixed(2)}));
+      }
+      // Floating geometric shapes — larger and brighter
+      for(let i=0;i<12;i++){
+        const gx = 40+Math.random()*520;
+        const gy = yTop+25+Math.random()*(h-50);
+        const sz = 6+Math.random()*10;
+        if(Math.random()>0.5){
+          bgCity.appendChild(S('path', {d:`M${gx},${gy-sz} L${gx+sz},${gy} L${gx},${gy+sz} L${gx-sz},${gy} Z`, fill:'none', stroke:accent, 'stroke-width':'1', opacity:(.15+Math.random()*.15).toFixed(2)}));
+        } else {
+          bgCity.appendChild(S('polygon', {points:`${gx},${gy-sz} ${gx+sz*.87},${gy+sz*.5} ${gx-sz*.87},${gy+sz*.5}`, fill:'none', stroke:accent2, 'stroke-width':'1', opacity:(.12+Math.random()*.15).toFixed(2)}));
+        }
+      }
+      // Pulsing center glow
+      bgCity.appendChild(S('circle', {cx:300, cy:yTop+h/2, r:25, fill:accent, opacity:'.06'}));
+      break;
+    }
+    case 'elevated': {
+      // Tall glass towers on margins — brighter
+      const towerSides = [{base:5, range:70},{base:515, range:70}];
+      towerSides.forEach(s => {
+        for(let i=0;i<5;i++){
+          const tx = s.base + Math.random()*s.range;
+          const ty = yTop + 15 + i*(h/5);
+          const tw = 22+Math.random()*28;
+          const th = 80+Math.random()*100;
+          const g2 = S('g');
+          g2.appendChild(S('rect', {x:tx, y:ty, width:tw, height:th, rx:2, fill:'#0a0a22', stroke:accent, 'stroke-width':'1.2', opacity:'.8'}));
+          // Glass reflection lines
+          for(let r=0;r<5;r++){
+            g2.appendChild(S('line', {x1:tx+2, y1:ty+6+r*(th/5), x2:tx+tw-2, y2:ty+6+r*(th/5), stroke:accent, 'stroke-width':'.5', opacity:'.2'}));
+          }
+          // Windows
+          const cols = Math.floor(tw/8), rows = Math.floor(th/10);
+          for(let r=0;r<rows;r++) for(let c=0;c<cols;c++){
+            if(Math.random()>.4) g2.appendChild(S('rect',{x:tx+3+c*8,y:ty+4+r*10,width:3.5,height:4,rx:.3,fill:accent,opacity:(.08+Math.random()*.18).toFixed(2)}));
+          }
+          // Roof beacon
+          g2.appendChild(S('circle', {cx:tx+tw/2, cy:ty-2, r:1.5, fill:accent, opacity:'.4'}));
+          bgCity.appendChild(g2);
+        }
+      });
+      // Sky bridges between towers — visible
+      for(let i=0;i<4;i++){
+        const by2 = yTop + 40 + i*(h/4) + Math.random()*30;
+        bgCity.appendChild(S('line', {x1:55+Math.random()*20, y1:by2, x2:530+Math.random()*20, y2:by2+Math.random()*10-5, stroke:accent2, 'stroke-width':'1.2', opacity:'.12'}));
+        // Bridge lights
+        for(let bl=0;bl<3;bl++){
+          bgCity.appendChild(S('circle',{cx:150+bl*150,cy:by2,r:1.2,fill:accent2,opacity:'.2'}));
+        }
+      }
+      // Diamond accents — brighter
+      for(let i=0;i<8;i++){
+        const dx2=40+Math.random()*520, dy2=yTop+30+Math.random()*(h-60);
+        const dsz=4+Math.random()*4;
+        bgCity.appendChild(S('path', {d:`M${dx2},${dy2-dsz} L${dx2+dsz},${dy2} L${dx2},${dy2+dsz} L${dx2-dsz},${dy2} Z`, fill:'none', stroke:accent2, 'stroke-width':'.8', opacity:(.1+Math.random()*.1).toFixed(2)}));
+      }
+      break;
+    }
+    case 'celestial': {
+      // Dense bright stars
+      for(let i=0;i<60;i++){
+        const sx2 = Math.random()*600, sy2 = yTop+Math.random()*h;
+        const sr = (Math.random()*1.2+.3).toFixed(1);
+        bgCity.appendChild(S('circle', {cx:sx2.toFixed(0), cy:sy2.toFixed(0), r:sr, fill:'#fff', opacity:(Math.random()*.4+.1).toFixed(2)}));
+        // Star cross glow on bigger stars
+        if(parseFloat(sr) > 1){
+          bgCity.appendChild(S('line',{x1:sx2-3,y1:sy2,x2:sx2+3,y2:sy2,stroke:'#fff','stroke-width':'.3',opacity:'.15'}));
+          bgCity.appendChild(S('line',{x1:sx2,y1:sy2-3,x2:sx2,y2:sy2+3,stroke:'#fff','stroke-width':'.3',opacity:'.15'}));
+        }
+      }
+      // Golden sparkle circles — bigger and brighter
+      for(let i=0;i<15;i++){
+        const gx2=30+Math.random()*540, gy2=yTop+15+Math.random()*(h-30);
+        const gr = (1.5+Math.random()*3).toFixed(1);
+        bgCity.appendChild(S('circle', {cx:gx2, cy:gy2, r:gr, fill:accent, opacity:(.1+Math.random()*.15).toFixed(2)}));
+        bgCity.appendChild(S('circle', {cx:gx2, cy:gy2, r:parseFloat(gr)*3, fill:accent, opacity:'.03'}));
+      }
+      // Cloud layers at bottom — visible
+      for(let i=0;i<8;i++){
+        const cx2 = 30+Math.random()*540, cy2 = yBot - 10 - Math.random()*80;
+        bgCity.appendChild(S('ellipse', {cx:cx2, cy:cy2, rx:50+Math.random()*80, ry:8+Math.random()*10, fill:'#ffffff', opacity:(.03+Math.random()*.04).toFixed(3)}));
+      }
+      // Constellation lines
+      for(let i=0;i<4;i++){
+        const x1=80+Math.random()*440, y1=yTop+30+Math.random()*(h-60);
+        const x2=x1+30+Math.random()*60, y2=y1-20+Math.random()*40;
+        bgCity.appendChild(S('line',{x1,y1,x2,y2,stroke:accent,'stroke-width':'.4',opacity:'.08'}));
+      }
+      break;
+    }
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  ZONE TRANSITIONS
+// ════════════════════════════════════════════════════════════
+function drawTransition(idx) {
+  const tg = document.getElementById('transitions');
+  const g = S('g');
+
+  switch(idx) {
+    case 0: { // Underground → Streets (y:2600-2680): Heavy metal gate
+      const y=2640, gw=200;
+      // Ambient zone glow
+      g.appendChild(S('rect', {x:300-gw/2-20, y:y-40, width:gw+40, height:80, rx:4, fill:'#7c4dff', opacity:'.03'}));
+      // Door frame — thicker, brighter
+      g.appendChild(S('rect', {x:300-gw/2-10, y:y-35, width:10, height:70, rx:2, fill:'#10102a', stroke:'#4a5568', 'stroke-width':1.5}));
+      g.appendChild(S('rect', {x:300+gw/2, y:y-35, width:10, height:70, rx:2, fill:'#10102a', stroke:'#4a5568', 'stroke-width':1.5}));
+      // Horizontal beam
+      g.appendChild(S('rect', {x:300-gw/2-10, y:y-37, width:gw+20, height:8, rx:2, fill:'#10102a', stroke:'#4a5568', 'stroke-width':1.5}));
+      // Rivets — brighter
+      for(let r=0;r<7;r++){
+        const rx2 = 300-gw/2+5+r*(gw/6);
+        g.appendChild(S('circle', {cx:rx2, cy:y-33, r:2, fill:'#4a5568', opacity:'.6'}));
+      }
+      // Gate bars — brighter
+      for(let b=0;b<6;b++){
+        const bx = 300-gw/2+12+b*(gw/5.5);
+        g.appendChild(S('line', {x1:bx, y1:y-29, x2:bx, y2:y+29, stroke:'#4a5568', 'stroke-width':2, opacity:'.4'}));
+      }
+      // Warning text
+      const gt = S('text', {x:300, y:y+2, 'text-anchor':'middle', 'font-size':'7', fill:'#7c4dff', 'font-family':'Chakra Petch', 'font-weight':'700', opacity:'.5'});
+      gt.textContent = 'ZONE II'; g.appendChild(gt);
+      break;
+    }
+    case 1: { // Streets → Turning Point (y:2000-2080): Ascending ramp
+      const y=2040;
+      // Ambient glow
+      g.appendChild(S('rect', {x:160, y:y-35, width:280, height:70, rx:4, fill:'#ff1867', opacity:'.03'}));
+      // Trapezoid ramp — brighter
+      g.appendChild(S('polygon', {points:`${160},${y+30} ${210},${y-30} ${390},${y-30} ${440},${y+30}`, fill:'#10081a', stroke:'#ff1867', 'stroke-width':1.5, opacity:'.5'}));
+      // Guard rails
+      g.appendChild(S('line', {x1:180, y1:y+20, x2:215, y2:y-25, stroke:'#ff1867', 'stroke-width':'1.2', opacity:'.35'}));
+      g.appendChild(S('line', {x1:420, y1:y+20, x2:385, y2:y-25, stroke:'#ff1867', 'stroke-width':'1.2', opacity:'.35'}));
+      // Chevron arrows — bigger, brighter
+      for(let a=0;a<5;a++){
+        const ay = y+15-a*10;
+        g.appendChild(S('path', {d:`M${285},${ay} L${300},${ay-8} L${315},${ay}`, fill:'none', stroke:'#ff1867', 'stroke-width':'1.5', opacity:(.2+a*.06).toFixed(2)}));
+      }
+      // ZONE III text
+      const rt = S('text', {x:300, y:y+4, 'text-anchor':'middle', 'font-size':'7', fill:'#ff1867', 'font-family':'Chakra Petch', 'font-weight':'700', opacity:'.5'});
+      rt.textContent = 'ZONE III'; g.appendChild(rt);
+      break;
+    }
+    case 2: { // Turning Point → Skyline (y:1400-1480): Elevator shaft
+      const y=1440, sw=70;
+      g.appendChild(S('rect', {x:300-sw/2-20, y:y-45, width:sw+40, height:90, rx:4, fill:'#00e676', opacity:'.03'}));
+      g.appendChild(S('rect', {x:300-sw/2-8, y:y-40, width:8, height:80, rx:2, fill:'#0e0e2a', stroke:'#00e676', 'stroke-width':1.2, opacity:'.6'}));
+      g.appendChild(S('rect', {x:300+sw/2, y:y-40, width:8, height:80, rx:2, fill:'#0e0e2a', stroke:'#00e676', 'stroke-width':1.2, opacity:'.6'}));
+      for(let b=0;b<5;b++){
+        const by2 = y-30+b*14;
+        g.appendChild(S('line', {x1:300-sw/2, y1:by2, x2:300+sw/2, y2:by2, stroke:'#00e676', 'stroke-width':'1', opacity:'.25'}));
+      }
+      g.appendChild(S('polygon', {points:`${300},${y-22} ${290},${y-4} ${310},${y-4}`, fill:'#00e676', stroke:'#00e676', 'stroke-width':1.5, opacity:'.25'}));
+      g.appendChild(S('line', {x1:294, y1:y-40, x2:294, y2:y+40, stroke:'#00e676', 'stroke-width':'.8', opacity:'.2'}));
+      g.appendChild(S('line', {x1:306, y1:y-40, x2:306, y2:y+40, stroke:'#00e676', 'stroke-width':'.8', opacity:'.2'}));
+      const et = S('text', {x:300, y:y+4, 'text-anchor':'middle', 'font-size':'7', fill:'#00e676', 'font-family':'Chakra Petch', 'font-weight':'700', opacity:'.5'});
+      et.textContent = 'ZONE IV'; g.appendChild(et);
+      break;
+    }
+    case 3: { // Skyline → Summit (y:640-720): Cloud break
+      const y=680;
+      // Cloud layers — brighter
+      for(let i=0;i<8;i++){
+        const cx2 = 60+Math.random()*480;
+        const ry2 = 6+Math.random()*8;
+        const rx2 = 50+Math.random()*80;
+        const op = (.04+i*.01).toFixed(3);
+        bgCity.appendChild(S('ellipse', {cx:cx2, cy:y-15+i*8, rx:rx2, ry:ry2, fill:'#ffffff', opacity:op}));
+      }
+      // Golden glow from above — brighter
+      g.appendChild(S('rect', {x:100, y:y-35, width:400, height:6, rx:3, fill:'#ffab00', opacity:'.08'}));
+      g.appendChild(S('rect', {x:150, y:y-25, width:300, height:4, rx:2, fill:'#ffd54f', opacity:'.1'}));
+      g.appendChild(S('rect', {x:200, y:y-15, width:200, height:3, rx:1.5, fill:'#ffd54f', opacity:'.06'}));
+      // Star peeks — brighter
+      for(let i=0;i<6;i++){
+        const sx=120+i*70+Math.random()*30;
+        g.appendChild(S('circle', {cx:sx, cy:y-30-Math.random()*15, r:1.5, fill:'#ffab00', opacity:'.25'}));
+        g.appendChild(S('circle', {cx:sx, cy:y-30-Math.random()*15, r:5, fill:'#ffab00', opacity:'.04'}));
+      }
+      // ZONE V text
+      const ct = S('text', {x:300, y:y+8, 'text-anchor':'middle', 'font-size':'7', fill:'#ffab00', 'font-family':'Chakra Petch', 'font-weight':'700', opacity:'.5'});
+      ct.textContent = 'ZONE V'; g.appendChild(ct);
+      break;
+    }
+  }
+  tg.appendChild(g);
+}
+
+// ════════════════════════════════════════════════════════════
+//  FOG OF WAR — zone-based (5 rects)
+// ════════════════════════════════════════════════════════════
+function buildFog() {
+  const fogLayer = document.getElementById('fog-layer');
+  fogLayer.innerHTML = '';
+  ZONES.forEach((z, i) => {
+    const fog = S('rect', {x:0, y:z.yTop, width:600, height:z.yBot-z.yTop, fill:'#06060f', 'data-fog-idx':i, class:'fog-block'});
+    const firstCh = z.chapters[0];
+    if (currentNode >= firstCh) {
+      fog.setAttribute('opacity', '0');
+      fog.classList.add('cleared');
+    } else if (i > 0 && currentNode >= ZONES[i-1].chapters[0]) {
+      fog.setAttribute('opacity', '0.45');
+    } else {
+      fog.setAttribute('opacity', '0.88');
+    }
+    fogLayer.appendChild(fog);
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  CLEAR FOG — zone-based
+// ════════════════════════════════════════════════════════════
+function clearFog() {
+  ZONES.forEach((z, i) => {
+    const fog = document.querySelector(`[data-fog-idx="${i}"]`);
+    if (!fog) return;
+    const firstCh = z.chapters[0];
+    if (currentNode >= firstCh) {
+      if (!fog.classList.contains('cleared')) {
+        setTimeout(() => { fog.classList.add('cleared'); }, i * 200);
+      }
+    } else if (i > 0 && currentNode >= ZONES[i-1].chapters[0]) {
+      fog.setAttribute('opacity', '0.45');
+    } else {
+      fog.setAttribute('opacity', '0.88');
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  REVEAL PATH (neon road glow — 5 zone-colored paths)
+// ════════════════════════════════════════════════════════════
+function revealRoad() {
+  const progress = currentNode / (MS.length - 1);
+  const offset = pathLen * (1 - progress);
+  for (let z = 0; z < 5; z++) {
+    const gp = document.getElementById('road-glow-z'+z);
+    gp.style.transition = 'stroke-dashoffset 1.2s ease-out';
+    gp.style.strokeDashoffset = offset;
+  }
+}
+
+// ════════════════════════════════════════════════════════════
+//  MOVE THE CAR
+// ════════════════════════════════════════════════════════════
+let carAnimFrame = null;
+
+function positionCar(nodeIdx, animate) {
+  const ridx = Math.min(MS_ROAD_IDX[nodeIdx], ROAD.length-1);
+  // Get point on path corresponding to this road index
+  const frac = ridx / (ROAD.length - 1);
+  const targetLen = frac * pathLen;
+  const pt = pathEl.getPointAtLength(targetLen);
+
+  // Get tangent for rotation
+  const pt2 = pathEl.getPointAtLength(Math.min(targetLen + 2, pathLen));
+  const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * (180/Math.PI) + 90;
+
+  const car = document.getElementById('car-group');
+
+  if (animate) {
+    // Animate car along path from current position
+    const currentTransform = car.getAttribute('transform');
+    const match = currentTransform.match(/translate\(([\d.]+),([\d.]+)\)/);
+    let startLen = 0;
+    if (match) {
+      const cx = parseFloat(match[1]), cy = parseFloat(match[2]);
+      startLen = findClosestLength(cx, cy);
+    }
+
+    cancelAnimationFrame(carAnimFrame);
+    const duration = 1200 + Math.abs(targetLen - startLen) * 0.8;
+    const startTime = performance.now();
+
+    function step(now) {
+      const t = Math.min(1, (now - startTime) / duration);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic
+      const currentLen = startLen + (targetLen - startLen) * eased;
+      const p = pathEl.getPointAtLength(Math.max(0, Math.min(currentLen, pathLen)));
+      const p2 = pathEl.getPointAtLength(Math.min(currentLen + 2, pathLen));
+      const a = Math.atan2(p2.y - p.y, p2.x - p.x) * (180/Math.PI) + 90;
+      car.setAttribute('transform', `translate(${p.x},${p.y}) rotate(${a})`);
+      if (t < 1) carAnimFrame = requestAnimationFrame(step);
+    }
+    carAnimFrame = requestAnimationFrame(step);
+  } else {
+    car.setAttribute('transform', `translate(${pt.x},${pt.y}) rotate(${angle})`);
+  }
+}
+
+function findClosestLength(cx, cy) {
+  let best = 0, bestDist = Infinity;
+  for (let l = 0; l <= pathLen; l += 20) {
+    const p = pathEl.getPointAtLength(l);
+    const d = (p.x-cx)**2 + (p.y-cy)**2;
+    if (d < bestDist) { bestDist = d; best = l; }
+  }
+  // Refine
+  for (let l = Math.max(0, best-20); l <= Math.min(pathLen, best+20); l += 2) {
+    const p = pathEl.getPointAtLength(l);
+    const d = (p.x-cx)**2 + (p.y-cy)**2;
+    if (d < bestDist) { bestDist = d; best = l; }
+  }
+  return best;
+}
+
+// ════════════════════════════════════════════════════════════
+//  SCROLL TO CAR
+// ════════════════════════════════════════════════════════════
+function scrollToCar() {
+  const svg = document.getElementById('city');
+  const car = document.getElementById('car-group');
+  const t = car.getAttribute('transform');
+  const m = t.match(/translate\(([\d.]+),([\d.]+)\)/);
+  if (!m) return;
+  const cy = parseFloat(m[2]);
+  const svgRect = svg.getBoundingClientRect();
+  const vb = svg.viewBox.baseVal;
+  const scale = svgRect.height / vb.height;
+  const screenY = svgRect.top + window.scrollY + cy * scale;
+  window.scrollTo({ top: Math.max(0, screenY - window.innerHeight * 0.5), behavior: 'smooth' });
+}
+
+// ════════════════════════════════════════════════════════════
+//  UPDATE MILESTONE VISUALS
+// ════════════════════════════════════════════════════════════
+function updateMilestoneVisuals() {
+  MS.forEach((m, i) => {
+    const marker = document.querySelector(`[data-marker="${i}"]`);
+    const landmark = document.querySelector(`[data-ms="${i}"]`);
+    if (!marker) return;
+
+    const unlocked = playerXP >= m.xp;
+    const isCurrent = i === currentNode;
+
+    // Marker glow
+    const circles = marker.querySelectorAll('circle');
+    const text = marker.querySelector('text');
+    if (unlocked) {
+      circles.forEach(c => { c.setAttribute('stroke', m.color); c.setAttribute('opacity', isCurrent ? '1' : '.6'); });
+      if (isCurrent) {
+        // Add pulse
+        let pulse = marker.querySelector('.ms-pulse');
+        if (!pulse) {
+          pulse = S('circle', {cx:ROAD[MS_ROAD_IDX[i]].x, cy:ROAD[MS_ROAD_IDX[i]].y, r:8, fill:'none', stroke:m.color, 'stroke-width':2, opacity:'.5', class:'ms-pulse'});
+          pulse.style.animation = 'm-pulse 2s ease-out infinite';
+          marker.insertBefore(pulse, marker.firstChild);
+        }
+      }
+      if (text) { text.setAttribute('fill', m.color); text.setAttribute('opacity', '1'); }
+    } else {
+      circles.forEach(c => { c.setAttribute('stroke', '#1e293b'); c.setAttribute('opacity', '.3'); });
+      if (circles[1]) circles[1].setAttribute('fill', '#06060f');
+      if (text) { text.setAttribute('fill', '#334155'); text.setAttribute('opacity', '.3'); }
+    }
+
+    // Landmark brightness
+    if (landmark) {
+      landmark.style.opacity = unlocked ? '1' : '.35';
+      landmark.style.filter = unlocked ? 'none' : 'grayscale(1) brightness(0.4)';
+      landmark.style.transition = 'opacity .6s, filter .6s';
+    }
+  });
+}
+
+// ════════════════════════════════════════════════════════════
+//  HUD
+// ════════════════════════════════════════════════════════════
+function updateHUD() {
+  document.getElementById('hud-lv').textContent = playerLevel;
+  document.getElementById('hud-xp').textContent = playerXP.toLocaleString();
+  document.getElementById('hud-coins').textContent = playerCoins.toLocaleString();
+  document.getElementById('hud-chapter').textContent = 'Ch.' + currentNode;
+  const lvlXP = (playerLevel - 1) * 1000;
+  const pct = Math.min(100, ((playerXP - lvlXP) / 1000) * 100);
+  document.getElementById('xp-bar').style.width = pct + '%';
+}
+
+// ════════════════════════════════════════════════════════════
+//  MODAL
+// ════════════════════════════════════════════════════════════
+function showModal(i) {
+  const m = MS[i];
+  const unlocked = playerXP >= m.xp;
+  document.getElementById('m-title').textContent = m.bld;
+  document.getElementById('m-title').style.color = m.color;
+  document.getElementById('m-chapter').textContent = m.ch || '';
+  document.getElementById('m-chapter').style.color = unlocked ? m.color : '#334155';
+  document.getElementById('m-icon').textContent = m.icon;
+  document.getElementById('m-desc').textContent = m.desc;
+  const storyEl = document.getElementById('m-story');
+  if (unlocked && m.story) {
+    storyEl.textContent = m.story;
+    storyEl.style.borderColor = m.color + '30';
+    storyEl.style.display = '';
+  } else if (!unlocked && m.story) {
+    storyEl.textContent = '🔒 أكمل المرحلة لفتح القصة...';
+    storyEl.style.borderColor = '#1e293b';
+    storyEl.style.display = '';
+  } else {
+    storyEl.style.display = 'none';
+  }
+  document.getElementById('m-xp').textContent = m.xp.toLocaleString();
+  document.getElementById('m-reward').textContent = m.reward;
+  const st = document.getElementById('m-status');
+  if (unlocked) {
+    st.innerHTML = `<span style="color:${m.color}">&#x2713; UNLOCKED — ${m.title}</span>`;
+  } else {
+    const rem = m.xp - playerXP;
+    st.innerHTML = `<span style="color:#334155">&#x1F512; LOCKED — ${rem.toLocaleString()} XP left</span>`;
+  }
+  document.getElementById('modal').classList.remove('hidden');
+}
+function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+
+// ════════════════════════════════════════════════════════════
+//  CALC NODE
+// ════════════════════════════════════════════════════════════
+function calcNode() {
+  let n = 0;
+  for (let i = MS.length - 1; i >= 0; i--) { if (playerXP >= MS[i].xp) { n = i; break; } }
+  return n;
+}
+
+// ════════════════════════════════════════════════════════════
+//  FULL RENDER
+// ════════════════════════════════════════════════════════════
+function render(animate) {
+  const prev = currentNode;
+  currentNode = calcNode();
+  updateHUD();
+  updateMilestoneVisuals();
+  revealRoad();
+  clearFog();
+  positionCar(currentNode, animate);
+  // Always scroll to car so user sees their progress
+  setTimeout(scrollToCar, animate ? 400 : 100);
+}
+
+// ════════════════════════════════════════════════════════════
+//  MANUAL CAR MOVEMENT (Keyboard + D-Pad)
+// ════════════════════════════════════════════════════════════
+let carPathPos = 0;  // current position on path (0 → pathLen)
+let carMoving = false;
+let carMoveDir = 0;  // -1 = back (down), +1 = forward (up)
+let carMoveInterval = null;
+const CAR_SPEED = 8; // pixels per step
+
+function initCarControls() {
+  // Set initial car position from XP-based node
+  const ridx = Math.min(MS_ROAD_IDX[currentNode], ROAD.length-1);
+  carPathPos = (ridx / (ROAD.length - 1)) * pathLen;
+
+  // Keyboard
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') {
+      e.preventDefault();
+      startCarMove(1);
+    } else if (e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') {
+      e.preventDefault();
+      startCarMove(-1);
+    } else if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      interactNearestMilestone();
+    }
+  });
+  document.addEventListener('keyup', (e) => {
+    if (['ArrowUp','ArrowDown','w','W','s','S'].includes(e.key)) {
+      stopCarMove();
+    }
+  });
+}
+
+function startCarMove(dir) {
+  carMoveDir = dir;
+  if (carMoveInterval) return;
+  moveCarStep();
+  carMoveInterval = setInterval(moveCarStep, 30);
+}
+
+function stopCarMove() {
+  carMoveDir = 0;
+  if (carMoveInterval) { clearInterval(carMoveInterval); carMoveInterval = null; }
+}
+
+function moveCarStep() {
+  if (!pathEl || !pathLen) return;
+  carPathPos = Math.max(0, Math.min(pathLen, carPathPos - carMoveDir * CAR_SPEED));
+
+  const pt = pathEl.getPointAtLength(carPathPos);
+  const pt2 = pathEl.getPointAtLength(Math.min(carPathPos + 2, pathLen));
+  const angle = Math.atan2(pt2.y - pt.y, pt2.x - pt.x) * (180/Math.PI) + 90;
+
+  const car = document.getElementById('car-group');
+  car.setAttribute('transform', `translate(${pt.x},${pt.y}) rotate(${angle})`);
+
+  // Auto-scroll to keep car visible
+  scrollToCarSmooth(pt.y);
+}
+
+function scrollToCarSmooth(carSvgY) {
+  const svg = document.getElementById('city');
+  const svgRect = svg.getBoundingClientRect();
+  const vb = svg.viewBox.baseVal;
+  const scale = svgRect.height / vb.height;
+  const screenY = svgRect.top + window.scrollY + carSvgY * scale;
+  const viewCenter = window.scrollY + window.innerHeight * 0.5;
+  const diff = screenY - viewCenter;
+  if (Math.abs(diff) > window.innerHeight * 0.35) {
+    window.scrollBy({ top: diff * 0.3, behavior: 'auto' });
+  }
+}
+
+function interactNearestMilestone() {
+  if (!pathEl) return;
+  const carPt = pathEl.getPointAtLength(carPathPos);
+  let bestIdx = -1, bestDist = Infinity;
+  MS.forEach((m, i) => {
+    const ridx = Math.min(MS_ROAD_IDX[i], ROAD.length-1);
+    const frac = ridx / (ROAD.length - 1);
+    const mPt = pathEl.getPointAtLength(frac * pathLen);
+    const d = Math.sqrt((carPt.x - mPt.x)**2 + (carPt.y - mPt.y)**2);
+    if (d < bestDist) { bestDist = d; bestIdx = i; }
+  });
+  if (bestIdx >= 0 && bestDist < 80) {
+    showModal(bestIdx);
+  }
+}
+
+// D-Pad handlers
+function mapDpad(dir) {
+  if (dir === 'forward') startCarMove(1);
+  else startCarMove(-1);
+}
+function mapDpadStop() { stopCarMove(); }
+function mapDpadInteract() { interactNearestMilestone(); }
+
+// ════════════════════════════════════════════════════════════
+//  BOOT
+// ════════════════════════════════════════════════════════════
+async function boot() {
+  buildCity();
+
+  try {
+    const cfg = await fetch('/api/config').then(r => r.json());
+    supabaseClient = window.supabase.createClient(cfg.supabase_url, cfg.supabase_anon_key);
+    const { data:{ session } } = await supabaseClient.auth.getSession();
+    if (!session) { render(false); setTimeout(()=>scrollToCar(),300); initCarControls(); return; }
+    accessToken = session.access_token;
+
+    const res = await fetch('/api/me', { headers:{'Authorization':'Bearer '+accessToken} }).then(r=>r.json());
+    const emp = res.data?.employee || res.employee || res;
+    playerXP = emp.total_xp || 0;
+    playerLevel = emp.level || 1;
+    playerCoins = emp.syb_coins || 0;
+    try {
+      const stats = await fetch('/api/me/stats?days=365', { headers:{'Authorization':'Bearer '+accessToken} }).then(r=>r.json());
+      playerDeals = stats.data?.stats?.deals_closed_total || stats.stats?.deals_closed_total || 0;
+    } catch {}
+
+    render(false);
+    setTimeout(scrollToCar, 500);
+    initCarControls();
+
+    // Realtime
+    supabaseClient.channel('map-xp')
+      .on('postgres_changes', { event:'UPDATE', schema:'public', table:'employees', filter:`id=eq.${emp.id}` }, (p) => {
+        const d = p.new;
+        if (d.total_xp !== playerXP) {
+          playerXP = d.total_xp||0; playerLevel = d.level||1; playerCoins = d.syb_coins||0;
+          render(true);
+        }
+      }).subscribe();
+  } catch(e) {
+    console.error('Boot err:', e);
+    render(false);
+    setTimeout(scrollToCar, 300);
+    initCarControls();
+  }
+}
+
+boot();
+</script>
+</body>
+</html>

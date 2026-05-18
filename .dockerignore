@@ -1,0 +1,45 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+.venv/
+venv/
+env/
+.env
+.env.*
+!env.example
+
+# vcs / editors
+.git/
+.gitignore
+.vscode/
+.idea/
+*.swp
+
+# tests / caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+htmlcov/
+.coverage
+coverage.xml
+
+# build / dist
+build/
+dist/
+*.egg-info/
+
+# project junk
+*.log
+node_modules/
+*.sqlite
+*.db
+
+# OS
+.DS_Store
+Thumbs.db
+
+# raw data dumps — shouldn't ship in image
+عمرو_leads.json
+عمرو_import.sql

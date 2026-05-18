@@ -1,0 +1,1976 @@
+<!doctype html>
+<html lang="ar" dir="ltr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#06060f"/>
+<title>Antigravity CRM — Office</title>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config={theme:{extend:{colors:{g:{bg:'#06060f',surface:'#0c0c1e',card:'#111130',cyan:'#00e5ff',blue:'#2979ff',purple:'#7c4dff',pink:'#ff1867',green:'#00e676',amber:'#ffab00',text:'#e2e8f0'}},fontFamily:{display:['Chakra Petch','sans-serif'],body:['IBM Plex Sans Arabic','sans-serif']}}}}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/phaser@3.60.0/dist/phaser.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body{background:#06060f;overflow:hidden;font-family:'IBM Plex Sans Arabic','Chakra Petch',sans-serif}
+#game-container{position:fixed;inset:0;z-index:0;touch-action:none}
+#game-container canvas{display:block;margin:0 auto;image-rendering:pixelated}
+
+/* ── HUD Layer ── */
+.hud{position:fixed;z-index:20;pointer-events:none}
+.hud>*{pointer-events:auto}
+.hud-panel{background:rgba(6,6,15,.88);backdrop-filter:blur(10px);border:1px solid rgba(0,229,255,.1);border-radius:10px;padding:10px 14px}
+
+/* ── Interaction Prompt ── */
+#interact-prompt{position:fixed;bottom:120px;left:50%;transform:translateX(-50%);z-index:25;background:rgba(6,6,15,.9);border:1px solid rgba(0,229,255,.3);border-radius:10px;padding:8px 20px;font-size:13px;color:#00e5ff;font-weight:600;display:none;animation:promptBounce 1.5s ease infinite;pointer-events:none}
+@keyframes promptBounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-4px)}}
+
+/* ── CRM Modal ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:40;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.modal-overlay.open{display:flex}
+.modal-content{background:#0c0c1e;border:1px solid rgba(0,229,255,.15);border-radius:16px;width:94%;max-width:560px;max-height:85vh;overflow:hidden;box-shadow:0 0 40px rgba(0,229,255,.08)}
+
+/* ── Tabs ── */
+.tab-bar{display:flex;border-bottom:1px solid rgba(0,229,255,.1);background:rgba(0,229,255,.03)}
+.tab-btn{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:600;color:#64748b;cursor:pointer;transition:all .2s;border-bottom:2px solid transparent}
+.tab-btn.active{color:#00e5ff;border-bottom-color:#00e5ff;background:rgba(0,229,255,.05)}
+.tab-btn:hover{color:#00e5ff}
+.tab-panel{display:none;padding:16px;overflow-y:auto;max-height:calc(85vh - 100px)}
+.tab-panel.active{display:block}
+
+/* ── Form inputs ── */
+.g-input{width:100%;background:#111130;border:1px solid rgba(0,229,255,.12);border-radius:8px;padding:8px 12px;color:#e2e8f0;font-size:13px;outline:none;transition:border-color .2s}
+.g-input:focus{border-color:#00e5ff;box-shadow:0 0 0 3px rgba(0,229,255,.1)}
+.g-btn{padding:8px 18px;border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;transition:all .15s;border:none}
+.g-btn-primary{background:#00e5ff;color:#06060f}.g-btn-primary:hover{background:#33edff}
+.g-btn-action{background:rgba(0,229,255,.08);border:1px solid rgba(0,229,255,.2);color:#00e5ff}.g-btn-action:hover{background:rgba(0,229,255,.15)}
+.g-select{appearance:none;background:#111130 url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%2300e5ff' viewBox='0 0 16 16'%3E%3Cpath d='M8 11L3 6h10z'/%3E%3C/svg%3E") no-repeat right 10px center;border:1px solid rgba(0,229,255,.12);border-radius:8px;padding:8px 30px 8px 12px;color:#e2e8f0;font-size:13px;outline:none;cursor:pointer}
+
+/* ── Badge unlock ── */
+.badge-unlock{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;backdrop-filter:blur(6px)}
+.badge-unlock.show{display:flex}
+@keyframes badgePop{0%{transform:scale(0) rotate(-20deg);opacity:0}60%{transform:scale(1.2) rotate(5deg)}100%{transform:scale(1) rotate(0);opacity:1}}
+.badge-pop{animation:badgePop .5s ease forwards}
+
+/* ── Toast ── */
+#toast-area{position:fixed;top:80px;right:16px;z-index:30;display:flex;flex-direction:column;gap:6px;pointer-events:none}
+.toast-item{padding:8px 16px;border-radius:8px;font-size:12px;font-weight:600;animation:slideIn .25s ease;pointer-events:none}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+
+/* ── Minimap ── */
+#minimap{position:fixed;bottom:16px;right:16px;z-index:20;border:1px solid rgba(0,229,255,.15);border-radius:8px;overflow:hidden;background:#06060f}
+
+/* ── Level up ── */
+#levelup-overlay{position:fixed;inset:0;z-index:55;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center}
+#levelup-overlay.show{display:flex}
+
+/* ── Daily Highlights ── */
+#highlights-overlay.show{display:flex}
+#highlights-overlay .hl-card{opacity:0;transform:translateY(20px);animation:hlCardIn .6s ease forwards}
+#highlights-overlay .hl-card:nth-child(1){animation-delay:.2s}
+#highlights-overlay .hl-card:nth-child(2){animation-delay:.4s}
+#highlights-overlay .hl-card:nth-child(3){animation-delay:.6s}
+#highlights-overlay .hl-card:nth-child(4){animation-delay:.8s}
+@keyframes hlCardIn{to{opacity:1;transform:translateY(0)}}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+
+/* ── Onboarding ── */
+.onboard-overlay{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.8);display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+.onboard-overlay.show{display:flex}
+
+/* ── Mobile D-Pad (touch only) ── */
+#dpad{display:none;position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:30;touch-action:none}
+@keyframes villainPop{0%{transform:translate(-50%,-50%) scale(.3);opacity:0}100%{transform:translate(-50%,-50%) scale(1);opacity:1}}
+@keyframes villainPulse{0%,100%{box-shadow:0 0 20px rgba(255,24,103,.2)}50%{box-shadow:0 0 40px rgba(255,24,103,.4)}}
+[id="villain-card"]{animation:villainPop .4s ease-out, villainPulse 2s ease-in-out infinite .4s}
+@media(pointer:coarse){[id="dpad"]{display:block!important}[id="minimap"]{top:70px;bottom:auto;right:8px}[id="quest-panel"]{top:auto;bottom:80px;left:8px;width:150px}[id="online-panel"]{top:auto;bottom:80px;right:8px;width:130px;display:none!important}[id="squad-panel"]{top:auto;bottom:80px;left:8px;width:150px;display:none!important}}
+.dpad-btn{width:52px;height:52px;border-radius:12px;background:rgba(0,229,255,.12);border:1px solid rgba(0,229,255,.2);color:#00e5ff;font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.dpad-btn:active{background:rgba(0,229,255,.3)}
+#dpad-action{background:rgba(255,171,0,.15);border-color:rgba(255,171,0,.25);color:#ffab00;font-size:12px;font-weight:700;font-family:'Chakra Petch'}
+#dpad-hifive{background:rgba(0,230,118,.15);border-color:rgba(0,230,118,.25);color:#00e676;font-size:11px;font-weight:700;font-family:'Chakra Petch'}
+
+/* ── Settings ── */
+#settings-panel{position:fixed;top:60px;right:16px;z-index:35;display:none}
+#settings-panel.open{display:block}
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════════════
+     GAME CANVAS
+     ═══════════════════════════════════════════════════ -->
+<div id="game-container"></div>
+
+<!-- ═══════════════════════════════════════════════════
+     HUD — Top Bar
+     ═══════════════════════════════════════════════════ -->
+<div class="hud" style="top:0;left:0;right:0;padding:10px 16px">
+  <div style="display:flex;align-items:center;gap:8px;max-width:900px;margin:0 auto">
+    <!-- Avatar + Name -->
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0">
+      <div id="hud-avatar" style="width:36px;height:36px;border-radius:50%;background:#00e5ff;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#06060f;border:2px solid rgba(0,229,255,.4)">?</div>
+      <div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <span id="hud-name" style="font-weight:600;font-size:13px;color:#e2e8f0">—</span>
+          <span id="hud-title" style="font-size:10px;color:#00e5ff;background:rgba(0,229,255,.1);padding:1px 8px;border-radius:999px;border:1px solid rgba(0,229,255,.2)">—</span>
+        </div>
+        <!-- XP bar -->
+        <div style="display:flex;align-items:center;gap:4px;margin-top:2px">
+          <span id="hud-level" style="font-size:10px;color:#00e5ff;font-weight:700;font-family:'Chakra Petch'">Lv 1</span>
+          <div style="flex:1;height:4px;background:rgba(0,229,255,.1);border-radius:4px;overflow:hidden;min-width:60px">
+            <div id="hud-xp-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#00e5ff,#2979ff);border-radius:4px;transition:width .4s"></div>
+          </div>
+          <span id="hud-xp-text" style="font-size:9px;color:rgba(0,229,255,.4)">0/1000</span>
+        </div>
+      </div>
+    </div>
+
+    <div style="flex:1"></div>
+
+    <!-- Stats pills -->
+    <div style="display:flex;gap:6px;flex-shrink:0;align-items:center">
+      <div style="background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.12);border-radius:8px;padding:4px 10px;text-align:center">
+        <div style="font-size:8px;color:rgba(0,229,255,.5);font-family:'Chakra Petch'">XP</div>
+        <div id="hud-xp" style="font-size:12px;font-weight:700;color:#00e5ff;font-family:'Chakra Petch'">0</div>
+      </div>
+      <div style="background:rgba(124,77,255,.06);border:1px solid rgba(124,77,255,.12);border-radius:8px;padding:4px 10px;text-align:center">
+        <div style="font-size:8px;color:rgba(124,77,255,.5);font-family:'Chakra Petch'">COINS</div>
+        <div id="hud-coins" style="font-size:12px;font-weight:700;color:#7c4dff;font-family:'Chakra Petch'">0</div>
+      </div>
+      <!-- Stamina -->
+      <div style="background:rgba(0,230,118,.06);border:1px solid rgba(0,230,118,.12);border-radius:8px;padding:4px 10px;text-align:center;min-width:55px">
+        <div style="font-size:8px;color:rgba(0,230,118,.5);font-family:'Chakra Petch'">STA</div>
+        <div style="display:flex;align-items:center;gap:3px">
+          <div style="flex:1;height:4px;background:rgba(0,230,118,.12);border-radius:4px;overflow:hidden;min-width:30px">
+            <div id="hud-sta-bar" style="height:100%;width:100%;background:#00e676;border-radius:4px;transition:width .4s,background .3s"></div>
+          </div>
+          <span id="hud-sta-num" style="font-size:10px;font-weight:700;color:#00e676;font-family:'Chakra Petch'">100</span>
+        </div>
+      </div>
+      <!-- Shop button -->
+      <button id="shop-btn" style="background:rgba(255,171,0,.06);border:1px solid rgba(255,171,0,.1);border-radius:8px;padding:6px;cursor:pointer;color:#64748b;transition:color .2s" onmouseover="this.style.color='#ffab00'" onmouseout="this.style.color='#64748b'" onclick="openShop()">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 100 4 2 2 0 000-4z"/></svg>
+      </button>
+      <!-- Settings gear -->
+      <button id="settings-btn" style="background:rgba(0,229,255,.06);border:1px solid rgba(0,229,255,.1);border-radius:8px;padding:6px;cursor:pointer;color:#64748b;transition:color .2s" onmouseover="this.style.color='#00e5ff'" onmouseout="this.style.color='#64748b'">
+        <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.066 2.573c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.573 1.066c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.066-2.573c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><circle cx="12" cy="12" r="3"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     HUD — Online Players (right sidebar)
+     ═══════════════════════════════════════════════════ -->
+<div id="online-panel" class="hud" style="top:70px;right:16px;width:160px">
+  <div class="hud-panel" style="font-size:11px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <span style="font-weight:700;color:#00e5ff;font-family:'Chakra Petch';font-size:10px;letter-spacing:1px">ONLINE</span>
+      <span id="online-count" style="color:rgba(0,229,255,.4);font-size:10px">0</span>
+    </div>
+    <div id="online-list" style="display:flex;flex-direction:column;gap:4px;max-height:200px;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     HUD — Quest Tracker (left sidebar)
+     ═══════════════════════════════════════════════════ -->
+<div id="quest-panel" class="hud" style="top:70px;left:16px;width:180px">
+  <div class="hud-panel" style="font-size:11px">
+    <div style="font-weight:700;color:#ffab00;font-family:'Chakra Petch';font-size:10px;letter-spacing:1px;margin-bottom:6px">QUESTS</div>
+    <div id="quest-list" style="display:flex;flex-direction:column;gap:6px;max-height:200px;overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     HUD — Squad Panel
+     ═══════════════════════════════════════════════════ -->
+<div id="squad-panel" class="hud" style="bottom:16px;left:16px;width:180px">
+  <div class="hud-panel" style="font-size:11px">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+      <span style="font-weight:700;color:#7c4dff;font-family:'Chakra Petch';font-size:10px;letter-spacing:1px">SQUAD</span>
+      <button id="squad-action-btn" onclick="squadAction()" style="background:rgba(124,77,255,.1);border:1px solid rgba(124,77,255,.15);border-radius:6px;padding:2px 8px;font-size:9px;color:#7c4dff;cursor:pointer;font-family:'Chakra Petch'">JOIN</button>
+    </div>
+    <div id="squad-info" style="color:#64748b;font-size:10px">Loading...</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     POWER HOUR BANNER
+     ═══════════════════════════════════════════════════ -->
+<div id="power-hour-banner" class="hud" style="top:70px;left:50%;transform:translateX(-50%);display:none;z-index:25">
+  <div style="background:linear-gradient(90deg,rgba(255,171,0,.15),rgba(255,87,34,.15));border:1px solid rgba(255,171,0,.3);border-radius:10px;padding:6px 16px;display:flex;align-items:center;gap:8px;backdrop-filter:blur(8px)">
+    <span id="ph-icon" style="font-size:18px">🔥</span>
+    <div>
+      <div id="ph-type" style="font-size:11px;font-weight:700;color:#ffab00;font-family:'Chakra Petch';letter-spacing:1px">POWER HOUR</div>
+      <div id="ph-countdown" style="font-size:9px;color:rgba(255,171,0,.6)">--:--</div>
+    </div>
+  </div>
+</div>
+
+<!-- CEO Visit Banner -->
+<div id="ceo-banner" style="display:none;position:fixed;top:56px;left:50%;transform:translateX(-50%);z-index:38;background:rgba(124,77,255,.15);border:1px solid rgba(124,77,255,.3);border-radius:12px;padding:6px 18px;font-family:'Chakra Petch';font-size:11px;color:#7c4dff;letter-spacing:1px;white-space:nowrap;backdrop-filter:blur(8px)">
+  🕴️ CEO IS WATCHING! <span style="color:#ffab00;font-weight:700">3× XP</span> — <span id="ceo-timer" style="color:#7c4dff">--:--</span>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     INTERACTION PROMPT
+     ═══════════════════════════════════════════════════ -->
+<div id="interact-prompt">Press <kbd style="background:rgba(0,229,255,.2);padding:1px 6px;border-radius:4px;margin:0 2px">SPACE</kbd> to interact</div>
+
+<!-- ═══════════════════════════════════════════════════
+     CRM MODAL (4 tabs from PDF spec)
+     ═══════════════════════════════════════════════════ -->
+<div id="crm-modal" class="modal-overlay">
+  <div class="modal-content">
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid rgba(0,229,255,.08)">
+      <h2 style="font-family:'Chakra Petch';font-weight:700;font-size:14px;color:#00e5ff;letter-spacing:1px">WORKSTATION</h2>
+      <button onclick="closeCRM()" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:18px;padding:4px">&times;</button>
+    </div>
+    <div class="tab-bar">
+      <div class="tab-btn active" data-tab="new-lead">+ Lead</div>
+      <div class="tab-btn" data-tab="my-leads">My Leads</div>
+      <div class="tab-btn" data-tab="log-action">Log Action</div>
+      <div class="tab-btn" data-tab="my-stats">Stats</div>
+    </div>
+
+    <!-- Tab 1: New Lead -->
+    <div class="tab-panel active" id="tab-new-lead">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <input class="g-input" id="nl-name" placeholder="Name"/>
+        <input class="g-input" id="nl-phone" placeholder="Phone"/>
+        <input class="g-input" id="nl-email" placeholder="Email" type="email"/>
+        <select class="g-select g-input" id="nl-source"><option value="">Source...</option><option value="facebook">Facebook</option><option value="google">Google</option><option value="referral">Referral</option><option value="cold_call">Cold Call</option><option value="website">Website</option></select>
+        <textarea class="g-input" id="nl-notes" placeholder="Notes..." rows="2" style="resize:none"></textarea>
+        <button class="g-btn g-btn-primary" onclick="submitNewLead()">Add Lead (+10 XP)</button>
+      </div>
+    </div>
+
+    <!-- Tab 2: My Leads -->
+    <div class="tab-panel" id="tab-my-leads">
+      <div id="my-leads-list" style="font-size:12px;color:#94a3b8">Loading...</div>
+    </div>
+
+    <!-- Tab 3: Log Action -->
+    <div class="tab-panel" id="tab-log-action">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button class="g-btn g-btn-action" onclick="logCRMAction('call_made',5,2)" style="padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:24px">📞</span><span>Made Call</span><span style="font-size:10px;opacity:.5">+5 XP · -2 STA</span>
+        </button>
+        <button class="g-btn g-btn-action" onclick="logCRMAction('deal_closed',50,5)" style="padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:24px">🏆</span><span>Closed Deal</span><span style="font-size:10px;opacity:.5">+50 XP · -5 STA</span>
+        </button>
+        <button class="g-btn g-btn-action" onclick="logCRMAction('whatsapp_sent',3,1)" style="padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:24px">💬</span><span>Sent Message</span><span style="font-size:10px;opacity:.5">+3 XP · -1 STA</span>
+        </button>
+        <button class="g-btn g-btn-action" onclick="logCRMAction('note_added',2,0)" style="padding:16px 8px;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:24px">📝</span><span>Added Note</span><span style="font-size:10px;opacity:.5">+2 XP · 0 STA</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab 4: Stats -->
+    <div class="tab-panel" id="tab-my-stats">
+      <div id="stats-content" style="font-size:12px;color:#94a3b8">Loading...</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SETTINGS PANEL
+     ═══════════════════════════════════════════════════ -->
+<div id="settings-panel" class="hud-panel" style="width:220px">
+  <div style="font-family:'Chakra Petch';font-weight:700;font-size:11px;color:#00e5ff;letter-spacing:1px;margin-bottom:10px">SETTINGS</div>
+  <div style="display:flex;flex-direction:column;gap:10px;font-size:12px">
+    <label style="display:flex;align-items:center;justify-content:space-between;color:#94a3b8">
+      Music <input type="range" id="vol-music" min="0" max="100" value="50" style="width:80px;accent-color:#00e5ff"/>
+    </label>
+    <label style="display:flex;align-items:center;justify-content:space-between;color:#94a3b8">
+      SFX <input type="range" id="vol-sfx" min="0" max="100" value="80" style="width:80px;accent-color:#00e5ff"/>
+    </label>
+    <label style="display:flex;align-items:center;justify-content:space-between;color:#94a3b8">
+      Mute <input type="checkbox" id="mute-all" style="accent-color:#00e5ff"/>
+    </label>
+    <div style="border-top:1px solid rgba(0,229,255,.08);padding-top:8px;margin-top:4px">
+      <a href="/agent" class="g-btn g-btn-action" style="display:block;text-align:center;text-decoration:none;font-size:11px">Back to Agent App</a>
+    </div>
+    <button onclick="supabaseClient?.auth.signOut().then(()=>location.href='/agent')" class="g-btn" style="background:rgba(255,24,103,.1);color:#ff1867;border:1px solid rgba(255,24,103,.2);font-size:11px">Logout</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     SHOP OVERLAY
+     ═══════════════════════════════════════════════════ -->
+<div id="shop-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:45;backdrop-filter:blur(4px)" onclick="if(event.target===this)closeShop()">
+  <div style="max-width:380px;margin:60px auto 0;background:#0c0c1e;border:1px solid rgba(255,171,0,.15);border-radius:16px;padding:20px;max-height:80vh;overflow-y:auto">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+      <h3 style="font-family:'Chakra Petch';color:#ffab00;font-size:14px;font-weight:700;letter-spacing:2px">🛒 SHOP</h3>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span id="shop-coins" style="font-family:'Chakra Petch';color:#ffab00;font-size:12px;background:rgba(255,171,0,.06);padding:3px 10px;border-radius:99px;border:1px solid rgba(255,171,0,.12)">0 C</span>
+        <button onclick="closeShop()" style="background:none;border:none;color:#64748b;cursor:pointer;font-size:18px">✕</button>
+      </div>
+    </div>
+    <div id="shop-items" style="display:grid;gap:10px"></div>
+    <div id="shop-empty" style="display:none;text-align:center;color:#475569;font-size:12px;padding:20px">لا توجد منتجات متاحة حالياً</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     LEVEL UP OVERLAY
+     ═══════════════════════════════════════════════════ -->
+<div id="levelup-overlay">
+  <div style="text-align:center">
+    <div style="font-size:64px;margin-bottom:12px">🎉</div>
+    <div style="font-family:'Chakra Petch';font-weight:900;font-size:36px;background:linear-gradient(90deg,#00e5ff,#7c4dff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">LEVEL UP!</div>
+    <div id="lu-detail" style="font-family:'Chakra Petch';font-size:20px;color:#00e5ff;margin-top:8px">Level 2</div>
+    <button onclick="document.getElementById('levelup-overlay').classList.remove('show')" class="g-btn g-btn-primary" style="margin-top:20px;padding:10px 32px;font-size:14px">Continue</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     BADGE UNLOCK
+     ═══════════════════════════════════════════════════ -->
+<div id="badge-unlock" class="badge-unlock">
+  <div style="text-align:center" class="badge-pop">
+    <div id="badge-icon" style="font-size:64px;margin-bottom:8px"></div>
+    <div style="font-family:'Chakra Petch';font-weight:700;font-size:18px;color:#ffab00;letter-spacing:2px">BADGE UNLOCKED</div>
+    <div id="badge-name" style="font-size:14px;color:#e2e8f0;margin-top:4px"></div>
+    <div id="badge-desc" style="font-size:11px;color:#64748b;margin-top:2px"></div>
+    <button onclick="document.getElementById('badge-unlock').classList.remove('show')" class="g-btn g-btn-primary" style="margin-top:16px">Nice!</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     VILLAIN OVERLAY
+     ═══════════════════════════════════════════════════ -->
+<div id="villain-overlay" style="display:none;position:fixed;z-index:42;pointer-events:none">
+  <div id="villain-card" style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(12,12,30,.95);border:2px solid #ff1867;border-radius:16px;padding:24px;text-align:center;min-width:260px;box-shadow:0 0 40px rgba(255,24,103,.2);pointer-events:auto;animation:villainPop .4s ease-out">
+    <div id="villain-icon" style="font-size:56px;margin-bottom:6px"></div>
+    <div id="villain-name" style="font-family:'Chakra Petch';font-weight:700;font-size:15px;color:#ff1867;letter-spacing:1px"></div>
+    <div id="villain-msg" style="font-size:11px;color:#94a3b8;margin:8px 0 14px;line-height:1.5"></div>
+    <button id="villain-btn" class="g-btn" style="background:rgba(255,24,103,.1);color:#ff1867;border:1px solid rgba(255,24,103,.2);padding:8px 20px;font-size:12px" onclick="dismissVillain()">أنا جاهز!</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     DAILY HIGHLIGHTS CINEMATIC
+     ═══════════════════════════════════════════════════ -->
+<div id="highlights-overlay" style="position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.92);display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px)">
+  <div style="text-align:center;max-width:480px;width:90%;padding:32px">
+    <div style="font-size:48px;margin-bottom:8px;animation:pulse 2s ease-in-out infinite">🏆</div>
+    <div style="font-family:'Chakra Petch';font-weight:900;font-size:28px;background:linear-gradient(90deg,#ffd700,#ff6b35);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:24px;letter-spacing:3px">DAILY HIGHLIGHTS</div>
+
+    <div id="hl-cards" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px">
+      <div class="hl-card" style="background:linear-gradient(135deg,rgba(255,215,0,.1),rgba(255,107,53,.05));border:1px solid rgba(255,215,0,.2);border-radius:12px;padding:16px">
+        <div style="font-size:28px;margin-bottom:4px">💰</div>
+        <div style="font-size:10px;color:#ffd700;font-family:'Chakra Petch';letter-spacing:1px;margin-bottom:4px">BEST DEALER</div>
+        <div id="hl-dealer-name" style="font-size:14px;font-weight:700;color:#e2e8f0">—</div>
+        <div id="hl-dealer-val" style="font-size:11px;color:#64748b"></div>
+      </div>
+      <div class="hl-card" style="background:linear-gradient(135deg,rgba(41,121,255,.1),rgba(0,229,255,.05));border:1px solid rgba(41,121,255,.2);border-radius:12px;padding:16px">
+        <div style="font-size:28px;margin-bottom:4px">📞</div>
+        <div style="font-size:10px;color:#2979ff;font-family:'Chakra Petch';letter-spacing:1px;margin-bottom:4px">MOST CALLS</div>
+        <div id="hl-calls-name" style="font-size:14px;font-weight:700;color:#e2e8f0">—</div>
+        <div id="hl-calls-val" style="font-size:11px;color:#64748b"></div>
+      </div>
+      <div class="hl-card" style="background:linear-gradient(135deg,rgba(0,230,118,.1),rgba(0,200,83,.05));border:1px solid rgba(0,230,118,.2);border-radius:12px;padding:16px">
+        <div style="font-size:28px;margin-bottom:4px">📈</div>
+        <div style="font-size:10px;color:#00e676;font-family:'Chakra Petch';letter-spacing:1px;margin-bottom:4px">MOST IMPROVED</div>
+        <div id="hl-improved-name" style="font-size:14px;font-weight:700;color:#e2e8f0">—</div>
+        <div id="hl-improved-val" style="font-size:11px;color:#64748b"></div>
+      </div>
+      <div class="hl-card" style="background:linear-gradient(135deg,rgba(124,77,255,.1),rgba(255,24,103,.05));border:1px solid rgba(124,77,255,.2);border-radius:12px;padding:16px">
+        <div style="font-size:28px;margin-bottom:4px">🌟</div>
+        <div style="font-size:10px;color:#7c4dff;font-family:'Chakra Petch';letter-spacing:1px;margin-bottom:4px">DAILY MVP</div>
+        <div id="hl-mvp-name" style="font-size:14px;font-weight:700;color:#e2e8f0">—</div>
+        <div id="hl-mvp-val" style="font-size:11px;color:#64748b"></div>
+      </div>
+    </div>
+
+    <!-- Team Stats Bar -->
+    <div style="background:rgba(0,229,255,.04);border:1px solid rgba(0,229,255,.1);border-radius:12px;padding:12px 16px;margin-bottom:20px">
+      <div style="font-size:10px;color:rgba(0,229,255,.5);font-family:'Chakra Petch';letter-spacing:1px;margin-bottom:8px">TEAM STATS TODAY</div>
+      <div style="display:flex;justify-content:space-around;gap:8px">
+        <div style="text-align:center"><div id="hl-team-calls" style="font-size:18px;font-weight:700;color:#2979ff;font-family:'Chakra Petch'">0</div><div style="font-size:9px;color:#475569">Calls</div></div>
+        <div style="text-align:center"><div id="hl-team-deals" style="font-size:18px;font-weight:700;color:#00e676;font-family:'Chakra Petch'">0</div><div style="font-size:9px;color:#475569">Deals</div></div>
+        <div style="text-align:center"><div id="hl-team-xp" style="font-size:18px;font-weight:700;color:#00e5ff;font-family:'Chakra Petch'">0</div><div style="font-size:9px;color:#475569">XP</div></div>
+        <div style="text-align:center"><div id="hl-team-coins" style="font-size:18px;font-weight:700;color:#7c4dff;font-family:'Chakra Petch'">0</div><div style="font-size:9px;color:#475569">Coins</div></div>
+      </div>
+    </div>
+
+    <button onclick="closeHighlights()" class="g-btn g-btn-primary" style="padding:12px 40px;font-size:14px;font-family:'Chakra Petch';letter-spacing:1px">See you tomorrow! 👋</button>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════
+     ONBOARDING
+     ═══════════════════════════════════════════════════ -->
+<div id="onboard" class="onboard-overlay">
+  <div style="text-align:center;max-width:360px;padding:24px">
+    <div style="font-size:48px;margin-bottom:12px">🎮</div>
+    <h2 style="font-family:'Chakra Petch';font-weight:700;font-size:20px;color:#00e5ff;margin-bottom:8px">Welcome to Antigravity</h2>
+    <p style="font-size:13px;color:#94a3b8;margin-bottom:16px;line-height:1.6">
+      Walk around the office with <kbd style="background:rgba(0,229,255,.15);padding:1px 6px;border-radius:4px">WASD</kbd> or <kbd style="background:rgba(0,229,255,.15);padding:1px 6px;border-radius:4px">Arrow Keys</kbd>.<br>
+      Press <kbd style="background:rgba(0,229,255,.15);padding:1px 6px;border-radius:4px">SPACE</kbd> near your desk to open the CRM.<br>
+      Visit the <span style="color:#00e676">Break Room</span> to recharge stamina.<br>
+      Check the <span style="color:#ffab00">Leaderboard Wall</span> to see rankings.
+    </p>
+    <button onclick="dismissOnboard()" class="g-btn g-btn-primary" style="padding:10px 32px;font-size:14px">Start Playing!</button>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div id="toast-area"></div>
+
+<!-- MOBILE D-PAD (touch devices only) -->
+<div id="dpad">
+  <div style="display:grid;grid-template-columns:52px 52px 52px;grid-template-rows:52px 52px 52px;gap:4px">
+    <div></div>
+    <button class="dpad-btn" id="dpad-up" ontouchstart="dpadDown('up')" ontouchend="dpadUp()">▲</button>
+    <div></div>
+    <button class="dpad-btn" id="dpad-left" ontouchstart="dpadDown('left')" ontouchend="dpadUp()">◀</button>
+    <button class="dpad-btn" id="dpad-action" ontouchstart="dpadAction()">ACT</button>
+    <button class="dpad-btn" id="dpad-right" ontouchstart="dpadDown('right')" ontouchend="dpadUp()">▶</button>
+    <button class="dpad-btn" id="dpad-hifive" ontouchstart="dpadHighFive()">Hi5</button>
+    <button class="dpad-btn" id="dpad-down" ontouchstart="dpadDown('down')" ontouchend="dpadUp()">▼</button>
+    <div></div>
+  </div>
+</div>
+
+<!-- MINIMAP -->
+<canvas id="minimap" width="120" height="90"></canvas>
+
+<script>
+// ── Prevent iOS text selection / context menu / long press ──
+document.addEventListener('contextmenu', e => e.preventDefault(), {passive:false});
+document.addEventListener('selectstart', e => e.preventDefault(), {passive:false});
+// iOS long-press triggers selection after ~500ms — intercept via touchstart
+let _touchTimer;
+document.addEventListener('touchstart', e => {
+  _touchTimer = setTimeout(() => { window.getSelection()?.removeAllRanges(); }, 400);
+}, {passive:true});
+document.addEventListener('touchend', () => clearTimeout(_touchTimer), {passive:true});
+document.addEventListener('touchmove', () => clearTimeout(_touchTimer), {passive:true});
+
+// ════════════════════════════════════════════════════════
+//  CONSTANTS & STATE
+// ════════════════════════════════════════════════════════
+const TILE = 32;
+const COLS = 40, ROWS = 30;
+const MAP_W = COLS * TILE, MAP_H = ROWS * TILE;
+
+let supabaseClient, accessToken, me = null;
+let gameInstance, officeScene;
+let playerStamina = 100, maxStamina = 100;
+let gamePaused = false;
+let onboardDone = localStorage.getItem('antigravity_onboard') === '1';
+
+// Zone definitions (in tile coords)
+const ZONES = {
+  spawn:       { x:20, y:28, w:1, h:1 },
+  bullpen:     { x:8,  y:10, w:24, h:10 },
+  leaderboard: { x:16, y:1,  w:8,  h:2 },
+  breakroom:   { x:2,  y:22, w:8,  h:6 },
+  manager:     { x:32, y:2,  w:6,  h:6 },
+};
+
+// Desk positions (tile coords) — 6 desks in bullpen
+const DESKS = [
+  {x:10, y:12}, {x:16, y:12}, {x:22, y:12},
+  {x:10, y:17}, {x:16, y:17}, {x:22, y:17},
+];
+
+// Hot Lead state
+let activeHotLead = null;  // { id, desk_index, expires_at, gfx, timer, countdown }
+let hotLeadGfx = null;
+
+// High Five state
+let lastHighFiveTime = {};  // keyed by target user_id → timestamp
+
+// ════════════════════════════════════════════════════════
+//  AUDIO SYSTEM
+// ════════════════════════════════════════════════════════
+const Audio = (() => {
+  let ctx;
+  const getCtx = () => { if(!ctx) try{ctx=new(window.AudioContext||window.webkitAudioContext)()}catch{}; if(ctx?.state==='suspended')ctx.resume().catch(()=>{}); return ctx; };
+  const muted = () => document.getElementById('mute-all')?.checked;
+  const sfxVol = () => (document.getElementById('vol-sfx')?.value || 80) / 100;
+
+  function beep(freq, dur, type='sine', gain=.1, delay=0) {
+    if(muted()) return; const c=getCtx(); if(!c) return;
+    const t=c.currentTime+delay, o=c.createOscillator(), g=c.createGain();
+    o.type=type; o.frequency.value=freq;
+    g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(gain*sfxVol(),t+.01);
+    g.gain.exponentialRampToValueAtTime(.0001,t+dur/1000);
+    o.connect(g).connect(c.destination); o.start(t); o.stop(t+dur/1000+.02);
+  }
+  return {
+    step:    ()=> beep(200,30,'square',.02),
+    xp:     ()=> { beep(660,100,'triangle',.08); beep(990,150,'triangle',.06,.07); },
+    coin:   ()=> { beep(880,60,'square',.06); beep(1320,80,'square',.06,.04); },
+    levelUp:()=> [523,659,784,1047].forEach((f,i)=>beep(f,160,'triangle',.1,i*.08)),
+    deal:   ()=> [392,523,659,784,1047].forEach((f,i)=>beep(f,200,'sawtooth',.08,i*.09)),
+    badge:  ()=> { beep(440,200,'triangle',.1); beep(660,200,'triangle',.1,.15); beep(880,300,'triangle',.1,.3); },
+    click:  ()=> beep(520,30,'square',.03),
+    error:  ()=> beep(200,200,'sawtooth',.06),
+    bell:   ()=> { beep(1200,200,'sine',.12); beep(1600,250,'sine',.08,.12); beep(1200,200,'sine',.06,.28); },
+    highFive:()=> { beep(600,60,'triangle',.1); beep(900,80,'triangle',.08,.05); beep(1200,100,'triangle',.06,.1); },
+  };
+})();
+
+// ════════════════════════════════════════════════════════
+//  PHASER SCENE — OFFICE MAP
+// ════════════════════════════════════════════════════════
+class OfficeScene extends Phaser.Scene {
+  constructor() { super('Office'); }
+
+  preload() {
+    // We draw everything procedurally — no external assets needed
+  }
+
+  create() {
+    officeScene = this;
+    this.cameras.main.setBackgroundColor('#06060f');
+
+    // ── Build tilemap data ──
+    this.wallTiles = new Set();
+    this.interactTiles = new Set();
+    this.breakTiles = new Set();
+    this.leaderboardTiles = new Set();
+    this.managerTiles = new Set();
+    this.coffeeTile = null;
+    this.arcadeTile = null;
+
+    this.drawMap();
+    this.createPlayer();
+    this.setupCamera();
+    this.setupInput();
+    this.remotePlayers = {};
+
+    // Interaction check timer
+    this.time.addEvent({ delay: 200, callback: () => this.checkInteraction(), loop: true });
+
+    // Stamina regen in break room
+    this.time.addEvent({ delay: 2000, callback: () => this.checkBreakRoom(), loop: true });
+
+    // Sync positions every 150ms
+    this.time.addEvent({ delay: 150, callback: () => this.broadcastPosition(), loop: true });
+
+    // Fetch other players periodically
+    this.time.addEvent({ delay: 3000, callback: () => this.fetchOtherPlayers(), loop: true });
+
+    // Hot Lead polling (check every 10s)
+    this.time.addEvent({ delay: 10000, callback: () => this.fetchHotLeads(), loop: true });
+    this.fetchHotLeads();
+
+    // Hot Lead glow animation
+    this.hotLeadGfx = null;
+    this.hotLeadGlow = 0;
+    this.hotLeadCountdownText = null;
+  }
+
+  drawMap() {
+    const g = this.add.graphics();
+
+    // ── Floor ──
+    g.fillStyle(0x0a0a1a); g.fillRect(0, 0, MAP_W, MAP_H);
+
+    // Grid lines
+    g.lineStyle(1, 0x111130, 0.3);
+    for (let x = 0; x <= MAP_W; x += TILE) { g.lineBetween(x, 0, x, MAP_H); }
+    for (let y = 0; y <= MAP_H; y += TILE) { g.lineBetween(0, y, MAP_W, y); }
+
+    // ── Walls (perimeter) ──
+    g.fillStyle(0x1a1a3a);
+    for (let x = 0; x < COLS; x++) {
+      this.addWall(g, x, 0); this.addWall(g, x, ROWS-1);
+    }
+    for (let y = 0; y < ROWS; y++) {
+      this.addWall(g, 0, y); this.addWall(g, COLS-1, y);
+    }
+
+    // ── Bullpen floor ──
+    g.fillStyle(0x0c1225);
+    for (let y = ZONES.bullpen.y; y < ZONES.bullpen.y+ZONES.bullpen.h; y++)
+      for (let x = ZONES.bullpen.x; x < ZONES.bullpen.x+ZONES.bullpen.w; x++)
+        g.fillRect(x*TILE+1, y*TILE+1, TILE-2, TILE-2);
+
+    // ── Desks ──
+    DESKS.forEach(d => {
+      // Desk body (3x2)
+      for (let dx = 0; dx < 3; dx++) {
+        for (let dy = 0; dy < 2; dy++) {
+          const tx = d.x + dx, ty = d.y + dy;
+          g.fillStyle(0x1a2744);
+          g.fillRect(tx*TILE+2, ty*TILE+2, TILE-4, TILE-4);
+          g.lineStyle(1, 0x2979ff, 0.3);
+          g.strokeRect(tx*TILE+2, ty*TILE+2, TILE-4, TILE-4);
+          if (dy === 0) { this.wallTiles.add(`${tx},${ty}`); }
+        }
+      }
+      // Computer screen on top-center of desk
+      const cx = d.x + 1, cy = d.y;
+      g.fillStyle(0x00e5ff); g.fillRect(cx*TILE+8, cy*TILE+6, 16, 12);
+      g.fillStyle(0x0a1628); g.fillRect(cx*TILE+10, cy*TILE+8, 12, 8);
+      // Chair (below desk, walkable but interactive)
+      const chairX = d.x + 1, chairY = d.y + 2;
+      g.fillStyle(0x1e293b); g.fillRect(chairX*TILE+6, chairY*TILE+4, 20, 24);
+      g.lineStyle(1, 0x7c4dff, 0.2); g.strokeRect(chairX*TILE+6, chairY*TILE+4, 20, 24);
+      this.interactTiles.add(`${chairX},${chairY}`);
+    });
+
+    // ── Break Room ──
+    g.fillStyle(0x081a10);
+    for (let y = ZONES.breakroom.y; y < ZONES.breakroom.y+ZONES.breakroom.h; y++)
+      for (let x = ZONES.breakroom.x; x < ZONES.breakroom.x+ZONES.breakroom.w; x++) {
+        g.fillRect(x*TILE+1, y*TILE+1, TILE-2, TILE-2);
+        this.breakTiles.add(`${x},${y}`);
+      }
+    // Break room walls
+    for (let x = ZONES.breakroom.x; x < ZONES.breakroom.x+ZONES.breakroom.w; x++) {
+      this.addWall(g, x, ZONES.breakroom.y, 0x00e676);
+    }
+    for (let y = ZONES.breakroom.y; y < ZONES.breakroom.y+ZONES.breakroom.h; y++) {
+      this.addWall(g, ZONES.breakroom.x, y, 0x00e676);
+    }
+    // Break room label
+    const brLabel = this.add.text(ZONES.breakroom.x*TILE + 4*TILE, ZONES.breakroom.y*TILE - 12, 'BREAK ROOM', {font:'bold 9px Chakra Petch', fill:'#00e676'}).setOrigin(0.5);
+    // Couches
+    g.fillStyle(0x1a3a2a);
+    g.fillRect((ZONES.breakroom.x+1)*TILE+4, (ZONES.breakroom.y+2)*TILE+4, TILE*3-8, TILE-8);
+    this.addWall(g, ZONES.breakroom.x+1, ZONES.breakroom.y+2, 0x00e676);
+    this.addWall(g, ZONES.breakroom.x+2, ZONES.breakroom.y+2, 0x00e676);
+    this.addWall(g, ZONES.breakroom.x+3, ZONES.breakroom.y+2, 0x00e676);
+    // Water cooler
+    g.fillStyle(0x2979ff); g.fillRect((ZONES.breakroom.x+6)*TILE+10, (ZONES.breakroom.y+1)*TILE+4, 12, 24);
+    this.addWall(g, ZONES.breakroom.x+6, ZONES.breakroom.y+1, 0x2979ff);
+    // Plants
+    g.fillStyle(0x00e676);
+    g.fillCircle((ZONES.breakroom.x+1)*TILE+16, (ZONES.breakroom.y+4)*TILE+16, 8);
+    g.fillCircle((ZONES.breakroom.x+7)*TILE+16, (ZONES.breakroom.y+4)*TILE+16, 8);
+    // Coffee Machine (interactive)
+    const cofX = ZONES.breakroom.x+5, cofY = ZONES.breakroom.y+1;
+    g.fillStyle(0x4a2810); g.fillRect(cofX*TILE+6, cofY*TILE+2, 20, 28);
+    g.fillStyle(0xff6d00); g.fillRect(cofX*TILE+10, cofY*TILE+6, 12, 8);
+    g.fillStyle(0x00e676); g.fillCircle(cofX*TILE+16, cofY*TILE+22, 3);
+    this.add.text(cofX*TILE+16, cofY*TILE-6, '☕', {font:'10px sans-serif'}).setOrigin(0.5);
+    this.coffeeTile = `${cofX},${cofY+1}`;
+    // Arcade Machine (interactive)
+    const arcX = ZONES.breakroom.x+5, arcY = ZONES.breakroom.y+4;
+    g.fillStyle(0x1a0a30); g.fillRect(arcX*TILE+4, arcY*TILE+2, 24, 28);
+    g.fillStyle(0x7c4dff); g.fillRect(arcX*TILE+7, arcY*TILE+5, 18, 12);
+    g.fillStyle(0x00e5ff); g.fillCircle(arcX*TILE+12, arcY*TILE+22, 3);
+    g.fillCircle(arcX*TILE+20, arcY*TILE+22, 3);
+    this.add.text(arcX*TILE+16, arcY*TILE-6, '🕹️', {font:'10px sans-serif'}).setOrigin(0.5);
+    this.arcadeTile = `${arcX},${arcY+1}`;
+
+    // ── Leaderboard Wall ──
+    g.fillStyle(0x1a1530);
+    for (let x = ZONES.leaderboard.x; x < ZONES.leaderboard.x+ZONES.leaderboard.w; x++) {
+      g.fillRect(x*TILE+1, ZONES.leaderboard.y*TILE+1, TILE-2, TILE*2-2);
+      this.leaderboardTiles.add(`${x},${ZONES.leaderboard.y+1}`);
+    }
+    // Screen
+    g.fillStyle(0x7c4dff); g.fillRect(ZONES.leaderboard.x*TILE+8, ZONES.leaderboard.y*TILE+4, ZONES.leaderboard.w*TILE-16, TILE-8);
+    g.fillStyle(0x0a0a1a); g.fillRect(ZONES.leaderboard.x*TILE+12, ZONES.leaderboard.y*TILE+8, ZONES.leaderboard.w*TILE-24, TILE-16);
+    const lbLabel = this.add.text((ZONES.leaderboard.x + ZONES.leaderboard.w/2)*TILE, ZONES.leaderboard.y*TILE + TILE/2, 'LEADERBOARD', {font:'bold 8px Chakra Petch', fill:'#7c4dff'}).setOrigin(0.5);
+
+    // ── Manager Office ──
+    g.fillStyle(0x1a1025);
+    for (let y = ZONES.manager.y; y < ZONES.manager.y+ZONES.manager.h; y++)
+      for (let x = ZONES.manager.x; x < ZONES.manager.x+ZONES.manager.w; x++) {
+        g.fillRect(x*TILE+1, y*TILE+1, TILE-2, TILE-2);
+        this.managerTiles.add(`${x},${y}`);
+      }
+    // Glass walls
+    g.lineStyle(2, 0x7c4dff, 0.25);
+    g.strokeRect(ZONES.manager.x*TILE, ZONES.manager.y*TILE, ZONES.manager.w*TILE, ZONES.manager.h*TILE);
+    for (let y = ZONES.manager.y; y < ZONES.manager.y+ZONES.manager.h; y++) {
+      this.addWall(g, ZONES.manager.x, y, 0x7c4dff);
+    }
+    for (let x = ZONES.manager.x; x < ZONES.manager.x+ZONES.manager.w; x++) {
+      this.addWall(g, x, ZONES.manager.y, 0x7c4dff);
+      this.addWall(g, x, ZONES.manager.y+ZONES.manager.h-1, 0x7c4dff);
+    }
+    // Door gap
+    this.wallTiles.delete(`${ZONES.manager.x},${ZONES.manager.y+3}`);
+    this.wallTiles.delete(`${ZONES.manager.x},${ZONES.manager.y+4}`);
+    // Manager desk
+    g.fillStyle(0x2a1a44);
+    g.fillRect((ZONES.manager.x+2)*TILE+4, (ZONES.manager.y+2)*TILE+4, TILE*2-8, TILE-8);
+    this.addWall(g, ZONES.manager.x+2, ZONES.manager.y+2);
+    this.addWall(g, ZONES.manager.x+3, ZONES.manager.y+2);
+    const mgLabel = this.add.text((ZONES.manager.x+ZONES.manager.w/2)*TILE, ZONES.manager.y*TILE-12, 'MANAGER OFFICE', {font:'bold 8px Chakra Petch', fill:'#7c4dff'}).setOrigin(0.5);
+
+    // ── Spawn marker ──
+    g.lineStyle(1, 0x00e5ff, 0.3);
+    g.strokeCircle(ZONES.spawn.x*TILE+TILE/2, ZONES.spawn.y*TILE+TILE/2, 14);
+    this.add.text(ZONES.spawn.x*TILE+TILE/2, ZONES.spawn.y*TILE+TILE+8, 'SPAWN', {font:'bold 7px Chakra Petch', fill:'#00e5ff', alpha:.3}).setOrigin(0.5);
+
+    // ── Door from break room ──
+    this.wallTiles.delete(`${ZONES.breakroom.x+4},${ZONES.breakroom.y}`);
+    this.wallTiles.delete(`${ZONES.breakroom.x+5},${ZONES.breakroom.y}`);
+  }
+
+  addWall(g, tx, ty, color = 0x1a1a3a) {
+    g.fillStyle(color);
+    g.fillRect(tx*TILE, ty*TILE, TILE, TILE);
+    g.lineStyle(1, 0x252550, 0.5);
+    g.strokeRect(tx*TILE, ty*TILE, TILE, TILE);
+    this.wallTiles.add(`${tx},${ty}`);
+  }
+
+  createPlayer() {
+    const sx = ZONES.spawn.x * TILE + TILE/2;
+    const sy = ZONES.spawn.y * TILE + TILE/2;
+    this.player = this.add.graphics();
+    this.player.setPosition(sx, sy);
+    this.playerDir = 'down';
+    this.drawPlayerSprite(this.player, me?.avatar_color || '#00e5ff', true);
+
+    // Name label
+    this.playerLabel = this.add.text(sx, sy - 22, me?.full_name || 'You', {
+      font: 'bold 8px Chakra Petch', fill: '#e2e8f0',
+      stroke: '#06060f', strokeThickness: 2
+    }).setOrigin(0.5);
+
+    this.playerTileX = ZONES.spawn.x;
+    this.playerTileY = ZONES.spawn.y;
+    this.isMoving = false;
+    this.moveTarget = null;
+    this.stepTimer = 0;
+  }
+
+  drawPlayerSprite(gfx, color, isLocal) {
+    gfx.clear();
+    const c = Phaser.Display.Color.HexStringToColor(color);
+    const rgb = c.color;
+    // Body
+    gfx.fillStyle(rgb, 1); gfx.fillRoundedRect(-10, -12, 20, 24, 4);
+    // Head
+    gfx.fillStyle(0xe2e8f0, 1); gfx.fillCircle(0, -8, 6);
+    // Eyes
+    gfx.fillStyle(0x06060f, 1); gfx.fillCircle(-2, -9, 1.5); gfx.fillCircle(2, -9, 1.5);
+    if (isLocal) {
+      // Arrow indicator
+      gfx.lineStyle(2, 0x00e5ff, 0.6);
+      gfx.strokeCircle(0, 0, 16);
+    }
+  }
+
+  setupCamera() {
+    this.cameras.main.startFollow(this.player, true, 0.08, 0.08);
+    this.cameras.main.setDeadzone(80, 60);
+    this.cameras.main.setBounds(0, 0, MAP_W, MAP_H);
+  }
+
+  setupInput() {
+    this.cursors = this.input.keyboard.createCursorKeys();
+    this.wasd = this.input.keyboard.addKeys({
+      w: Phaser.Input.Keyboard.KeyCodes.W,
+      a: Phaser.Input.Keyboard.KeyCodes.A,
+      s: Phaser.Input.Keyboard.KeyCodes.S,
+      d: Phaser.Input.Keyboard.KeyCodes.D,
+      space: Phaser.Input.Keyboard.KeyCodes.SPACE,
+      h: Phaser.Input.Keyboard.KeyCodes.H,
+    });
+  }
+
+  update(time, delta) {
+    if (gamePaused) return;
+    if (this.isMoving) {
+      this.moveStep(delta);
+      return;
+    }
+
+    let dx = 0, dy = 0, dir = this.playerDir;
+    if (this.cursors.up.isDown || this.wasd.w.isDown) { dy = -1; dir = 'up'; }
+    else if (this.cursors.down.isDown || this.wasd.s.isDown) { dy = 1; dir = 'down'; }
+    else if (this.cursors.left.isDown || this.wasd.a.isDown) { dx = -1; dir = 'left'; }
+    else if (this.cursors.right.isDown || this.wasd.d.isDown) { dx = 1; dir = 'right'; }
+
+    if (Phaser.Input.Keyboard.JustDown(this.wasd.space)) {
+      this.onInteract();
+      return;
+    }
+
+    if (Phaser.Input.Keyboard.JustDown(this.wasd.h)) {
+      this.tryHighFive();
+      return;
+    }
+
+    if (dx !== 0 || dy !== 0) {
+      this.playerDir = dir;
+      const nx = this.playerTileX + dx;
+      const ny = this.playerTileY + dy;
+      if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS && !this.wallTiles.has(`${nx},${ny}`)) {
+        this.isMoving = true;
+        this.moveTarget = { x: nx * TILE + TILE/2, y: ny * TILE + TILE/2 };
+        this.playerTileX = nx;
+        this.playerTileY = ny;
+        this.stepTimer += delta;
+        if (this.stepTimer > 250) { Audio.step(); this.stepTimer = 0; }
+      }
+    }
+  }
+
+  moveStep(delta) {
+    const speed = 0.25; // pixels per ms → 8px per frame at 32ms
+    const t = this.moveTarget;
+    const px = this.player.x, py = this.player.y;
+    const dx = t.x - px, dy = t.y - py;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if (dist < 2) {
+      this.player.setPosition(t.x, t.y);
+      this.playerLabel.setPosition(t.x, t.y - 22);
+      this.isMoving = false;
+      this.moveTarget = null;
+      this.updateZoneStatus();
+    } else {
+      const step = Math.min(dist, speed * delta);
+      this.player.setPosition(px + (dx/dist)*step, py + (dy/dist)*step);
+      this.playerLabel.setPosition(px + (dx/dist)*step, py + (dy/dist)*step - 22);
+    }
+    this.updateMinimap();
+  }
+
+  updateZoneStatus() {
+    const key = `${this.playerTileX},${this.playerTileY}`;
+    if (this.breakTiles.has(key)) {
+      updatePresence('on_break');
+    } else if (this.interactTiles.has(key)) {
+      updatePresence('working');
+    } else {
+      updatePresence('working');
+    }
+  }
+
+  checkInteraction() {
+    if (gamePaused) return;
+    const px = this.playerTileX, py = this.playerTileY;
+    const key = `${px},${py}`;
+    const prompt = document.getElementById('interact-prompt');
+    this.interactTarget = null;
+    // Check adjacent tiles too
+    const adjacent = [key,
+      `${px},${py-1}`,
+      `${px},${py+1}`,
+      `${px-1},${py}`,
+      `${px+1},${py}`,
+    ];
+    const nearInteract = adjacent.some(k => this.interactTiles.has(k));
+    const nearLB = adjacent.some(k => this.leaderboardTiles.has(k));
+
+    // Check near hot lead
+    const nearHotLead = activeHotLead && adjacent.some(k => {
+      const desk = DESKS[activeHotLead.desk_index];
+      return desk && k === `${desk.x},${desk.y}`;
+    });
+
+    // Check near another player for high five
+    const nearPlayer = this.getNearbyPlayer();
+
+    // Break room interactions
+    const nearCoffee = this.coffeeTile && adjacent.includes(this.coffeeTile);
+    const nearArcade = this.arcadeTile && adjacent.includes(this.arcadeTile);
+    if (nearCoffee) {
+      this.interactTarget = 'coffee';
+      prompt.style.display = 'block';
+      prompt.innerHTML = coffeeCooldown > 0
+        ? `☕ Cooldown ${Math.ceil(coffeeCooldown/60)}m`
+        : 'Press <kbd style="background:rgba(255,107,0,.2);padding:1px 6px;border-radius:4px;margin:0 2px;color:#ff6d00">SPACE</kbd> — ☕ Coffee (+30 STA)';
+      return;
+    }
+    if (nearArcade) {
+      this.interactTarget = 'minigame';
+      prompt.style.display = 'block';
+      prompt.innerHTML = 'Press <kbd style="background:rgba(124,77,255,.2);padding:1px 6px;border-radius:4px;margin:0 2px;color:#7c4dff">SPACE</kbd> — 🕹️ Mini Game';
+      return;
+    }
+
+    if (nearHotLead) {
+      prompt.style.display = 'block';
+      prompt.innerHTML = 'Press <kbd style="background:rgba(255,215,0,.3);padding:1px 6px;border-radius:4px;margin:0 2px;color:#ffd700">SPACE</kbd> — Grab Hot Lead! 🔥';
+    } else if (nearPlayer) {
+      prompt.style.display = 'block';
+      prompt.innerHTML = `Press <kbd style="background:rgba(0,230,118,.2);padding:1px 6px;border-radius:4px;margin:0 2px">H</kbd> — High Five ${nearPlayer.name}! 🙌`;
+    } else if (nearInteract || nearLB) {
+      prompt.style.display = 'block';
+      prompt.innerHTML = nearLB
+        ? 'Press <kbd style="background:rgba(0,229,255,.2);padding:1px 6px;border-radius:4px;margin:0 2px">SPACE</kbd> — Leaderboard'
+        : 'Press <kbd style="background:rgba(0,229,255,.2);padding:1px 6px;border-radius:4px;margin:0 2px">SPACE</kbd> — Workstation';
+    } else {
+      prompt.style.display = 'none';
+    }
+  }
+
+  onInteract() {
+    // Break room interactions
+    if (this.interactTarget === 'coffee') { useCoffeeMachine(); return; }
+    if (this.interactTarget === 'minigame') { startMiniGame(); return; }
+
+    const adjacent = [
+      `${this.playerTileX},${this.playerTileY}`,
+      `${this.playerTileX},${this.playerTileY-1}`,
+      `${this.playerTileX},${this.playerTileY+1}`,
+      `${this.playerTileX-1},${this.playerTileY}`,
+      `${this.playerTileX+1},${this.playerTileY}`,
+    ];
+
+    // Hot Lead claim takes priority
+    const nearHotLead = activeHotLead && adjacent.some(k => {
+      const desk = DESKS[activeHotLead.desk_index];
+      return desk && k === `${desk.x},${desk.y}`;
+    });
+    if (nearHotLead) {
+      claimHotLead();
+      return;
+    }
+
+    if (adjacent.some(k => this.interactTiles.has(k))) {
+      openCRM();
+    } else if (adjacent.some(k => this.leaderboardTiles.has(k))) {
+      openCRM();
+    }
+  }
+
+  checkBreakRoom() {
+    const key = `${this.playerTileX},${this.playerTileY}`;
+    if (this.breakTiles.has(key) && playerStamina < maxStamina) {
+      regenStamina(5);
+    }
+  }
+
+  broadcastPosition() {
+    if (!accessToken || !me) return;
+    fetch('/api/positions/update', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + accessToken },
+      body: JSON.stringify({ x: this.playerTileX, y: this.playerTileY, direction: this.playerDir }),
+    }).then(r => { if (r.status === 401) { accessToken = null; } }).catch(() => {});
+  }
+
+  fetchOtherPlayers() {
+    if (!accessToken) return;
+    fetch('/api/positions', {
+      headers: { 'Authorization': 'Bearer ' + accessToken },
+    }).then(r => { if (r.status === 401) { accessToken = null; return {data:{players:[]}}; } return r.json(); }).then(data => {
+      const players = data.data?.players || [];
+      const seen = new Set();
+      players.forEach(p => {
+        if (p.user_id === me?.id) return;
+        seen.add(p.user_id);
+        if (!this.remotePlayers[p.user_id]) {
+          // Create new remote player
+          const gfx = this.add.graphics();
+          const color = p.employee?.avatar_color || '#7c4dff';
+          this.drawPlayerSprite(gfx, color, false);
+          const label = this.add.text(0, 0, p.employee?.full_name || '?', {
+            font: 'bold 7px Chakra Petch', fill: '#94a3b8',
+            stroke: '#06060f', strokeThickness: 2
+          }).setOrigin(0.5);
+          const statusDot = this.add.graphics();
+          this.remotePlayers[p.user_id] = { gfx, label, statusDot, x: p.x, y: p.y };
+        }
+        const rp = this.remotePlayers[p.user_id];
+        // Smooth interpolation
+        const tx = p.x * TILE + TILE/2, ty = p.y * TILE + TILE/2;
+        rp.x = tx; rp.y = ty;
+        // Lerp
+        const cx = rp.gfx.x, cy = rp.gfx.y;
+        rp.gfx.setPosition(cx + (tx-cx)*0.3, cy + (ty-cy)*0.3);
+        rp.label.setPosition(rp.gfx.x, rp.gfx.y - 22);
+        // Status dot
+        rp.statusDot.clear();
+        const status = p.employee?.status || 'working';
+        const dotColor = status === 'on_break' ? 0x00e676 : status === 'idle' ? 0xffab00 : 0x00e5ff;
+        rp.statusDot.fillStyle(dotColor, 1);
+        rp.statusDot.fillCircle(rp.gfx.x + 10, rp.gfx.y - 16, 3);
+      });
+      // Remove disconnected
+      Object.keys(this.remotePlayers).forEach(uid => {
+        if (!seen.has(uid)) {
+          this.remotePlayers[uid].gfx.destroy();
+          this.remotePlayers[uid].label.destroy();
+          this.remotePlayers[uid].statusDot.destroy();
+          delete this.remotePlayers[uid];
+        }
+      });
+      // Update online panel
+      updateOnlinePanel(players);
+    }).catch(() => {});
+  }
+
+  // ── Hot Lead rendering ──
+  fetchHotLeads() {
+    if (!accessToken) return;
+    fetch('/api/hot-leads/active', {
+      headers: { 'Authorization': 'Bearer ' + accessToken },
+    }).then(r => r.json()).then(data => {
+      const events = data.data?.events || [];
+      const ev = events[0] || null;
+
+      if (ev && (!activeHotLead || activeHotLead.id !== ev.id)) {
+        // New hot lead event!
+        this.clearHotLeadGfx();
+        activeHotLead = ev;
+        Audio.bell();
+        toast('🔥 Hot Lead spawned! Run to grab it!', 'warn');
+        this.createHotLeadGfx(ev.desk_index);
+      } else if (!ev && activeHotLead) {
+        // Hot lead expired or claimed
+        this.clearHotLeadGfx();
+        activeHotLead = null;
+      }
+
+      // Update countdown if active
+      if (activeHotLead && this.hotLeadCountdownText) {
+        const remaining = Math.max(0, Math.round((new Date(activeHotLead.expires_at) - Date.now()) / 1000));
+        this.hotLeadCountdownText.setText(remaining > 0 ? `${remaining}s` : '');
+        if (remaining <= 0) { this.clearHotLeadGfx(); activeHotLead = null; }
+      }
+    }).catch(() => {});
+  }
+
+  createHotLeadGfx(deskIndex) {
+    const desk = DESKS[deskIndex];
+    if (!desk) return;
+    const cx = desk.x * TILE + TILE/2;
+    const cy = desk.y * TILE + TILE/2;
+
+    // Golden pulsing circle
+    this.hotLeadGfx = this.add.graphics();
+    this.hotLeadGfx.setDepth(5);
+
+    // Countdown text
+    this.hotLeadCountdownText = this.add.text(cx, cy - 28, '60s', {
+      font: 'bold 10px Chakra Petch', fill: '#ffd700',
+      stroke: '#06060f', strokeThickness: 3,
+    }).setOrigin(0.5).setDepth(6);
+
+    // Golden star label
+    this.hotLeadLabel = this.add.text(cx, cy + 20, '⭐ HOT LEAD', {
+      font: 'bold 7px Chakra Petch', fill: '#ffd700',
+      stroke: '#06060f', strokeThickness: 2,
+    }).setOrigin(0.5).setDepth(6);
+
+    // Pulsing animation
+    this.hotLeadGlow = 0;
+    this.time.addEvent({
+      delay: 50,
+      callback: () => {
+        if (!this.hotLeadGfx) return;
+        this.hotLeadGlow = (this.hotLeadGlow + 0.08) % (Math.PI * 2);
+        const pulse = 0.4 + Math.sin(this.hotLeadGlow) * 0.3;
+        this.hotLeadGfx.clear();
+        // Outer glow
+        this.hotLeadGfx.fillStyle(0xffd700, pulse * 0.3);
+        this.hotLeadGfx.fillCircle(cx, cy, 22);
+        // Inner bright
+        this.hotLeadGfx.fillStyle(0xffd700, pulse);
+        this.hotLeadGfx.fillCircle(cx, cy, 12);
+        // Core
+        this.hotLeadGfx.fillStyle(0xffffff, 0.9);
+        this.hotLeadGfx.fillCircle(cx, cy, 5);
+      },
+      loop: true,
+    });
+  }
+
+  clearHotLeadGfx() {
+    if (this.hotLeadGfx) { this.hotLeadGfx.destroy(); this.hotLeadGfx = null; }
+    if (this.hotLeadCountdownText) { this.hotLeadCountdownText.destroy(); this.hotLeadCountdownText = null; }
+    if (this.hotLeadLabel) { this.hotLeadLabel.destroy(); this.hotLeadLabel = null; }
+  }
+
+  // ── High Five: find nearest remote player ──
+  getNearbyPlayer() {
+    const px = this.playerTileX, py = this.playerTileY;
+    for (const [uid, rp] of Object.entries(this.remotePlayers)) {
+      const rpTileX = Math.round(rp.x / TILE - 0.5);
+      const rpTileY = Math.round(rp.y / TILE - 0.5);
+      const dist = Math.abs(px - rpTileX) + Math.abs(py - rpTileY);
+      if (dist <= 2) {
+        return { id: uid, name: rp.label?.text || '?', tileX: rpTileX, tileY: rpTileY };
+      }
+    }
+    return null;
+  }
+
+  tryHighFive() {
+    const target = this.getNearbyPlayer();
+    if (!target) { toast('No player nearby', 'error'); Audio.error(); return; }
+    sendHighFive(target.id, target.name);
+  }
+
+  // Show high five animation between two points
+  showHighFiveAnimation(fromX, fromY, toX, toY) {
+    const midX = (fromX + toX) / 2;
+    const midY = (fromY + toY) / 2 - 20;
+    const emoji = this.add.text(midX, midY, '🙌', {
+      font: '24px sans-serif',
+    }).setOrigin(0.5).setDepth(10);
+    this.tweens.add({
+      targets: emoji,
+      y: midY - 30,
+      alpha: 0,
+      scale: 1.5,
+      duration: 1000,
+      onComplete: () => emoji.destroy(),
+    });
+  }
+
+  updateMinimap() {
+    const c = document.getElementById('minimap');
+    const ctx = c.getContext('2d');
+    ctx.fillStyle = '#06060f'; ctx.fillRect(0,0,120,90);
+    const sx = 120/COLS, sy = 90/ROWS;
+    // Zones
+    ctx.fillStyle = '#0c1225';
+    ctx.fillRect(ZONES.bullpen.x*sx, ZONES.bullpen.y*sy, ZONES.bullpen.w*sx, ZONES.bullpen.h*sy);
+    ctx.fillStyle = '#081a10';
+    ctx.fillRect(ZONES.breakroom.x*sx, ZONES.breakroom.y*sy, ZONES.breakroom.w*sx, ZONES.breakroom.h*sy);
+    ctx.fillStyle = '#1a1025';
+    ctx.fillRect(ZONES.manager.x*sx, ZONES.manager.y*sy, ZONES.manager.w*sx, ZONES.manager.h*sy);
+    // Player dot
+    ctx.fillStyle = '#00e5ff';
+    ctx.beginPath(); ctx.arc(this.playerTileX*sx+sx/2, this.playerTileY*sy+sy/2, 3, 0, Math.PI*2); ctx.fill();
+    // Remote players
+    Object.values(this.remotePlayers).forEach(rp => {
+      const rx = (rp.x / TILE) * sx, ry = (rp.y / TILE) * sy;
+      ctx.fillStyle = '#7c4dff';
+      ctx.beginPath(); ctx.arc(rx, ry, 2, 0, Math.PI*2); ctx.fill();
+    });
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  CRM MODAL
+// ════════════════════════════════════════════════════════
+function openCRM() {
+  gamePaused = true;
+  document.getElementById('crm-modal').classList.add('open');
+  document.getElementById('interact-prompt').style.display = 'none';
+  Audio.click();
+  loadMyLeads();
+  loadMyStats();
+}
+function closeCRM() {
+  gamePaused = false;
+  document.getElementById('crm-modal').classList.remove('open');
+}
+
+// Tab switching
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-' + btn.dataset.tab).classList.add('active');
+    Audio.click();
+  });
+});
+
+async function submitNewLead() {
+  const name = document.getElementById('nl-name').value.trim();
+  const phone = document.getElementById('nl-phone').value.trim();
+  if (!name || !phone) { toast('Name & phone required', 'error'); return; }
+  // Check stamina
+  if (playerStamina < 1) { toast('No stamina! Visit Break Room', 'error'); Audio.error(); return; }
+  try {
+    const res = await api('/api/leads', { method: 'POST', body: {
+      name, phone,
+      email: document.getElementById('nl-email').value.trim(),
+      source: document.getElementById('nl-source').value,
+      notes: document.getElementById('nl-notes').value.trim(),
+    }});
+    lastActionTime = Date.now();
+    toast('+10 XP — Lead added!', 'xp');
+    Audio.xp();
+    drainStamina(1);
+    refreshMe();
+    checkBadges();
+    // Clear form
+    ['nl-name','nl-phone','nl-email','nl-notes'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('nl-source').value = '';
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+async function loadMyLeads() {
+  try {
+    const res = await api('/api/leads?per_page=20');
+    const leads = res.leads || [];
+    document.getElementById('my-leads-list').innerHTML = leads.length ? leads.map(l => `
+      <div style="display:flex;align-items:center;gap:8px;padding:8px;background:rgba(0,229,255,.03);border:1px solid rgba(0,229,255,.06);border-radius:8px;margin-bottom:6px">
+        <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#2979ff,#7c4dff);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0">${(l.name||'?')[0]}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:12px;color:#e2e8f0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${l.name||'—'}</div>
+          <div style="font-size:10px;color:#64748b">${l.phone||''}</div>
+        </div>
+        <span style="font-size:10px;padding:2px 8px;border-radius:999px;background:rgba(0,229,255,.08);color:#00e5ff;border:1px solid rgba(0,229,255,.15)">${l.status}</span>
+      </div>
+    `).join('') : '<div style="color:#475569;text-align:center;padding:20px">No leads yet</div>';
+  } catch { document.getElementById('my-leads-list').innerHTML = '<div style="color:#475569;text-align:center;padding:20px">Error loading</div>'; }
+}
+
+async function logCRMAction(action, xp, staCost) {
+  if (playerStamina < staCost) { toast('Not enough stamina! Visit Break Room', 'error'); Audio.error(); return; }
+  try {
+    if (action === 'call_made') {
+      await api('/api/actions/call', { method:'POST', body:{ lead_id: null, outcome:'answered', duration_seconds:0 }});
+    } else if (action === 'deal_closed') {
+      await api('/api/actions/close-deal', { method:'POST', body:{ lead_id: null, deal_value: 50000 }});
+      Audio.deal();
+    } else if (action === 'whatsapp_sent') {
+      await api('/api/actions/whatsapp', { method:'POST', body:{ lead_id: null, message:'(from game)' }});
+    } else {
+      // Generic note/action
+      await api('/api/leads', { method:'GET' }); // placeholder
+    }
+    lastActionTime = Date.now();
+    toast(`+${xp} XP`, 'xp');
+    Audio.xp();
+    if (staCost > 0) drainStamina(staCost);
+    refreshMe();
+    checkBadges();
+  } catch(e) { toast(e.message || 'Action failed', 'error'); }
+}
+
+async function loadMyStats() {
+  try {
+    const res = await api('/api/me/stats?days=1');
+    const s = res.stats || {};
+    document.getElementById('stats-content').innerHTML = `
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+        <div style="background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.1);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#00e5ff;font-family:'Chakra Petch'">${s.messages_sent||0}</div>
+          <div style="font-size:10px;color:#64748b">Messages</div>
+        </div>
+        <div style="background:rgba(0,229,255,.05);border:1px solid rgba(0,229,255,.1);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#2979ff;font-family:'Chakra Petch'">${s.calls_made||0}</div>
+          <div style="font-size:10px;color:#64748b">Calls</div>
+        </div>
+        <div style="background:rgba(0,230,118,.05);border:1px solid rgba(0,230,118,.1);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#00e676;font-family:'Chakra Petch'">${s.deals_closed||0}</div>
+          <div style="font-size:10px;color:#64748b">Deals</div>
+        </div>
+        <div style="background:rgba(124,77,255,.05);border:1px solid rgba(124,77,255,.1);border-radius:8px;padding:10px;text-align:center">
+          <div style="font-size:20px;font-weight:700;color:#7c4dff;font-family:'Chakra Petch'">${me?.total_xp?.toLocaleString()||0}</div>
+          <div style="font-size:10px;color:#64748b">Total XP</div>
+        </div>
+      </div>
+      <div style="text-align:center;font-size:11px;color:#64748b">
+        Level ${me?.level||1} · ${me?.title||'—'} · ${me?.syb_coins||0} Coins
+      </div>
+    `;
+  } catch { document.getElementById('stats-content').textContent = 'Error'; }
+}
+
+// ════════════════════════════════════════════════════════
+//  STAMINA
+// ════════════════════════════════════════════════════════
+async function drainStamina(amount) {
+  playerStamina = Math.max(0, playerStamina - amount);
+  updateStaminaUI();
+  try { await api('/api/stamina/drain', { method:'POST', body:{ amount }}); } catch {}
+}
+async function regenStamina(amount) {
+  const prev = playerStamina;
+  playerStamina = Math.min(maxStamina, playerStamina + amount);
+  if (playerStamina !== prev) {
+    updateStaminaUI();
+    try { await api('/api/stamina/regen', { method:'POST', body:{ amount }}); } catch {}
+  }
+}
+function updateStaminaUI() {
+  const pct = (playerStamina / maxStamina) * 100;
+  const bar = document.getElementById('hud-sta-bar');
+  bar.style.width = pct + '%';
+  bar.style.background = pct > 50 ? '#00e676' : pct > 20 ? '#ffab00' : '#ff1867';
+  document.getElementById('hud-sta-num').textContent = playerStamina;
+  document.getElementById('hud-sta-num').style.color = pct > 50 ? '#00e676' : pct > 20 ? '#ffab00' : '#ff1867';
+  if (pct <= 20 && pct > 0) toast('Low stamina! Visit Break Room', 'warn');
+}
+
+// ════════════════════════════════════════════════════════
+//  BADGES
+// ════════════════════════════════════════════════════════
+async function checkBadges() {
+  try {
+    const res = await api('/api/badges/check', { method:'POST' });
+    const earned = res.newly_earned || [];
+    earned.forEach(b => {
+      Audio.badge();
+      document.getElementById('badge-icon').textContent = b.icon;
+      document.getElementById('badge-name').textContent = b.name;
+      document.getElementById('badge-desc').textContent = b.description;
+      document.getElementById('badge-unlock').classList.add('show');
+    });
+  } catch {}
+}
+
+// ════════════════════════════════════════════════════════
+//  HOT LEAD CLAIM
+// ════════════════════════════════════════════════════════
+async function claimHotLead() {
+  if (!activeHotLead) { toast('No Hot Lead to claim', 'error'); return; }
+  try {
+    const res = await api('/api/hot-leads/claim', { method: 'POST', body: { event_id: activeHotLead.id } });
+    if (res.ok) {
+      const xp = res.xp_reward || 100;
+      lastActionTime = Date.now();
+      toast(`🔥 +${xp} XP — Hot Lead claimed!`, 'xp');
+      Audio.deal();
+      // Clear the hot lead
+      if (officeScene) officeScene.clearHotLeadGfx();
+      activeHotLead = null;
+      refreshMe();
+      checkBadges();
+    } else {
+      toast(res.reason === 'already_claimed_or_expired' ? 'Too slow! Someone else grabbed it' : 'Claim failed', 'error');
+      Audio.error();
+      if (officeScene) officeScene.clearHotLeadGfx();
+      activeHotLead = null;
+    }
+  } catch (e) { toast(e.message || 'Claim failed', 'error'); }
+}
+
+// ════════════════════════════════════════════════════════
+//  HIGH FIVE
+// ════════════════════════════════════════════════════════
+async function sendHighFive(targetId, targetName) {
+  // Check local cooldown
+  const lastTime = lastHighFiveTime[targetId] || 0;
+  const elapsed = Date.now() - lastTime;
+  if (elapsed < 5 * 60 * 1000) {
+    const remaining = Math.ceil((5 * 60 * 1000 - elapsed) / 1000);
+    toast(`Cooldown: wait ${remaining}s to High Five ${targetName} again`, 'warn');
+    return;
+  }
+  try {
+    const res = await api('/api/high-five/send', { method: 'POST', body: { to_user_id: targetId } });
+    if (res.ok) {
+      lastHighFiveTime[targetId] = Date.now();
+      lastActionTime = Date.now();
+      toast(`🙌 High Five with ${targetName}! +5 XP`, 'xp');
+      Audio.highFive();
+      // Show animation
+      if (officeScene) {
+        const target = officeScene.remotePlayers[targetId];
+        if (target) {
+          officeScene.showHighFiveAnimation(
+            officeScene.player.x, officeScene.player.y,
+            target.gfx.x, target.gfx.y
+          );
+        }
+      }
+      refreshMe();
+    } else if (res.reason === 'cooldown') {
+      toast(`Cooldown: wait ${res.retry_after || 0}s`, 'warn');
+    } else {
+      toast(res.reason || 'High Five failed', 'error');
+    }
+  } catch (e) { toast(e.message || 'High Five failed', 'error'); }
+}
+
+// ════════════════════════════════════════════════════════
+//  ONLINE PANEL
+// ════════════════════════════════════════════════════════
+function updateOnlinePanel(players) {
+  const list = document.getElementById('online-list');
+  const filtered = players.filter(p => p.user_id !== me?.id);
+  document.getElementById('online-count').textContent = filtered.length + 1;
+  list.innerHTML = filtered.map(p => {
+    const emp = p.employee || {};
+    const status = emp.status || 'working';
+    const dotColor = status==='on_break'?'#00e676':status==='idle'?'#ffab00':'#00e5ff';
+    return `<div style="display:flex;align-items:center;gap:6px;padding:3px 0">
+      <div style="width:6px;height:6px;border-radius:50%;background:${dotColor};flex-shrink:0"></div>
+      <span style="flex:1;color:#94a3b8;font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${emp.full_name||'?'}</span>
+      <span style="font-size:9px;color:#475569">Lv${emp.level||1}</span>
+    </div>`;
+  }).join('') || '<div style="color:#475569;font-size:10px">No one else online</div>';
+}
+
+// ════════════════════════════════════════════════════════
+//  QUESTS
+// ════════════════════════════════════════════════════════
+async function loadQuests() {
+  try {
+    const res = await api('/api/quests?status=pending');
+    const quests = res.quests || [];
+    document.getElementById('quest-list').innerHTML = quests.length ? quests.slice(0,4).map(q => {
+      const pct = Math.min(100, ((q.progress||0)/(q.target_count||1))*100);
+      return `<div style="background:rgba(255,171,0,.04);border:1px solid rgba(255,171,0,.1);border-radius:6px;padding:6px 8px">
+        <div style="font-size:10px;font-weight:600;color:#ffab00;margin-bottom:2px">${q.title}</div>
+        <div style="height:3px;background:rgba(255,171,0,.1);border-radius:3px;overflow:hidden"><div style="height:100%;width:${pct}%;background:#ffab00;border-radius:3px"></div></div>
+        <div style="font-size:8px;color:#64748b;margin-top:2px">${q.progress||0}/${q.target_count} · +${q.xp_reward} XP</div>
+      </div>`;
+    }).join('') : '<div style="color:#475569;font-size:10px">No active quests</div>';
+  } catch { document.getElementById('quest-list').innerHTML = ''; }
+}
+
+// ════════════════════════════════════════════════════════
+//  UTILS
+// ════════════════════════════════════════════════════════
+async function api(path, opts = {}) {
+  const res = await fetch(path, {
+    ...opts,
+    headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+accessToken, ...(opts.headers||{}) },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.message || `HTTP ${res.status}`);
+  return body.data ?? body;
+}
+
+function toast(msg, type='ok') {
+  const el = document.createElement('div');
+  el.className = 'toast-item';
+  const colors = {
+    xp:    'background:linear-gradient(90deg,rgba(0,229,255,.9),rgba(41,121,255,.9));color:#fff',
+    ok:    'background:rgba(0,230,118,.9);color:#fff',
+    error: 'background:rgba(255,24,103,.9);color:#fff',
+    warn:  'background:rgba(255,171,0,.9);color:#06060f',
+  };
+  el.style.cssText = colors[type] || colors.ok;
+  el.textContent = msg;
+  document.getElementById('toast-area').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+function updateHUD() {
+  if (!me) return;
+  document.getElementById('hud-name').textContent = me.full_name || '—';
+  document.getElementById('hud-title').textContent = me.title || '—';
+  document.getElementById('hud-level').textContent = 'Lv ' + (me.level||1);
+  document.getElementById('hud-xp').textContent = (me.total_xp||0).toLocaleString();
+  document.getElementById('hud-coins').textContent = (me.syb_coins||0).toLocaleString();
+  document.getElementById('hud-avatar').textContent = (me.full_name||'?')[0];
+  document.getElementById('hud-avatar').style.background = me.avatar_color || '#00e5ff';
+  const lvlXP = ((me.level||1) - 1) * 1000;
+  const progress = Math.min(100, (((me.total_xp||0) - lvlXP) / 1000) * 100);
+  document.getElementById('hud-xp-bar').style.width = progress + '%';
+  document.getElementById('hud-xp-text').textContent = `${(me.total_xp||0)-lvlXP} / 1000`;
+}
+
+async function refreshMe() {
+  try {
+    const res = await api('/api/me');
+    const prevLevel = me?.level;
+    me = res.employee || res;
+    updateHUD();
+    playerStamina = me.stamina ?? playerStamina;
+    maxStamina = me.max_stamina ?? 100;
+    updateStaminaUI();
+    // Level up check
+    if (prevLevel && me.level > prevLevel) {
+      Audio.levelUp();
+      document.getElementById('lu-detail').textContent = `Level ${me.level} — ${me.title||''}`;
+      document.getElementById('levelup-overlay').classList.add('show');
+    }
+  } catch {}
+}
+
+async function updatePresence(status) {
+  try { await api('/api/presence/status', { method:'POST', body:{ status }}); } catch {}
+}
+
+// ════════════════════════════════════════════════════════
+//  POWER HOUR POLLING
+// ════════════════════════════════════════════════════════
+let activePowerHour = null;
+let powerHourInterval = null;
+
+async function fetchPowerHour() {
+  try {
+    const res = await api('/api/power-hours/active');
+    const ph = res.power_hour;
+    const banner = document.getElementById('power-hour-banner');
+    if (ph) {
+      activePowerHour = ph;
+      const names = { happy_hour: 'HAPPY HOUR — XP x2', lightning_round: 'LIGHTNING ROUND', sniper_mode: 'SNIPER MODE' };
+      const icons = { happy_hour: '🔥', lightning_round: '⚡', sniper_mode: '🎯' };
+      document.getElementById('ph-type').textContent = names[ph.type] || 'POWER HOUR';
+      document.getElementById('ph-icon').textContent = icons[ph.type] || '🔥';
+      banner.style.display = 'block';
+      updatePowerHourCountdown();
+    } else {
+      activePowerHour = null;
+      banner.style.display = 'none';
+    }
+  } catch { /* ignore */ }
+}
+
+function updatePowerHourCountdown() {
+  if (!activePowerHour) return;
+  const remaining = Math.max(0, Math.round((new Date(activePowerHour.ends_at) - Date.now()) / 1000));
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
+  document.getElementById('ph-countdown').textContent = remaining > 0 ? `${mins}:${String(secs).padStart(2,'0')} remaining` : 'Ended';
+  if (remaining <= 0) {
+    activePowerHour = null;
+    document.getElementById('power-hour-banner').style.display = 'none';
+  }
+}
+
+// ════════════════════════════════════════════════════════
+//  DAILY HIGHLIGHTS CINEMATIC
+// ════════════════════════════════════════════════════════
+let lastHighlightsDate = null;
+
+async function checkDailyHighlights() {
+  try {
+    const res = await api('/api/daily-highlights/latest');
+    const hl = res.highlights;
+    if (hl && hl.highlight_date !== lastHighlightsDate) {
+      lastHighlightsDate = hl.highlight_date;
+      showHighlightsCinematic(hl);
+    }
+  } catch {}
+}
+
+function showHighlightsCinematic(hl) {
+  const dealer = hl.best_dealer || {};
+  const calls = hl.most_calls || {};
+  const improved = hl.most_improved || {};
+  const mvp = hl.daily_mvp || {};
+  const team = hl.team_stats || {};
+
+  document.getElementById('hl-dealer-name').textContent = dealer.name || '—';
+  document.getElementById('hl-dealer-val').textContent = dealer.value ? `$${Number(dealer.value).toLocaleString()}` : '';
+  document.getElementById('hl-calls-name').textContent = calls.name || '—';
+  document.getElementById('hl-calls-val').textContent = calls.count ? `${calls.count} calls` : '';
+  document.getElementById('hl-improved-name').textContent = improved.name || '—';
+  document.getElementById('hl-improved-val').textContent = improved.xp_gained ? `+${Number(improved.xp_gained).toLocaleString()} XP` : '';
+  document.getElementById('hl-mvp-name').textContent = mvp.name || '—';
+  document.getElementById('hl-mvp-val').textContent = mvp.xp ? `${Number(mvp.xp).toLocaleString()} XP` : '';
+
+  document.getElementById('hl-team-calls').textContent = (team.total_calls || 0).toLocaleString();
+  document.getElementById('hl-team-deals').textContent = (team.total_deals || 0).toLocaleString();
+  document.getElementById('hl-team-xp').textContent = (team.total_xp || 0).toLocaleString();
+  document.getElementById('hl-team-coins').textContent = (team.total_coins || 0).toLocaleString();
+
+  gamePaused = true;
+  document.getElementById('highlights-overlay').classList.add('show');
+  Audio.levelUp();
+}
+
+function closeHighlights() {
+  document.getElementById('highlights-overlay').classList.remove('show');
+  gamePaused = false;
+}
+
+// Settings toggle
+document.getElementById('settings-btn').addEventListener('click', () => {
+  document.getElementById('settings-panel').classList.toggle('open');
+  Audio.click();
+});
+
+// Onboarding
+function dismissOnboard() {
+  document.getElementById('onboard').classList.remove('show');
+  localStorage.setItem('antigravity_onboard', '1');
+  onboardDone = true;
+}
+
+// ════════════════════════════════════════════════════════
+//  MOBILE D-PAD
+// ════════════════════════════════════════════════════════
+let dpadDir = null;
+let dpadInterval = null;
+
+function dpadDown(dir) {
+  dpadDir = dir;
+  moveDpad();
+  dpadInterval = setInterval(moveDpad, 180);
+}
+
+function dpadUp() {
+  dpadDir = null;
+  if (dpadInterval) { clearInterval(dpadInterval); dpadInterval = null; }
+}
+
+function moveDpad() {
+  if (!officeScene || gamePaused || officeScene.isMoving) return;
+  const dirs = { up: [0,-1], down: [0,1], left: [-1,0], right: [1,0] };
+  const [dx, dy] = dirs[dpadDir] || [0,0];
+  if (dx === 0 && dy === 0) return;
+  officeScene.playerDir = dpadDir;
+  const nx = officeScene.playerTileX + dx;
+  const ny = officeScene.playerTileY + dy;
+  if (nx >= 0 && nx < COLS && ny >= 0 && ny < ROWS && !officeScene.wallTiles.has(`${nx},${ny}`)) {
+    officeScene.isMoving = true;
+    officeScene.moveTarget = { x: nx * TILE + TILE/2, y: ny * TILE + TILE/2 };
+    officeScene.playerTileX = nx;
+    officeScene.playerTileY = ny;
+    Audio.step();
+  }
+}
+
+function dpadAction() {
+  if (!officeScene || gamePaused) return;
+  officeScene.onInteract();
+}
+
+function dpadHighFive() {
+  if (!officeScene || gamePaused) return;
+  officeScene.tryHighFive();
+}
+
+// ════════════════════════════════════════════════════════
+//  SHOP
+// ════════════════════════════════════════════════════════
+let shopOpen = false;
+
+async function openShop() {
+  if (shopOpen) return;
+  shopOpen = true;
+  Audio.click();
+  document.getElementById('shop-overlay').style.display = 'block';
+  gamePaused = true;
+  loadShopItems();
+}
+
+function closeShop() {
+  document.getElementById('shop-overlay').style.display = 'none';
+  shopOpen = false;
+  gamePaused = false;
+}
+
+async function loadShopItems() {
+  try {
+    const data = await api('/api/store');
+    const items = data.items || [];
+    document.getElementById('shop-coins').textContent = (data.my_coins || 0) + ' C';
+    const container = document.getElementById('shop-items');
+    const empty = document.getElementById('shop-empty');
+    if (!items.length) { container.innerHTML = ''; empty.style.display = 'block'; return; }
+    empty.style.display = 'none';
+    container.innerHTML = items.map(it => `
+      <div style="background:rgba(${it.can_buy?'255,171,0':'100,116,139'},.05);border:1px solid rgba(${it.can_buy?'255,171,0':'100,116,139'},.12);border-radius:12px;padding:12px;display:flex;align-items:center;gap:10px">
+        <div style="font-size:28px;flex-shrink:0">${it.icon || '🎁'}</div>
+        <div style="flex:1;min-width:0">
+          <div style="font-weight:600;font-size:12px;color:#e2e8f0">${it.name}</div>
+          <div style="font-size:10px;color:#64748b;margin-top:2px">${it.description || ''}</div>
+          <div style="display:flex;gap:8px;margin-top:4px;font-size:10px">
+            <span style="color:#ffab00">${it.coin_price} C</span>
+            <span style="color:#7c4dff">Lv ${it.level_required}+</span>
+            ${it.stock !== null ? `<span style="color:#64748b">Stock: ${it.stock}</span>` : ''}
+          </div>
+        </div>
+        <button onclick="buyItem('${it.id}')" ${it.can_buy?'':'disabled'} class="g-btn" style="padding:6px 12px;font-size:10px;flex-shrink:0;${it.can_buy?'background:rgba(255,171,0,.1);color:#ffab00;border:1px solid rgba(255,171,0,.2)':'background:rgba(100,116,139,.05);color:#475569;border:1px solid rgba(100,116,139,.1);cursor:not-allowed'}">${it.can_buy?'Buy':'🔒'}</button>
+      </div>
+    `).join('');
+  } catch(e) {
+    console.error('Shop load error:', e);
+  }
+}
+
+async function buyItem(itemId) {
+  try {
+    const res = await fetch('/api/store/buy', { method:'POST', headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'}, body:JSON.stringify({item_id:itemId}) });
+    const data = await res.json();
+    if (data.error) { showToast(data.error, '#ff1867'); Audio.error(); return; }
+    showToast('تم الشراء! 🛒', '#00e676');
+    Audio.coin();
+    loadShopItems();
+    const r = await api('/api/me'); me = r.employee || r; updateHUD();
+  } catch(e) { showToast('خطأ في الشراء', '#ff1867'); Audio.error(); }
+}
+
+// ════════════════════════════════════════════════════════
+//  VILLAINS
+// ════════════════════════════════════════════════════════
+let lastActionTime = Date.now();
+let activeVillain = null;
+const VILLAINS = {
+  procrastinator: { icon:'🐌', name:'The Procrastinator', msg:'أنت قاعد من غير شغل! لازم تعمل أي أكشن عشان يروح', action:'أي أكشن CRM' },
+  burnout:        { icon:'💀', name:'Burnout Demon', msg:'طاقتك خلصت! روح البريك روم فوراً', action:'روح البريك روم' },
+  ghost:          { icon:'👻', name:'Ghost Lead', msg:'فيه ليد متنسي! تواصل مع الليدز بتاعتك', action:'تواصل!' },
+};
+
+function checkVillains() {
+  if (activeVillain || gamePaused || !me) return;
+  const now = Date.now();
+  const idleMs = now - lastActionTime;
+  // Procrastinator: 5 minutes idle
+  if (idleMs > 5 * 60 * 1000) { showVillain('procrastinator'); return; }
+  // Burnout Demon: stamina < 15%
+  if (playerStamina < maxStamina * 0.15 && playerStamina > 0) { showVillain('burnout'); return; }
+}
+
+function showVillain(type) {
+  if (activeVillain) return;
+  activeVillain = type;
+  const v = VILLAINS[type];
+  document.getElementById('villain-icon').textContent = v.icon;
+  document.getElementById('villain-name').textContent = v.name;
+  document.getElementById('villain-msg').textContent = v.msg;
+  document.getElementById('villain-btn').textContent = v.action;
+  document.getElementById('villain-overlay').style.display = 'block';
+  Audio.error();
+}
+
+function dismissVillain() {
+  document.getElementById('villain-overlay').style.display = 'none';
+  activeVillain = null;
+  lastActionTime = Date.now();
+  Audio.click();
+  // If burnout, open CRM to go to break room hint
+  // If procrastinator, just reset idle timer
+}
+
+// ════════════════════════════════════════════════════════
+//  CEO VISITS
+// ════════════════════════════════════════════════════════
+let activeCeoVisit = null;
+
+async function fetchCeoVisit() {
+  try {
+    const data = await api('/api/ceo-visit/active');
+    activeCeoVisit = data.visit || null;
+    updateCeoVisitUI();
+  } catch(e) { activeCeoVisit = null; }
+}
+
+function updateCeoVisitUI() {
+  const banner = document.getElementById('ceo-banner');
+  if (!activeCeoVisit) { banner.style.display = 'none'; return; }
+  const ends = new Date(activeCeoVisit.ends_at);
+  const now = new Date();
+  if (ends <= now) { activeCeoVisit = null; banner.style.display = 'none'; return; }
+  banner.style.display = 'block';
+  const diff = Math.max(0, Math.floor((ends - now) / 1000));
+  const mm = Math.floor(diff / 60).toString().padStart(2, '0');
+  const ss = (diff % 60).toString().padStart(2, '0');
+  document.getElementById('ceo-timer').textContent = mm + ':' + ss;
+}
+
+// ════════════════════════════════════════════════════════
+//  BREAK ROOM INTERACTIONS
+// ════════════════════════════════════════════════════════
+let coffeeCooldown = 0;
+let miniGameActive = false;
+
+async function useCoffeeMachine() {
+  if (coffeeCooldown > 0) { showToast(`القهوة محتاجة ${Math.ceil(coffeeCooldown/60)}د كمان ☕`, '#ffab00'); Audio.error(); return; }
+  try {
+    await fetch('/api/breakroom/coffee', { method:'POST', headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'}, body:'{}' });
+    playerStamina = Math.min(maxStamina, playerStamina + 30);
+    updateStaminaUI();
+    coffeeCooldown = 600; // 10 minutes
+    showToast('قهوة! طاقة +30 ☕', '#00e676');
+    Audio.coin();
+  } catch(e) { showToast('خطأ', '#ff1867'); }
+}
+
+function startMiniGame() {
+  if (miniGameActive) return;
+  miniGameActive = true;
+  gamePaused = true;
+  const startTime = Date.now();
+  const targetDelay = 1500 + Math.random() * 3000; // 1.5-4.5s random delay
+  showToast('انتظر... ثم اضغط فوراً! ⚡', '#ffab00');
+
+  setTimeout(() => {
+    const clickTime = Date.now();
+    Audio.bell();
+    showToast('اضغط SPACE الآن! 🎯', '#00e676');
+
+    const handler = (e) => {
+      if (e.key === ' ' || e.key === 'Enter') {
+        e.preventDefault();
+        document.removeEventListener('keydown', handler);
+        const reaction = Date.now() - clickTime;
+        miniGameActive = false;
+        gamePaused = false;
+        const score = Math.max(0, 1000 - reaction);
+        const xp = Math.min(10, Math.max(2, Math.floor(score / 100)));
+        showToast(`رد فعل: ${reaction}ms — +${xp} XP! 🎮`, '#7c4dff');
+        Audio.xp();
+        fetch('/api/breakroom/minigame', { method:'POST', headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'}, body:JSON.stringify({score}) });
+      }
+    };
+    document.addEventListener('keydown', handler);
+
+    // Timeout after 3 seconds
+    setTimeout(() => {
+      if (miniGameActive) {
+        document.removeEventListener('keydown', handler);
+        miniGameActive = false;
+        gamePaused = false;
+        showToast('فات الوقت! حاول تاني 😅', '#ff1867');
+        Audio.error();
+      }
+    }, 3000);
+  }, targetDelay);
+}
+
+// ════════════════════════════════════════════════════════
+//  SQUADS
+// ════════════════════════════════════════════════════════
+let mySquad = null;
+
+async function loadSquad() {
+  try {
+    const data = await api('/api/squads/my');
+    mySquad = data.squad || null;
+    updateSquadUI();
+  } catch(e) { mySquad = null; updateSquadUI(); }
+}
+
+function updateSquadUI() {
+  const info = document.getElementById('squad-info');
+  const btn = document.getElementById('squad-action-btn');
+  if (!mySquad) {
+    info.innerHTML = '<span style="color:#475569">مش في سكواد</span>';
+    btn.textContent = 'JOIN';
+    btn.onclick = () => showSquadList();
+    return;
+  }
+  const members = mySquad.employees || [];
+  info.innerHTML = `<div style="color:#7c4dff;font-weight:600;margin-bottom:4px">${mySquad.name}</div>` +
+    members.map(m => `<div style="display:flex;align-items:center;gap:4px;margin-top:3px">
+      <div style="width:6px;height:6px;border-radius:50%;background:${m.status==='working'?'#00e676':m.status==='on_break'?'#ffab00':'#334155'}"></div>
+      <span style="color:#94a3b8;font-size:10px">${m.name} <span style="color:#475569">Lv${m.level}</span></span>
+    </div>`).join('');
+  btn.textContent = 'LEAVE';
+  btn.onclick = () => leaveSquad();
+}
+
+async function showSquadList() {
+  try {
+    const data = await api('/api/squads');
+    const squads = data.squads || [];
+    if (!squads.length) {
+      const name = prompt('أول سكواد! اكتب اسم السكواد:');
+      if (name) { await createSquad(name); }
+      return;
+    }
+    // Simple: show squad names as prompt choices
+    const list = squads.map((s,i) => `${i+1}. ${s.name} (${(s.employees||[]).length}/4)`).join('\n');
+    const choice = prompt(`اختار سكواد (أو اكتب "new" لعمل جديد):\n${list}`);
+    if (choice === 'new') {
+      const name = prompt('اسم السكواد الجديد:');
+      if (name) createSquad(name);
+    } else {
+      const idx = parseInt(choice) - 1;
+      if (squads[idx]) joinSquad(squads[idx].id);
+    }
+  } catch(e) { showToast('خطأ', '#ff1867'); }
+}
+
+async function createSquad(name) {
+  try {
+    await fetch('/api/squads/create', { method:'POST', headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'}, body:JSON.stringify({name}) });
+    showToast('سكواد جديد! 🤝', '#7c4dff'); Audio.badge();
+    loadSquad();
+  } catch(e) { showToast('خطأ', '#ff1867'); }
+}
+
+async function joinSquad(squadId) {
+  try {
+    const res = await fetch('/api/squads/join', { method:'POST', headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'}, body:JSON.stringify({squad_id:squadId}) });
+    const data = await res.json();
+    if (data.error || data.message?.includes('ممتلئ')) { showToast(data.error || data.message, '#ff1867'); return; }
+    showToast('انضممت للسكواد! 🎯', '#7c4dff'); Audio.badge();
+    loadSquad();
+  } catch(e) { showToast('خطأ', '#ff1867'); }
+}
+
+async function leaveSquad() {
+  try {
+    await fetch('/api/squads/leave', { method:'POST', headers:{'Authorization':'Bearer '+accessToken,'Content-Type':'application/json'}, body:'{}' });
+    showToast('خرجت من السكواد', '#64748b');
+    mySquad = null; updateSquadUI();
+  } catch(e) {}
+}
+
+function squadAction() {
+  if (mySquad) leaveSquad();
+  else showSquadList();
+}
+
+// ════════════════════════════════════════════════════════
+//  BOOT
+// ════════════════════════════════════════════════════════
+async function boot() {
+  try {
+    const cfg = await fetch('/api/config').then(r => r.json());
+    supabaseClient = window.supabase.createClient(cfg.supabase_url, cfg.supabase_anon_key);
+    const { data:{ session } } = await supabaseClient.auth.getSession();
+    if (!session) { location.href = '/agent'; return; }
+    accessToken = session.access_token;
+
+    const res = await api('/api/me');
+    me = res.employee || res;
+    playerStamina = me.stamina ?? 100;
+    maxStamina = me.max_stamina ?? 100;
+
+    updateHUD();
+    updateStaminaUI();
+    loadQuests();
+
+    // Show onboarding for first-time users
+    if (!onboardDone) {
+      document.getElementById('onboard').classList.add('show');
+    }
+
+    // Start Phaser
+    gameInstance = new Phaser.Game({
+      type: Phaser.AUTO,
+      parent: 'game-container',
+      width: Math.min(window.innerWidth, 1280),
+      height: Math.min(window.innerHeight, 960),
+      pixelArt: true,
+      backgroundColor: '#06060f',
+      scene: [OfficeScene],
+      scale: {
+        mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+      },
+      input: { keyboard: true },
+    });
+
+    // Power Hour polling
+    fetchPowerHour();
+    setInterval(fetchPowerHour, 15000);
+    setInterval(updatePowerHourCountdown, 1000);
+
+    // Daily Highlights check (poll every 60s, auto-show cinematic)
+    setInterval(checkDailyHighlights, 60000);
+
+    // V2 features polling
+    fetchCeoVisit();
+    setInterval(fetchCeoVisit, 15000);
+    setInterval(updateCeoVisitUI, 1000);
+    setInterval(checkVillains, 30000);
+    setInterval(() => { if(coffeeCooldown > 0) coffeeCooldown--; }, 1000);
+    loadSquad();
+
+    // Realtime XP updates
+    supabaseClient.channel('game-xp')
+      .on('postgres_changes', { event:'UPDATE', schema:'public', table:'employees', filter:`id=eq.${me.id}` }, (p) => {
+        const d = p.new;
+        if (d.total_xp !== me.total_xp) {
+          const prevLevel = me.level;
+          me = { ...me, ...d };
+          updateHUD();
+          updateStaminaUI();
+        }
+      }).subscribe();
+
+  } catch(e) {
+    console.error('Game boot error:', e);
+    location.href = '/agent';
+  }
+}
+
+boot();
+</script>
+</body>
+</html>

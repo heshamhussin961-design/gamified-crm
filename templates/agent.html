@@ -1,0 +1,1698 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+<meta name="theme-color" content="#3b82f6" />
+<link rel="manifest" href="/static/manifest.json" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<title>AlSaeb CRM — Agent</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        crm: {
+          bg: '#0c0f1a', surface: '#151929', card: '#1a1f35',
+          border: 'rgba(148,163,184,0.08)',
+          primary: '#3b82f6', secondary: '#06b6d4', accent: '#8b5cf6',
+          success: '#22c55e', danger: '#ef4444', warning: '#f59e0b',
+          muted: '#64748b',
+        }
+      },
+      fontFamily: {
+        heading: ['Inter', 'IBM Plex Sans Arabic', 'sans-serif'],
+        body: ['IBM Plex Sans Arabic', 'Inter', 'sans-serif'],
+      },
+      boxShadow: {
+        'soft': '0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2)',
+        'card': '0 4px 6px -1px rgba(0,0,0,0.25), 0 2px 4px -2px rgba(0,0,0,0.15)',
+        'glow': '0 0 15px rgba(59,130,246,0.15)',
+      }
+    }
+  }
+}
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+  /* ═══════════════════════════════════════════════════════════
+     AlSaeb CRM — Agent Mobile Professional Theme
+     ═══════════════════════════════════════════════════════════ */
+  :root {
+    --crm-primary: #3b82f6;
+    --crm-accent: #8b5cf6;
+    --crm-success: #22c55e;
+    --crm-danger: #ef4444;
+    --crm-bg: #0c0f1a;
+    --crm-card: rgba(26, 31, 53, 0.85);
+    --crm-border: rgba(148,163,184,0.08);
+  }
+
+  body {
+    font-family: 'IBM Plex Sans Arabic', 'Inter', sans-serif;
+    overscroll-behavior: none;
+    background: var(--crm-bg);
+    background-image:
+      radial-gradient(ellipse at 20% 80%, rgba(59,130,246,0.03) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.02) 0%, transparent 50%);
+  }
+
+  h1, h2, h3 { font-family: 'Inter', 'IBM Plex Sans Arabic', sans-serif; letter-spacing: 0; }
+
+  .card {
+    background: var(--crm-card);
+    backdrop-filter: blur(14px);
+    border: 1px solid var(--crm-border);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .card:hover {
+    border-color: rgba(59,130,246,0.2);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+  }
+
+  .chip {
+    padding: 2px 10px; border-radius: 999px; font-size: 11px;
+    font-weight: 600;
+  }
+
+  /* ── Status Chips ── */
+  .status-new          { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
+  .status-contacted    { background: rgba(14,165,233,0.12); color: #38bdf8; border: 1px solid rgba(14,165,233,0.25); }
+  .status-interested   { background: rgba(250,204,21,0.12); color: #facc15; border: 1px solid rgba(250,204,21,0.25); }
+  .status-meeting_set  { background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); }
+  .status-negotiation  { background: rgba(251,146,60,0.12); color: #fb923c; border: 1px solid rgba(251,146,60,0.25); }
+  .status-closed_won   { background: rgba(34,197,94,0.12); color: #22c55e; border: 1px solid rgba(34,197,94,0.25); }
+  .status-closed_lost  { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+
+  /* ── Animations ── */
+  @keyframes pop { 0% { transform: scale(.5); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
+  .pop { animation: pop .35s ease; }
+  @keyframes slide { from { transform: translateX(100%); } }
+  .slide { animation: slide .25s ease; }
+
+  /* ── XP Bar ── */
+  .xp-bar {
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    background-size: 200% 100%;
+    animation: shine 3s linear infinite;
+  }
+  @keyframes shine { to { background-position: -200% 0; } }
+
+  #confetti-canvas { position: fixed; inset: 0; pointer-events: none; z-index: 60; }
+
+  /* ── Combo Badge ── */
+  @keyframes combo-float {
+    0%   { transform: translate(-50%, 0) scale(.6); opacity: 0; }
+    20%  { transform: translate(-50%, -10px) scale(1.2); opacity: 1; }
+    80%  { opacity: 1; }
+    100% { transform: translate(-50%, -80px) scale(1); opacity: 0; }
+  }
+  .combo-badge {
+    position: fixed; left: 50%; top: 120px;
+    padding: 6px 16px; border-radius: 999px;
+    font-weight: 800; font-size: 14px; font-family: 'Inter', sans-serif;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+    animation: combo-float 1.4s ease forwards;
+    z-index: 55; pointer-events: none;
+  }
+
+  @keyframes flame { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+  .flame { animation: flame 1.4s ease-in-out infinite; display: inline-block; }
+
+  /* ── Badges ── */
+  .badge-unlocked {
+    background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));
+    border: 1px solid rgba(59,130,246,0.25);
+  }
+  .badge-locked { opacity: .25; filter: grayscale(1) brightness(0.4); }
+
+  /* ── Input Focus ── */
+  input:focus, select:focus {
+    border-color: var(--crm-primary) !important;
+    box-shadow: 0 0 0 3px rgba(59,130,246,0.15) !important;
+    outline: none;
+  }
+
+  /* ── Active Nav ── */
+  .nav-active { color: #3b82f6 !important; }
+
+  /* ── Side Drawer ── */
+  #nav-drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:45;display:none;backdrop-filter:blur(2px)}
+  #nav-drawer-backdrop.open{display:block}
+  #nav-drawer{position:fixed;top:0;right:-260px;width:250px;height:100%;background:var(--crm-bg);border-left:1px solid rgba(59,130,246,.15);z-index:46;transition:right .25s ease;overflow-y:auto;padding:20px 0}
+  #nav-drawer.open{right:0}
+  #nav-drawer .drawer-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-size:14px;color:#94a3b8;cursor:pointer;transition:all .15s;border-right:3px solid transparent}
+  #nav-drawer .drawer-item:hover{background:rgba(59,130,246,.06);color:#e2e8f0}
+  #nav-drawer .drawer-item.nav-active{color:#3b82f6;background:rgba(59,130,246,.08);border-right-color:#3b82f6}
+  #hamburger-btn{position:fixed;bottom:16px;right:16px;z-index:44;width:48px;height:48px;border-radius:50%;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#3b82f6;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,.3);transition:transform .15s}
+  #hamburger-btn:active{transform:scale(.9)}
+
+  /* ── Scrollbar ── */
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: rgba(148,163,184,0.15); border-radius: 4px; }
+</style>
+</head>
+<body class="bg-crm-bg text-slate-100 min-h-screen pb-4">
+
+<!-- LOGIN -->
+<section id="login-view" class="hidden min-h-screen flex items-center justify-center p-4">
+  <div class="card rounded-2xl p-6 w-full max-w-sm border-crm-primary/20 relative overflow-hidden">
+    <div class="text-center mb-6">
+      <div class="w-16 h-16 mx-auto mb-2 rounded-2xl bg-crm-primary/10 flex items-center justify-center">
+        <svg class="w-8 h-8 text-crm-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
+      </div>
+      <h1 class="text-xl font-heading font-bold text-crm-primary">AlSaeb CRM</h1>
+      <p class="text-xs text-slate-400 mt-1">تسجيل دخول الموظف</p>
+    </div>
+    <form id="login-form" class="space-y-3">
+      <input type="email" id="login-email" required placeholder="الإيميل"
+             class="w-full bg-crm-bg/80 border border-crm-primary/20 rounded-lg px-3 py-3 text-slate-100 placeholder-slate-500" />
+      <input type="password" id="login-password" required placeholder="كلمة السر"
+             class="w-full bg-crm-bg/80 border border-crm-primary/20 rounded-lg px-3 py-3 text-slate-100 placeholder-slate-500" />
+      <button type="submit"
+              class="w-full bg-gradient-to-r from-crm-primary/90 to-crm-accent rounded-lg py-3 font-semibold text-crm-bg font-heading tracking-wider shadow-glow hover:shadow-glow transition-shadow">
+        دخول
+      </button>
+      <p id="login-error" class="text-crm-danger text-sm hidden text-center"></p>
+    </form>
+  </div>
+</section>
+
+<!-- APP -->
+<section id="app-view" class="hidden">
+
+  <!-- HEADER -->
+  <header class="sticky top-0 z-40 bg-crm-bg/90 backdrop-blur-xl border-b border-crm-primary/15 px-4 py-3" style="">
+    <div class="flex items-center gap-3">
+      <div id="me-avatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-crm-primary to-crm-accent flex items-center justify-center text-xl shadow-soft" style="">🎯</div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-center gap-2">
+          <span id="me-name" class="font-semibold truncate text-slate-100">—</span>
+          <span id="me-title" class="chip bg-crm-primary/10 text-crm-primary text-[10px] border border-crm-primary/20">—</span>
+        </div>
+        <div class="flex items-center gap-2 text-xs gm-only">
+          <span id="me-level" class="text-crm-primary font-bold font-heading text-[11px]">Lv 1</span>
+          <div class="flex-1 h-1.5 bg-crm-surface rounded-full overflow-hidden">
+            <div id="me-xp-bar" class="xp-bar h-full rounded-full" style="width:0%"></div>
+          </div>
+          <span id="me-xp-text" class="text-slate-400 text-[10px]">0 / 1000</span>
+        </div>
+      </div>
+      <!-- Notification Bell -->
+      <div class="relative">
+        <button id="notif-bell" class="relative text-slate-400 hover:text-crm-primary transition-colors p-1" title="الإشعارات" onclick="toggleNotifPanel()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+          <span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-crm-danger text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">0</span>
+        </button>
+        <div id="notif-panel" class="hidden absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-72 max-h-80 overflow-y-auto bg-crm-surface border border-crm-primary/20 rounded-xl shadow-lg z-50">
+          <div class="flex items-center justify-between px-3 py-2 border-b border-crm-primary/10">
+            <span class="text-xs font-bold text-slate-200">الإشعارات</span>
+            <button class="text-[10px] text-crm-primary hover:underline" onclick="clearNotifications()">مسح الكل</button>
+          </div>
+          <div id="notif-list" class="divide-y divide-crm-primary/5">
+            <div class="px-3 py-4 text-center text-slate-500 text-xs">لا يوجد إشعارات</div>
+          </div>
+        </div>
+      </div>
+      <div class="text-left">
+        <div class="text-crm-primary font-bold text-sm flex items-center gap-1 gm-only" style="">🪙 <span id="me-coins">0</span></div>
+        <div class="flex items-center gap-2 justify-end">
+          <button id="mute-btn"   class="text-xs text-slate-500 hover:text-crm-primary transition-colors" title="كتم الصوت">🔊</button>
+          <button id="logout-btn" class="text-xs text-slate-500 hover:text-crm-danger transition-colors">خروج</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- VIEWS -->
+  <main class="p-4 space-y-4">
+
+    <!-- HOME: Today's stats + Quests -->
+    <div data-view="home" class="view">
+
+      <!-- DAILY STREAK banner -->
+      <div id="streak-banner" class="card rounded-xl p-3 mb-3 flex items-center gap-3 border-crm-danger/20 gm-section">
+        <div class="text-3xl flame">🔥</div>
+        <div class="flex-1">
+          <div class="text-sm font-bold text-crm-primary"><span id="streak-days">0</span> يوم متواصل</div>
+          <div class="text-[11px] text-slate-400" id="streak-sub">ادخل كل يوم عشان تاخد بونس!</div>
+        </div>
+        <button id="streak-claim" class="hidden bg-gradient-to-r from-crm-primary to-crm-accent text-crm-bg font-bold text-xs px-3 py-2 rounded-lg shadow-soft font-heading">
+          استلم +50 🪙
+        </button>
+      </div>
+
+      <!-- ATTENDANCE CHECK-IN / CHECK-OUT -->
+      <div id="attendance-card" class="card rounded-xl p-4 mb-3 border-crm-success/20">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div id="att-icon" class="text-3xl">📍</div>
+            <div>
+              <div id="att-title" class="text-sm font-bold text-slate-200">تسجيل الحضور</div>
+              <div id="att-sub" class="text-[11px] text-slate-400">سجل وصولك للمكتب</div>
+            </div>
+          </div>
+          <button id="att-btn" onclick="toggleAttendance()" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg hover:shadow-green-500/25 transition-all font-heading">
+            📍 وصلت
+          </button>
+        </div>
+        <div id="att-gps" class="hidden mt-2 text-[10px] flex items-center gap-1.5 text-slate-500">
+          <span id="att-gps-dot" class="inline-block w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+          <span id="att-gps-text">جاري تحديد الموقع...</span>
+        </div>
+        <div id="att-timer" class="hidden mt-3 text-center">
+          <div class="text-[10px] text-slate-500 mb-1">وقت العمل</div>
+          <div id="att-elapsed" class="text-lg font-bold font-heading text-crm-primary">00:00:00</div>
+        </div>
+      </div>
+
+      <div class="grid grid-cols-3 gap-2 mb-4">
+        <div class="card rounded-xl p-3 text-center border-crm-primary/10">
+          <div class="text-2xl" style="filter: drop-shadow(0 0 6px rgba(59,130,246,0.4))">💬</div>
+          <div id="h-messages" class="font-bold text-lg text-crm-primary font-heading">0</div>
+          <div class="text-[10px] text-slate-400">رسالة اليوم</div>
+        </div>
+        <div class="card rounded-xl p-3 text-center border-crm-accent/10">
+          <div class="text-2xl" style="filter: drop-shadow(0 0 6px rgba(14,165,233,0.4))">📞</div>
+          <div id="h-calls" class="font-bold text-lg text-crm-accent font-heading">0</div>
+          <div class="text-[10px] text-slate-400">مكالمة اليوم</div>
+        </div>
+        <div class="card rounded-xl p-3 text-center border-crm-success/10">
+          <div class="text-2xl" style="filter: drop-shadow(0 0 6px rgba(34,197,94,0.4))">🏆</div>
+          <div id="h-deals" class="font-bold text-lg text-crm-success font-heading">0</div>
+          <div class="text-[10px] text-slate-400">صفقة اليوم</div>
+        </div>
+      </div>
+
+      <div class="gm-section">
+        <h2 class="font-bold mb-2 flex items-center gap-2 text-crm-primary font-heading text-sm tracking-wider">🎯 مهماتك اليوم</h2>
+        <div id="quests-list" class="space-y-2"></div>
+      </div>
+
+      <!-- NEW WHATSAPP MESSAGES -->
+      <div class="gm-section" id="wa-inbox-section">
+        <h2 class="font-bold mt-4 mb-2 flex items-center gap-2 text-crm-primary font-heading text-sm tracking-wider">
+          📩 رسائل واتساب جديدة
+          <span id="wa-inbox-badge" class="hidden bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center animate-pulse">0</span>
+        </h2>
+        <div id="wa-inbox-list" class="space-y-2">
+          <div class="text-slate-500 text-xs text-center py-3">لا يوجد رسائل جديدة</div>
+        </div>
+      </div>
+
+      <div class="gm-section">
+        <h2 class="font-bold mt-4 mb-2 flex items-center gap-2 text-crm-primary font-heading text-sm tracking-wider">🏅 ترتيبك</h2>
+        <div id="mini-lb" class="space-y-1"></div>
+      </div>
+
+      <div class="gm-section">
+        <h2 class="font-bold mt-4 mb-2 flex items-center gap-2 text-crm-primary font-heading text-sm tracking-wider">🎖️ الشارات</h2>
+        <div id="badges-grid" class="grid grid-cols-4 gap-2"></div>
+      </div>
+    </div>
+
+    <!-- LEADS LIST -->
+    <div data-view="leads" class="view hidden">
+      <div class="flex gap-2 mb-3 overflow-x-auto pb-1">
+        <button data-filter=""           class="filter-btn chip bg-crm-primary/20 text-crm-primary border border-crm-primary/30">الكل</button>
+        <button data-filter="new"        class="filter-btn chip status-new">جديد</button>
+        <button data-filter="contacted"  class="filter-btn chip status-contacted">اتواصل</button>
+        <button data-filter="interested" class="filter-btn chip status-interested">مهتم</button>
+        <button data-filter="meeting_set" class="filter-btn chip status-meeting_set">ميتنج</button>
+        <button data-filter="negotiation" class="filter-btn chip status-negotiation">تفاوض</button>
+      </div>
+      <div id="leads-list" class="space-y-2"></div>
+      <button id="leads-load-more" onclick="loadMoreLeads()" class="hidden w-full mt-3 py-3 rounded-xl text-sm font-semibold bg-crm-surface border border-crm-primary/20 text-crm-primary hover:bg-crm-primary/10 transition-all cursor-pointer">تحميل المزيد...</button>
+    </div>
+
+    <!-- LEAD DETAIL -->
+    <div data-view="detail" class="view hidden">
+      <button onclick="show('leads')" class="text-indigo-400 text-sm mb-3 flex items-center gap-1">← رجوع</button>
+      <div id="lead-detail"></div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div data-view="leaderboard" class="view hidden">
+      <select id="lb-period" class="w-full bg-crm-surface border border-crm-primary/20 rounded-lg px-3 py-2 text-sm mb-3 text-slate-100">
+        <option value="daily">يومي</option>
+        <option value="weekly" selected>أسبوعي</option>
+        <option value="monthly">شهري</option>
+      </select>
+      <div id="leaderboard-list" class="space-y-2"></div>
+    </div>
+
+    <!-- STORE -->
+    <div data-view="store" class="view hidden">
+      <div id="store-list" class="grid grid-cols-2 gap-2"></div>
+    </div>
+
+    <!-- MAP -->
+    <div data-view="map" class="view hidden">
+      <iframe id="map-frame" class="w-full border-0 rounded-xl" style="height:calc(100vh - 130px)" loading="lazy"></iframe>
+    </div>
+
+    <!-- GAME -->
+    <div data-view="game" class="view hidden">
+      <iframe id="game-frame" class="w-full border-0 rounded-xl" style="height:calc(100vh - 130px)" loading="lazy"></iframe>
+    </div>
+
+    <!-- SETTINGS -->
+    <div data-view="settings" class="view hidden">
+      <h2 class="font-bold mb-4 text-crm-primary font-heading text-lg">الإعدادات</h2>
+
+      <!-- Mode Toggle -->
+      <div class="card rounded-xl p-4 mb-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-semibold text-slate-200 text-sm">وضع العرض</div>
+            <div class="text-[11px] text-slate-400 mt-0.5" id="mode-desc">الوضع الاحترافي يخفي عناصر اللعب (XP، كوينز، شارات، مهمات)</div>
+          </div>
+          <div class="flex bg-crm-surface rounded-lg overflow-hidden border border-crm-primary/20">
+            <button id="mode-game-btn" onclick="setMode(false)"
+              class="px-3 py-2 text-xs font-bold transition-all cursor-pointer">🎮 لعب</button>
+            <button id="mode-pro-btn" onclick="setMode(true)"
+              class="px-3 py-2 text-xs font-bold transition-all cursor-pointer">💼 احترافي</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Account info -->
+      <div class="card rounded-xl p-4 mb-3">
+        <div class="text-sm font-semibold text-slate-200 mb-2">الحساب</div>
+        <div class="space-y-2 text-xs text-slate-400">
+          <div class="flex justify-between"><span>الاسم</span><span id="set-name" class="text-slate-200">—</span></div>
+          <div class="flex justify-between"><span>الإيميل</span><span id="set-email" class="text-slate-200 font-mono">—</span></div>
+          <div class="flex justify-between"><span>الدور</span><span id="set-role" class="text-slate-200">—</span></div>
+        </div>
+      </div>
+
+      <!-- Sound -->
+      <div class="card rounded-xl p-4 mb-3">
+        <div class="flex items-center justify-between">
+          <div>
+            <div class="font-semibold text-slate-200 text-sm">المؤثرات الصوتية</div>
+            <div class="text-[11px] text-slate-400 mt-0.5">أصوات XP والإنجازات</div>
+          </div>
+          <button onclick="$('#mute-btn').click(); updateSoundBtn()" id="settings-sound-btn"
+            class="px-3 py-2 rounded-lg text-xs font-bold bg-crm-surface border border-crm-primary/20 cursor-pointer">🔊</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- HAMBURGER BUTTON -->
+  <button id="hamburger-btn" onclick="toggleDrawer()">☰</button>
+
+  <!-- SIDE DRAWER -->
+  <div id="nav-drawer-backdrop" onclick="toggleDrawer(false)"></div>
+  <nav id="nav-drawer">
+    <div style="padding:16px 20px 20px;border-bottom:1px solid rgba(59,130,246,.1);margin-bottom:8px">
+      <div class="text-sm font-bold text-slate-200" id="drawer-name">—</div>
+      <div class="text-xs text-slate-500" id="drawer-email">—</div>
+    </div>
+    <button data-nav="home"        class="drawer-item nav-btn"><span class="text-lg">🏠</span> الرئيسية</button>
+    <button data-nav="leads"       class="drawer-item nav-btn"><span class="text-lg">🎯</span> الليدز</button>
+    <button data-nav="map"         class="drawer-item nav-btn"><span class="text-lg">🗺️</span> الخريطة</button>
+    <button data-nav="game"        class="drawer-item nav-btn"><span class="text-lg">🎮</span> اللعبة</button>
+    <button data-nav="leaderboard" class="drawer-item nav-btn"><span class="text-lg">🏆</span> الترتيب</button>
+    <button data-nav="store"       class="drawer-item nav-btn"><span class="text-lg">🛒</span> المتجر</button>
+    <div style="border-top:1px solid rgba(59,130,246,.1);margin:8px 0"></div>
+    <button data-nav="settings"    class="drawer-item nav-btn"><span class="text-lg">⚙️</span> إعدادات</button>
+  </nav>
+</section>
+
+<!-- XP TOAST -->
+<div id="toast-host" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 space-y-2"></div>
+
+<!-- CONFETTI -->
+<canvas id="confetti-canvas"></canvas>
+
+<!-- LEVEL UP OVERLAY -->
+<div id="level-up" class="hidden fixed inset-0 bg-black/85 z-50 flex items-center justify-center backdrop-blur-sm">
+  <div class="text-center pop relative">
+    <!-- Neon ring effect -->
+    <div class="absolute inset-0 -m-16 rounded-full" style="background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%); animation: none;"></div>
+    <div class="text-8xl mb-4" style="filter: drop-shadow(0 0 30px rgba(59,130,246,0.8))">🎉</div>
+    <div class="text-4xl font-black font-heading bg-gradient-to-r from-crm-primary to-crm-danger bg-clip-text text-transparent" style="text-shadow: none; filter: drop-shadow(0 0 20px rgba(59,130,246,0.5))">LEVEL UP!</div>
+    <div id="lu-text" class="text-2xl mt-2 text-crm-primary font-heading">—</div>
+    <button onclick="document.getElementById('level-up').classList.add('hidden')"
+            class="mt-6 bg-gradient-to-r from-crm-primary to-crm-accent text-crm-bg px-8 py-2 rounded-lg font-heading font-bold tracking-wider shadow-glow hover:shadow-glow transition-shadow">تمام!</button>
+  </div>
+</div>
+
+<script>
+const $ = (q) => document.querySelector(q);
+const $$ = (q) => document.querySelectorAll(q);
+var supabase, accessToken, me = null, currentLead = null, proMode = false;
+
+async function boot() {
+  try {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('/static/sw.js').catch(() => {});
+    }
+    const cfg = await fetch('/api/config').then(r => r.json());
+    supabase = window.supabase.createClient(cfg.supabase_url, cfg.supabase_anon_key);
+    // Auto-refresh token when it expires
+    supabase.auth.onAuthStateChange((event, session) => {
+      if (session) {
+        accessToken = session.access_token;
+      } else if (event === 'SIGNED_OUT' || event === 'TOKEN_REFRESHED' && !session) {
+        location.reload();
+      }
+    });
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) { accessToken = session.access_token; await onLogin(); }
+    else { $('#login-view').classList.remove('hidden'); }
+  } catch (err) {
+    console.error('Boot error:', err);
+    $('#login-view').classList.remove('hidden');
+  }
+}
+
+$('#login-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: $('#login-email').value, password: $('#login-password').value,
+  });
+  if (error) {
+    $('#login-error').textContent = error.message;
+    $('#login-error').classList.remove('hidden');
+    return;
+  }
+  accessToken = data.session.access_token;
+  onLogin();
+});
+
+$('#logout-btn').addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  location.reload();
+});
+
+// mute toggle (persists in localStorage)
+(function initMute() {
+  const btn = $('#mute-btn'); if (!btn) return;
+  const sync = () => btn.textContent = localStorage.getItem('fx_muted') === '1' ? '🔇' : '🔊';
+  btn.addEventListener('click', () => {
+    const now = localStorage.getItem('fx_muted') === '1' ? '0' : '1';
+    localStorage.setItem('fx_muted', now);
+    sync();
+    if (now === '0') FX.click();
+  });
+  sync();
+})();
+
+async function onLogin() {
+  try {
+    const res = await api('/api/me');
+    me = res.employee || res;
+    proMode = !!me.professional_mode;
+    $('#login-view').classList.add('hidden');
+    $('#app-view').classList.remove('hidden');
+    applyMode();
+    renderMe();
+    show('home');
+    subscribeEvents();
+  } catch { $('#login-view').classList.remove('hidden'); }
+}
+
+function applyMode() {
+  // عناصر اللعب في الهيدر
+  document.querySelectorAll('.gm-only').forEach(el => el.classList.toggle('hidden', proMode));
+  document.querySelectorAll('.pro-only').forEach(el => el.classList.toggle('hidden', !proMode));
+
+  // التابات السفلية — إخفاء الخاصة باللعب
+  const gameTabs = ['map', 'game', 'leaderboard', 'store'];
+  document.querySelectorAll('nav [data-nav]').forEach(btn => {
+    if (gameTabs.includes(btn.dataset.nav)) btn.classList.toggle('hidden', proMode);
+  });
+
+  // ضبط الـ grid حسب عدد التابات الظاهرة (3 في الاحترافي، 7 في اللعب)
+  const nav = document.getElementById('nav-grid');
+  if (nav) nav.className = proMode
+    ? 'flex justify-around'
+    : 'flex justify-around';
+
+  // إخفاء أقسام الألعاب في الهوم
+  document.querySelectorAll('.gm-section').forEach(el => el.classList.toggle('hidden', proMode));
+}
+
+function renderMe() {
+  $('#me-name').textContent = me.full_name || me.email;
+  $('#me-title').textContent = proMode ? (me.role || '—') : (me.title || '—');
+  // Update drawer header
+  const dn = document.getElementById('drawer-name');
+  const de = document.getElementById('drawer-email');
+  if (dn) dn.textContent = me.full_name || me.email;
+  if (de) de.textContent = me.email || '';
+  if (!proMode) {
+    $('#me-level').textContent = 'Lv ' + (me.level || 1);
+    $('#me-coins').textContent = (me.syb_coins || 0).toLocaleString();
+    const lvlStart = Math.max(0, (me.total_xp || 0) - ((me.level - 1) * 1000));
+    const pct = Math.min(100, (lvlStart / 1000) * 100);
+    $('#me-xp-bar').style.width = pct + '%';
+    $('#me-xp-text').textContent = `${lvlStart} / 1000`;
+  }
+}
+
+async function api(path, opts = {}) {
+  const res = await fetch(path, {
+    ...opts,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + accessToken,
+      ...(opts.headers || {}),
+    },
+    body: opts.body ? JSON.stringify(opts.body) : undefined,
+  });
+  const body = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(body.message || body.error || `HTTP ${res.status}`);
+  return body.data ?? body;
+}
+
+function toast(msg, type = 'ok') {
+  const el = document.createElement('div');
+  const styles = {
+    error: 'background: rgba(239,68,68,0.9); border: 1px solid rgba(239,68,68,0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.3);',
+    xp:    'background: linear-gradient(90deg, rgba(59,130,246,0.9), rgba(139,92,246,0.9)); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.3);',
+    ok:    'background: rgba(34,197,94,0.9); color: #fff; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.3);',
+  };
+  el.className = 'slide px-4 py-2 rounded-lg text-sm font-medium';
+  el.style.cssText = styles[type] || styles.ok;
+  el.textContent = msg;
+  $('#toast-host').appendChild(el);
+  setTimeout(() => el.remove(), 3000);
+}
+
+function xpReward(r) {
+  if (proMode) {
+    // الوضع الاحترافي — إظهار رسالة نجاح بسيطة فقط بدون XP/كونفيتي
+    if (r?.xp_added) toast('تم تسجيل الإجراء ✅', 'ok');
+    api('/api/me').then(res => { me = res.employee || res; renderMe(); }).catch(() => {});
+    return;
+  }
+  if (r?.leveled_up) {
+    $('#lu-text').textContent = `Level ${r.new_level} — ${r.new_title || ''}`;
+    $('#level-up').classList.remove('hidden');
+    FX.levelUp();
+  } else if (r?.xp_added) {
+    toast(`+${r.xp_added} XP ${r.coins_added ? `· +${r.coins_added} 🪙` : ''}`, 'xp');
+    FX.xpGain(r.xp_added);
+  }
+  // refresh me
+  api('/api/me').then(res => { me = res.employee || res; renderMe(); refreshBadges(); }).catch(() => {});
+}
+
+// =================================================================
+//  🎮 GAME-FEEL FX : sound + confetti + haptics + combos
+// =================================================================
+const FX = (() => {
+  let audioCtx = null;
+  const getCtx = () => {
+    if (!audioCtx) {
+      try { audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+      catch { audioCtx = null; }
+    }
+    // some browsers start suspended until a gesture
+    if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
+    return audioCtx;
+  };
+  const muted = () => localStorage.getItem('fx_muted') === '1';
+
+  function beep(freq, durationMs, type = 'sine', gain = 0.15, whenOffsetSec = 0) {
+    if (muted()) return;
+    const ctx = getCtx(); if (!ctx) return;
+    const t0 = ctx.currentTime + whenOffsetSec;
+    const osc = ctx.createOscillator();
+    const g = ctx.createGain();
+    osc.type = type; osc.frequency.value = freq;
+    g.gain.setValueAtTime(0, t0);
+    g.gain.linearRampToValueAtTime(gain, t0 + 0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, t0 + durationMs / 1000);
+    osc.connect(g).connect(ctx.destination);
+    osc.start(t0); osc.stop(t0 + durationMs / 1000 + 0.02);
+  }
+
+  const vibrate = (pattern) => { try { navigator.vibrate?.(pattern); } catch {} };
+
+  // sounds ---------------------------------------------------------
+  const xpDing  = () => { beep(660, 120, 'triangle', 0.12); beep(990, 180, 'triangle', 0.10, 0.08); };
+  const coinSfx = () => { beep(880, 70, 'square', 0.08); beep(1320, 100, 'square', 0.08, 0.05); };
+  const levelUp = () => {
+    [523, 659, 784, 1047].forEach((f, i) => beep(f, 180, 'triangle', 0.14, i * 0.09));
+    vibrate([40, 40, 40, 40, 120]);
+    confettiBurst(180, { spread: true, duration: 3200 });
+  };
+  const deal = () => {
+    [392, 523, 659, 784, 1047].forEach((f, i) => beep(f, 220, 'sawtooth', 0.12, i * 0.10));
+    vibrate([60, 40, 60, 40, 200]);
+    confettiBurst(260, { spread: true, duration: 4000 });
+  };
+  const click = () => beep(520, 40, 'square', 0.04);
+
+  // xp combo tracker ----------------------------------------------
+  let comboCount = 0, comboXP = 0, comboTimer = null;
+  function xpGain(amount) {
+    xpDing(); vibrate(25); confettiBurst(14, { small: true });
+    comboCount += 1; comboXP += amount;
+    clearTimeout(comboTimer);
+    comboTimer = setTimeout(() => { comboCount = 0; comboXP = 0; }, 4000);
+    if (comboCount >= 2) showCombo(comboCount, comboXP);
+  }
+  function showCombo(count, total) {
+    const el = document.createElement('div');
+    el.className = 'combo-badge';
+    el.innerHTML = `🔥 COMBO x${count} <span class="opacity-90">+${total} XP</span>`;
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1400);
+  }
+
+  // confetti canvas ------------------------------------------------
+  const COLORS = ['#3b82f6','#8b5cf6','#06b6d4','#22c55e','#f59e0b','#ec4899','#10b981'];
+  let particles = [], running = false, canvas, ctx;
+
+  function ensureCanvas() {
+    canvas = document.getElementById('confetti-canvas');
+    if (!canvas) return false;
+    ctx = canvas.getContext('2d');
+    canvas.width  = window.innerWidth;
+    canvas.height = window.innerHeight;
+    return true;
+  }
+  function confettiBurst(count = 80, opts = {}) {
+    if (!ensureCanvas()) return;
+    const small = opts.small;
+    const spread = opts.spread;
+    const duration = opts.duration || (small ? 900 : 2400);
+    const cx = spread ? canvas.width / 2 : canvas.width / 2;
+    const cy = spread ? canvas.height / 3 : 120;
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: cx + (Math.random() - 0.5) * (small ? 40 : 120),
+        y: cy + (Math.random() - 0.5) * 20,
+        vx: (Math.random() - 0.5) * (spread ? 14 : 6),
+        vy: (Math.random() * -1 - 2) * (spread ? 4 : 2),
+        g: 0.22 + Math.random() * 0.12,
+        size: small ? 4 + Math.random() * 3 : 6 + Math.random() * 6,
+        rot: Math.random() * Math.PI * 2,
+        vr: (Math.random() - 0.5) * 0.3,
+        color: COLORS[Math.floor(Math.random() * COLORS.length)],
+        life: duration,
+        born: performance.now(),
+      });
+    }
+    if (!running) { running = true; requestAnimationFrame(tick); }
+  }
+  function tick(now) {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles = particles.filter(p => now - p.born < p.life);
+    for (const p of particles) {
+      p.vy += p.g; p.x += p.vx; p.y += p.vy; p.rot += p.vr;
+      const age = (now - p.born) / p.life;
+      ctx.globalAlpha = Math.max(0, 1 - age);
+      ctx.save();
+      ctx.translate(p.x, p.y); ctx.rotate(p.rot);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.5);
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+    if (particles.length) requestAnimationFrame(tick);
+    else { running = false; ctx.clearRect(0, 0, canvas.width, canvas.height); }
+  }
+  window.addEventListener('resize', () => { if (canvas) { canvas.width = innerWidth; canvas.height = innerHeight; } });
+
+  return { xpGain, xpDing, coinSfx, levelUp, deal, click, vibrate, confettiBurst };
+})();
+
+// =================================================================
+//  🔥 DAILY STREAK (client-tracked with server-persisted bonus)
+// =================================================================
+function renderStreak() {
+  const today = new Date().toISOString().slice(0, 10);
+  const last  = localStorage.getItem('streak_last') || '';
+  const yday  = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+  let days    = parseInt(localStorage.getItem('streak_days') || '0', 10);
+  const claimed = localStorage.getItem('streak_claimed_on') === today;
+
+  if (last !== today) {
+    if (last === yday)       days = Math.min(days + 1, 365);
+    else if (last && last !== today) days = 1;
+    else if (!last)          days = 1;
+    localStorage.setItem('streak_days', String(days));
+    localStorage.setItem('streak_last', today);
+  }
+  $('#streak-days').textContent = days;
+  const sub = claimed
+    ? 'بونس النهاردة اتستلم ✓ — شوفك بكرة!'
+    : (days >= 7 ? 'عايز تاخد +100 🪙؟' : `شد ${7 - (days % 7)} يوم كمان عشان بونس أكبر`);
+  $('#streak-sub').textContent = sub;
+  const btn = $('#streak-claim');
+  if (claimed) btn.classList.add('hidden');
+  else {
+    btn.classList.remove('hidden');
+    btn.textContent = days >= 7 ? 'استلم +100 🪙' : 'استلم +50 🪙';
+  }
+}
+document.addEventListener('click', (e) => {
+  if (e.target?.id !== 'streak-claim') return;
+  const today = new Date().toISOString().slice(0, 10);
+  const days = parseInt(localStorage.getItem('streak_days') || '1', 10);
+  localStorage.setItem('streak_claimed_on', today);
+  FX.coinSfx(); FX.vibrate(30); FX.confettiBurst(60);
+  toast(days >= 7 ? '+100 🪙 بونس الأسبوع!' : '+50 🪙 بونس يومي!', 'xp');
+  renderStreak();
+});
+
+// =================================================================
+//  🎖️ BADGES (client-derived from /api/me/stats)
+// =================================================================
+const BADGES = [
+  { id: 'first_deal',  icon: '🏆', name: 'أول صفقة',   check: s => (s.deals_closed_total || 0) >= 1 },
+  { id: 'ten_deals',   icon: '💎', name: '١٠ صفقات',   check: s => (s.deals_closed_total || 0) >= 10 },
+  { id: 'fifty_deals', icon: '👑', name: '٥٠ صفقة',    check: s => (s.deals_closed_total || 0) >= 50 },
+  { id: 'century_msg', icon: '💬', name: '١٠٠ رسالة',  check: s => (s.messages_sent || 0) >= 100 },
+  { id: 'level5',      icon: '⭐', name: 'Lv 5',        check: () => (me?.level || 0) >= 5 },
+  { id: 'level10',     icon: '🌟', name: 'Lv 10',       check: () => (me?.level || 0) >= 10 },
+  { id: 'streak7',     icon: '🔥', name: 'أسبوع كامل',  check: () => parseInt(localStorage.getItem('streak_days') || '0', 10) >= 7 },
+  { id: 'big_spender', icon: '🪙', name: 'جامع الكوينز', check: () => (me?.syb_coins || 0) >= 500 },
+];
+async function refreshBadges() {
+  let stats = {};
+  try { stats = (await api('/api/me/stats?days=365')).stats || {}; } catch {}
+  const grid = $('#badges-grid'); if (!grid) return;
+  grid.innerHTML = BADGES.map(b => {
+    const unlocked = !!b.check(stats);
+    return `<div class="rounded-xl p-2 text-center ${unlocked ? 'badge-unlocked' : 'badge-locked card'}"
+                 title="${b.name}">
+      <div class="text-2xl">${b.icon}</div>
+      <div class="text-[10px] ${unlocked ? 'text-amber-200 font-semibold' : 'text-slate-400'}">${b.name}</div>
+    </div>`;
+  }).join('');
+}
+
+// ============ NAV ============
+function toggleDrawer(forceOpen) {
+  const d = document.getElementById('nav-drawer');
+  const b = document.getElementById('nav-drawer-backdrop');
+  const open = forceOpen !== undefined ? forceOpen : !d.classList.contains('open');
+  d.classList.toggle('open', open);
+  b.classList.toggle('open', open);
+}
+$$('[data-nav]').forEach(b => b.addEventListener('click', () => { toggleDrawer(false); show(b.dataset.nav); }));
+
+const STATUS_LABELS = {
+  new: 'جديد', contacted: 'اتواصل', interested: 'مهتم',
+  meeting_set: 'ميتنج', negotiation: 'تفاوض',
+  closed_won: 'فاز 🏆', closed_lost: 'خسارة',
+};
+
+function show(name) {
+  $$('.view').forEach(v => v.classList.toggle('hidden', v.dataset.view !== name));
+  $$('.nav-btn').forEach(b => {
+    const isActive = b.dataset.nav === name;
+    b.classList.toggle('nav-active', isActive);
+  });
+  // Lazy-load map/game iframes on first visit
+  if (name === 'map') {
+    const f = $('#map-frame');
+    if (!f.src || !f.src.includes('/map')) f.src = '/map';
+  } else if (name === 'game') {
+    const f = $('#game-frame');
+    if (!f.src || !f.src.includes('/game')) f.src = '/game';
+  }
+  const loader = { home: loadHome, leads: () => loadLeads(), leaderboard: loadLeaderboard, store: loadStore, settings: loadSettings }[name];
+  if (loader) loader();
+}
+
+function loadSettings() {
+  if (!me) return;
+  const el = (id, val) => { const e = document.getElementById(id); if (e) e.textContent = val; };
+  el('set-name', me.full_name || '—');
+  el('set-email', me.email || '—');
+  el('set-role', me.role || '—');
+  updateModeButtons();
+  updateSoundBtn();
+}
+
+function updateModeButtons() {
+  const gBtn = $('#mode-game-btn');
+  const pBtn = $('#mode-pro-btn');
+  if (gBtn) {
+    gBtn.className = `px-3 py-2 text-xs font-bold transition-all cursor-pointer ${!proMode ? 'bg-crm-primary text-white' : 'text-slate-400'}`;
+  }
+  if (pBtn) {
+    pBtn.className = `px-3 py-2 text-xs font-bold transition-all cursor-pointer ${proMode ? 'bg-crm-primary text-white' : 'text-slate-400'}`;
+  }
+}
+
+function updateSoundBtn() {
+  const btn = $('#settings-sound-btn');
+  if (btn) btn.textContent = localStorage.getItem('fx_muted') === '1' ? '🔇 مكتوم' : '🔊 مفعّل';
+}
+
+async function setMode(isPro) {
+  try {
+    await api('/api/me/mode', { method: 'PATCH', body: { professional_mode: isPro } });
+    proMode = isPro;
+    me.professional_mode = isPro;
+    applyMode();
+    renderMe();
+    updateModeButtons();
+    toast(isPro ? 'تم التبديل للوضع الاحترافي 💼' : 'تم التبديل لوضع اللعب 🎮');
+    // لو كان على تاب لعب وبدّل لاحترافي — رجعه للرئيسية
+    const currentView = document.querySelector('.view:not(.hidden)');
+    if (isPro && currentView) {
+      const vn = currentView.dataset?.view;
+      if (['map','game','leaderboard','store'].includes(vn)) show('home');
+    }
+  } catch (e) { toast(e.message, 'error'); }
+}
+
+// ============ ATTENDANCE ============
+let attendanceTimer = null;
+let attendanceCheckIn = null;
+
+function updateElapsed() {
+  if (!attendanceCheckIn) return;
+  const diff = Math.floor((Date.now() - attendanceCheckIn) / 1000);
+  const h = String(Math.floor(diff / 3600)).padStart(2, '0');
+  const m = String(Math.floor((diff % 3600) / 60)).padStart(2, '0');
+  const s = String(diff % 60).padStart(2, '0');
+  const el = document.getElementById('att-elapsed');
+  if (el) el.textContent = `${h}:${m}:${s}`;
+}
+
+async function loadAttendance() {
+  try {
+    const res = await api('/api/attendance/status');
+    const st = res.status;
+    const btn = document.getElementById('att-btn');
+    const title = document.getElementById('att-title');
+    const sub = document.getElementById('att-sub');
+    const icon = document.getElementById('att-icon');
+    const timer = document.getElementById('att-timer');
+
+    if (st === 'checked_in') {
+      // الموظف موجود — اعرض زرار الانصراف
+      btn.innerHTML = '👋 مشيت';
+      btn.className = 'bg-gradient-to-r from-red-500 to-orange-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg hover:shadow-red-500/25 transition-all font-heading';
+      title.textContent = 'أنت في الشغل ✅';
+      const checkIn = res.record?.check_in;
+      if (checkIn) {
+        attendanceCheckIn = new Date(checkIn).getTime();
+        sub.textContent = 'وصلت ' + new Date(checkIn).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+      } else {
+        sub.textContent = 'تم تسجيل حضورك';
+      }
+      icon.textContent = '🏢';
+      timer.classList.remove('hidden');
+      if (attendanceTimer) clearInterval(attendanceTimer);
+      attendanceTimer = setInterval(updateElapsed, 1000);
+      updateElapsed();
+
+    } else if (st === 'checked_out') {
+      // خلص يومه
+      btn.innerHTML = '✅ تم';
+      btn.disabled = true;
+      btn.className = 'bg-slate-700 text-slate-400 font-bold text-xs px-4 py-2.5 rounded-xl font-heading cursor-not-allowed';
+      title.textContent = 'انتهى يوم العمل';
+      const hw = res.record?.hours_worked;
+      sub.textContent = hw ? `اشتغلت ${parseFloat(hw).toFixed(1)} ساعة` : 'تم تسجيل الانصراف';
+      icon.textContent = '🏠';
+      timer.classList.add('hidden');
+      if (attendanceTimer) { clearInterval(attendanceTimer); attendanceTimer = null; }
+
+    } else {
+      // لم يسجل حضور
+      btn.innerHTML = '📍 وصلت';
+      btn.disabled = false;
+      btn.className = 'bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg hover:shadow-green-500/25 transition-all font-heading';
+      title.textContent = 'تسجيل الحضور';
+      sub.textContent = 'سجل وصولك للمكتب';
+      icon.textContent = '📍';
+      timer.classList.add('hidden');
+    }
+  } catch (e) {
+    console.log('Attendance not available:', e.message);
+  }
+}
+
+// GPS helper — returns {latitude, longitude} or {} if denied/unavailable
+function getGPSCoords() {
+  return new Promise(resolve => {
+    if (!navigator.geolocation) return resolve({});
+    const gpsEl = document.getElementById('att-gps');
+    const gpsDot = document.getElementById('att-gps-dot');
+    const gpsTxt = document.getElementById('att-gps-text');
+    if (gpsEl) gpsEl.classList.remove('hidden');
+    if (gpsTxt) gpsTxt.textContent = 'جاري تحديد الموقع...';
+    navigator.geolocation.getCurrentPosition(
+      pos => {
+        const { latitude, longitude, accuracy } = pos.coords;
+        if (gpsDot) gpsDot.className = 'inline-block w-1.5 h-1.5 rounded-full bg-green-500';
+        if (gpsTxt) gpsTxt.textContent = `📍 تم تحديد الموقع (±${Math.round(accuracy)}م)`;
+        resolve({ latitude, longitude });
+      },
+      () => {
+        if (gpsDot) gpsDot.className = 'inline-block w-1.5 h-1.5 rounded-full bg-yellow-500';
+        if (gpsTxt) gpsTxt.textContent = '⚠️ لم يتم تحديد الموقع';
+        resolve({});
+      },
+      { timeout: 8000, maximumAge: 60000 }
+    );
+  });
+}
+
+async function toggleAttendance() {
+  const btn = document.getElementById('att-btn');
+  const origText = btn.innerHTML;
+  btn.disabled = true;
+  btn.innerHTML = '⏳...';
+  try {
+    const statusRes = await api('/api/attendance/status');
+    if (statusRes.status === 'checked_in') {
+      const res = await api('/api/attendance/checkout', { method: 'POST', body: {} });
+      toast(res.message || 'تم تسجيل الانصراف 👋');
+      if (res.data?.bonus_xp) toast(`+${res.data.bonus_xp} XP بونص يوم كامل! 🎉`);
+      document.getElementById('att-gps')?.classList.add('hidden');
+    } else if (statusRes.status === 'not_checked_in') {
+      const coords = await getGPSCoords();
+      const res = await api('/api/attendance/checkin', { method: 'POST', body: coords });
+      toast(res.message || 'تم تسجيل الحضور ✅');
+      if (res.data?.xp_earned) toast(`+${res.data.xp_earned} XP 🎮`);
+      if (res.data?.gps_verified) {
+        const gpsDot = document.getElementById('att-gps-dot');
+        const gpsTxt = document.getElementById('att-gps-text');
+        if (gpsDot) gpsDot.className = 'inline-block w-1.5 h-1.5 rounded-full bg-green-500';
+        if (gpsTxt) gpsTxt.textContent = '✅ موقعك تم التحقق منه';
+      }
+    }
+    loadAttendance();
+  } catch (e) {
+    toast(e.message, 'error');
+    btn.disabled = false;
+    btn.innerHTML = origText;
+    return;
+  }
+  btn.disabled = false;
+}
+
+// ============ HOME ============
+async function loadHome() {
+  renderStreak();
+  refreshBadges();
+  loadAttendance();
+  try {
+    const stats = await api('/api/me/stats?days=1');
+    const s = stats.stats || {};
+    $('#h-messages').textContent = s.messages_sent || 0;
+    $('#h-calls').textContent = s.calls_made || 0;
+    $('#h-deals').textContent = s.deals_closed || 0;
+  } catch {}
+
+  try {
+    const quests = (await api('/api/quests?status=pending')).quests || [];
+    $('#quests-list').innerHTML = quests.length ? quests.map(q => {
+      const pct = Math.min(100, ((q.progress || 0) / (q.target_count || 1)) * 100);
+      return `
+      <div class="card rounded-xl p-3">
+        <div class="flex items-center justify-between mb-1">
+          <div class="font-semibold text-sm">${q.title}</div>
+          <div class="text-xs text-amber-300">+${q.xp_reward} XP · +${q.coin_reward} 🪙</div>
+        </div>
+        <div class="text-xs text-slate-400 mb-2">${q.description || ''}</div>
+        <div class="flex items-center gap-2">
+          <div class="flex-1 h-2 bg-crm-surface rounded-full overflow-hidden">
+            <div class="bg-gradient-to-r from-indigo-500 to-purple-500 h-full" style="width:${pct}%"></div>
+          </div>
+          <span class="text-xs text-slate-400">${q.progress||0}/${q.target_count}</span>
+        </div>
+      </div>`;
+    }).join('') : '<div class="text-slate-1000/40 text-sm text-center py-4">لسه مفيش مهام اليوم</div>';
+  } catch {}
+
+  try {
+    const lb = (await api('/api/leaderboard?period=weekly')).leaderboard || [];
+    const myIndex = lb.findIndex(r => r.employee_id === me.id);
+    const slice = myIndex >= 0 ? lb.slice(Math.max(0, myIndex - 1), myIndex + 2) : lb.slice(0, 3);
+    $('#mini-lb').innerHTML = slice.map((row, i) => {
+      const rank = myIndex >= 0 ? (Math.max(0, myIndex - 1) + i + 1) : (i + 1);
+      const isMe = row.employee_id === me.id;
+      const emp = row.employees || {};
+      return `<div class="card rounded-lg p-2 flex items-center gap-2 ${isMe ? 'ring-2 ring-indigo-500' : ''}">
+        <span class="text-sm font-bold w-6">#${rank}</span>
+        <span class="flex-1 text-sm truncate">${emp.full_name || '—'}</span>
+        <span class="text-indigo-300 text-sm font-bold">${(row.total_xp||0).toLocaleString()} XP</span>
+      </div>`;
+    }).join('');
+  } catch {}
+}
+
+// ============ LEADS ============
+let leadFilter = '';
+let agentLeadsPage = 1;
+const AGENT_LEADS_PER_PAGE = 20;
+
+$$('.filter-btn').forEach(btn => btn.addEventListener('click', () => {
+  leadFilter = btn.dataset.filter;
+  $$('.filter-btn').forEach(b => b.classList.remove('ring-2', 'ring-white'));
+  btn.classList.add('ring-2', 'ring-white');
+  agentLeadsPage = 1;
+  loadLeads();
+}));
+
+async function loadLeads(append = false) {
+  const qs = new URLSearchParams({ per_page: String(AGENT_LEADS_PER_PAGE), page: String(agentLeadsPage) });
+  if (leadFilter) qs.set('status', leadFilter);
+  try {
+    const leads = (await api('/api/leads?' + qs.toString())).leads || [];
+    const html = leads.map(l => `
+      <div class="card rounded-xl p-3 flex items-center gap-3 cursor-pointer active:scale-[.98]"
+           onclick="openLead('${l.id}')">
+        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center font-bold">
+          ${(l.name || '?').charAt(0)}
+        </div>
+        <div class="flex-1 min-w-0">
+          <div class="font-semibold truncate">${l.name || 'مجهول'}</div>
+          <div class="text-xs text-slate-400 font-mono">${l.phone}</div>
+        </div>
+        <span class="chip status-${l.status}">${STATUS_LABELS[l.status] || l.status}</span>
+      </div>`).join('');
+
+    if (append) {
+      $('#leads-list').insertAdjacentHTML('beforeend', html);
+    } else {
+      $('#leads-list').innerHTML = leads.length ? html : '<div class="text-slate-1000/40 text-center py-8">مفيش ليدز في القسم ده</div>';
+    }
+
+    // Show/hide load more
+    const btn = document.getElementById('leads-load-more');
+    if (leads.length === AGENT_LEADS_PER_PAGE) {
+      btn.classList.remove('hidden');
+    } else {
+      btn.classList.add('hidden');
+    }
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+function loadMoreLeads() {
+  agentLeadsPage++;
+  loadLeads(true);
+}
+
+async function openLead(id) {
+  try {
+    const data = await api('/api/leads/' + id);
+    currentLead = data.lead || data;
+    const actions = data.actions || [];
+    const msgs = data.messages || [];
+    renderLeadDetail(currentLead, actions, msgs);
+    show('detail');
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+function renderLeadDetail(lead, actions, messages) {
+  $('#lead-detail').innerHTML = `
+    <div class="card rounded-xl p-4 mb-3">
+      <div class="flex items-center justify-between mb-2">
+        <div>
+          <div class="text-xl font-bold">${lead.name || 'مجهول'}</div>
+          <a href="tel:${lead.phone}" class="text-sm text-indigo-400 font-mono">${lead.phone}</a>
+        </div>
+        <span class="chip status-${lead.status}">${STATUS_LABELS[lead.status] || lead.status}</span>
+      </div>
+      ${lead.projects?.name ? `<div class="text-xs text-slate-400">الحملة: ${lead.projects.name}</div>` : ''}
+
+      <div class="grid grid-cols-4 gap-2 mt-4">
+        <a href="https://wa.me/${lead.phone?.replace(/\\D/g,'')}" target="_blank"
+           class="rounded-lg py-2 text-center text-sm border border-green-500/30 text-green-400 hover:bg-green-500/10 transition-all"
+           onclick="logAction('whatsapp')">💬 واتس</a>
+        <a href="tel:${lead.phone}"
+           class="rounded-lg py-2 text-center text-sm border border-crm-accent/30 text-crm-accent hover:bg-crm-accent/10 transition-all"
+           onclick="logCall()">📞 اتصال</a>
+        <button onclick="bookMeeting()" class="rounded-lg py-2 text-sm border border-purple-500/30 text-purple-400 hover:bg-purple-500/10 transition-all">📅 ميتنج</button>
+        <button onclick="closeDealPrompt()" class="rounded-lg py-2 text-sm border border-crm-primary/40 text-crm-primary hover:bg-crm-primary/10 transition-all font-bold shadow-soft">🏆 صفقة</button>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 mt-2">
+        <button onclick="changeStatus()" class="bg-crm-surface border border-crm-primary/10 rounded-lg py-2 text-sm text-slate-300 hover:border-crm-primary/30 transition-all">🔄 تغيير حالة</button>
+        <button onclick="addNotePrompt()" class="bg-crm-surface border border-crm-primary/10 rounded-lg py-2 text-sm text-slate-300 hover:border-crm-primary/30 transition-all">📝 ملاحظة</button>
+      </div>
+    </div>
+
+    <div class="card rounded-xl p-4 mb-3">
+      <div class="flex items-center justify-between mb-2">
+        <h3 class="font-bold text-sm">🤖 AI Hint</h3>
+        <button onclick="getAiHint()" class="text-xs bg-indigo-600 px-3 py-1 rounded">طلب نصيحة</button>
+      </div>
+      <div id="ai-hint-box" class="text-sm text-slate-400">اضغط "طلب نصيحة" للحصول على اقتراح من الـ AI.</div>
+    </div>
+
+    <div class="card rounded-xl p-4 mb-3">
+      <h3 class="font-bold text-sm mb-2 flex items-center gap-2">💬 محادثة واتساب <span id="chat-live-dot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span></h3>
+      <div id="chat-messages" class="space-y-1 max-h-60 overflow-y-auto scroll-smooth" style="scrollbar-width:thin;">
+        ${messages.length ? messages.map(m => `
+          <div class="text-xs p-2 rounded ${m.direction === 'inbound' ? 'bg-crm-surface border-l-2 border-green-500/50' : 'bg-crm-primary/10 border-r-2 border-blue-500/50'}">
+            <div class="text-slate-400 text-[10px] mb-1">${m.direction === 'inbound' ? '📩 من العميل' : '📤 مبعوت'} · ${new Date(m.created_at).toLocaleString('ar-EG')}</div>
+            ${esc(m.message_text || '—')}
+          </div>`).join('') : '<div class="text-slate-500 text-xs text-center py-2">لسه مفيش رسايل</div>'}
+      </div>
+      <div class="mt-2 flex gap-2">
+        <input id="wa-reply-input" type="text" placeholder="اكتب رد للعميل..."
+          class="flex-1 bg-crm-surface border border-crm-primary/20 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:border-green-500/50 focus:outline-none transition-all"
+          onkeydown="if(event.key==='Enter')sendWaReply()">
+        <button onclick="sendWaReply()" class="bg-green-600 hover:bg-green-500 text-white rounded-lg px-4 py-2 text-sm font-bold transition-all shadow-lg hover:shadow-green-500/25 flex items-center gap-1">
+          📤 ارسل
+        </button>
+      </div>
+    </div>
+
+    <div class="card rounded-xl p-4">
+      <h3 class="font-bold text-sm mb-2">📜 السجل</h3>
+      <div class="space-y-1 max-h-40 overflow-y-auto">
+        ${actions.length ? actions.map(a => `
+          <div class="text-xs flex justify-between p-1.5">
+            <span>${a.action}</span>
+            <span class="text-slate-1000/40">${new Date(a.created_at).toLocaleString('ar-EG')}</span>
+          </div>`).join('') : '<div class="text-slate-1000/40 text-xs">مفيش أكشنز</div>'}
+      </div>
+    </div>
+  `;
+}
+
+async function logAction(kind) {
+  if (!currentLead) return;
+  if (kind === 'whatsapp') {
+    try {
+      const res = await api('/api/actions/whatsapp', { method: 'POST', body: { lead_id: currentLead.id, message: '(sent from mobile)' } });
+      xpReward(res.xp);
+    } catch (err) { toast(err.message, 'error'); }
+  }
+}
+
+async function logCall() {
+  if (!currentLead) return;
+  const outcome = prompt('نتيجة المكالمة: answered / no_answer / voicemail', 'answered');
+  if (!outcome) return;
+  try {
+    const res = await api('/api/actions/call', { method: 'POST', body: {
+      lead_id: currentLead.id, outcome, duration_seconds: 0,
+    }});
+    toast(`+${res.xp_earned} XP`, 'xp');
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function bookMeeting() {
+  if (!currentLead) return;
+  const when = prompt('ميعاد الميتنج (YYYY-MM-DD HH:MM)', '');
+  if (!when) return;
+  try {
+    const res = await api('/api/actions/meeting', { method: 'POST', body: {
+      lead_id: currentLead.id, meeting_at: when,
+    }});
+    xpReward({ xp_added: res.xp_earned, coins_added: res.coins_earned, leveled_up: res.level_up });
+    openLead(currentLead.id);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function closeDealPrompt() {
+  if (!currentLead) return;
+  const val = parseFloat(prompt('قيمة الصفقة:', '100000'));
+  if (!val) return;
+  try {
+    const res = await api('/api/actions/close-deal', { method: 'POST', body: {
+      lead_id: currentLead.id, deal_value: val,
+    }});
+    FX.deal();  // big confetti + fanfare + long haptic
+    xpReward({ xp_added: res.xp_earned, coins_added: res.coins_earned, leveled_up: res.leveled_up });
+    openLead(currentLead.id);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function changeStatus() {
+  const next = prompt('الحالة الجديدة: new/contacted/interested/meeting_set/negotiation/closed_won/closed_lost', currentLead.status);
+  if (!next || next === currentLead.status) return;
+  try {
+    await api(`/api/leads/${currentLead.id}/status`, { method: 'PATCH', body: { status: next } });
+    toast('✅ اتحدث');
+    openLead(currentLead.id);
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function addNotePrompt() {
+  const txt = prompt('اكتب الملاحظة:');
+  if (!txt) return;
+  try {
+    await api(`/api/leads/${currentLead.id}/notes`, { method: 'POST', body: { note_text: txt } });
+    toast('✅ اتضافت (+5 XP)', 'xp');
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function getAiHint() {
+  $('#ai-hint-box').innerHTML = '<span class="text-slate-1000/40">⏳ جاري التحليل…</span>';
+  try {
+    const res = await api('/api/ai/hint', { method: 'POST', body: { lead_id: currentLead.id } });
+    const h = res.hint || res;
+    $('#ai-hint-box').innerHTML = `
+      <div class="space-y-1">
+        <div><b>💡 اقتراح:</b> ${h.suggestion || '—'}</div>
+        <div class="text-xs text-slate-400">Score: ${h.lead_score ?? '—'} · Mood: ${h.sentiment || '—'} · ${h.recommended_action || ''}</div>
+      </div>`;
+  } catch (err) { $('#ai-hint-box').innerHTML = `<span class="text-crm-danger">${err.message}</span>`; }
+}
+
+// ============ LEADERBOARD ============
+$('#lb-period').addEventListener('change', loadLeaderboard);
+async function loadLeaderboard() {
+  const period = $('#lb-period').value;
+  try {
+    const lb = (await api('/api/leaderboard?period=' + period)).leaderboard || [];
+    $('#leaderboard-list').innerHTML = lb.length ? lb.map((row, i) => {
+      const emp = row.employees || {};
+      const isMe = row.employee_id === me.id;
+      return `<div class="card rounded-xl p-3 flex items-center gap-3 ${isMe ? 'border-crm-primary/50 shadow-soft' : ''}">
+        <div class="text-xl w-8 text-center font-heading">${['🥇','🥈','🥉'][i] || `#${i+1}`}</div>
+        <div class="flex-1">
+          <div class="font-semibold text-sm ${isMe ? 'text-crm-primary' : ''}">${emp.full_name || '—'}${isMe ? ' (أنت)' : ''}</div>
+          <div class="text-[10px] text-slate-400">Lv ${emp.level||1} · ${row.deals_closed||0} صفقة</div>
+        </div>
+        <div class="text-crm-primary text-sm font-bold font-heading">${(row.total_xp||0).toLocaleString()}</div>
+      </div>`;
+    }).join('') : '<div class="text-slate-1000/40 text-center py-6">لسه مفيش داتا</div>';
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+// ============ STORE ============
+async function loadStore() {
+  try {
+    const data = await api('/api/store');
+    $('#store-list').innerHTML = (data.items || []).map(it => `
+      <div class="card rounded-xl p-3 text-center ${!it.can_buy ? 'opacity-40' : 'border-crm-primary/15'}">
+        <div class="text-3xl mb-1" style="${it.can_buy ? 'filter: drop-shadow(0 0 8px rgba(59,130,246,0.4))' : ''}">${it.icon || '🎁'}</div>
+        <div class="font-semibold text-sm text-slate-100">${it.name}</div>
+        <div class="text-xs text-slate-400 mb-2">${it.description || ''}</div>
+        <div class="text-crm-primary text-sm font-bold mb-2 font-heading">🪙 ${it.coin_price}</div>
+        <button onclick="buyItem('${it.id}')" ${!it.can_buy ? 'disabled' : ''}
+                class="w-full ${it.can_buy ? 'bg-gradient-to-r from-crm-primary/80 to-crm-accent text-crm-bg font-bold shadow-soft' : 'bg-crm-surface text-slate-500 border border-slate-700'} rounded py-1.5 text-xs transition-all">
+          ${it.can_buy ? 'شراء' : (it.level_met ? 'كوينز قليلة' : 'Level ' + it.level_required)}
+        </button>
+      </div>`).join('');
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+async function buyItem(id) {
+  try {
+    const res = await api('/api/store/buy', { method: 'POST', body: { item_id: id } });
+    if (res.error) return toast(res.error, 'error');
+    FX.coinSfx(); FX.vibrate(20); FX.confettiBurst(30, { small: true });
+    toast('✅ اتشرى!', 'xp');
+    loadStore();
+    api('/api/me').then(r => { me = r.employee || r; renderMe(); });
+  } catch (err) { toast(err.message, 'error'); }
+}
+
+// ============ WHATSAPP INBOX ============
+
+const unreadMessages = []; // { lead_id, lead_name, phone, message_text, created_at }
+const WA_MSG_SOUND = 'data:audio/wav;base64,UklGRl9vT19teleXQVZFZm10IBIAAAABAAEARKwAAIhYAQACABAAZGF0YQ';
+
+// Stronger WhatsApp notification sound (longer beep)
+function playWaSound() {
+  try {
+    const muteBtn = document.getElementById('mute-btn');
+    if (muteBtn && muteBtn.textContent.trim() === '🔇') return;
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    // Double beep like WhatsApp
+    [0, 0.15].forEach(offset => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = 880;
+      gain.gain.setValueAtTime(0.4, ctx.currentTime + offset);
+      gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + offset + 0.12);
+      osc.start(ctx.currentTime + offset);
+      osc.stop(ctx.currentTime + offset + 0.12);
+    });
+  } catch(e) {}
+}
+
+function addInboxMessage(msg) {
+  // Add to unread list (max 30)
+  unreadMessages.unshift(msg);
+  if (unreadMessages.length > 30) unreadMessages.length = 30;
+  renderInbox();
+
+  // Play sound + push notification
+  playWaSound();
+  pushNotification(
+    `📩 رسالة من ${msg.lead_name || msg.phone || 'عميل'}`,
+    msg.message_text?.substring(0, 80) || 'رسالة جديدة',
+    'high'
+  );
+
+  // Vibrate if supported
+  if (navigator.vibrate) navigator.vibrate([200, 100, 200]);
+
+  // If lead detail is open for this lead, refresh chat
+  if (currentLead && currentLead.id === msg.lead_id) {
+    appendChatMessage(msg, 'inbound');
+  }
+}
+
+function renderInbox() {
+  const list = document.getElementById('wa-inbox-list');
+  const badge = document.getElementById('wa-inbox-badge');
+  if (!list) return;
+
+  if (unreadMessages.length === 0) {
+    list.innerHTML = '<div class="text-slate-500 text-xs text-center py-3">لا يوجد رسائل جديدة</div>';
+    if (badge) badge.classList.add('hidden');
+    return;
+  }
+
+  if (badge) {
+    badge.textContent = unreadMessages.length;
+    badge.classList.remove('hidden');
+  }
+
+  list.innerHTML = unreadMessages.slice(0, 10).map(m => `
+    <div onclick="openLeadFromInbox('${m.lead_id}')" class="card rounded-lg p-3 cursor-pointer border border-green-500/20 hover:border-green-500/50 transition-all group">
+      <div class="flex items-start gap-3">
+        <div class="text-2xl">📩</div>
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-sm text-green-400 group-hover:text-green-300">${esc(m.lead_name || m.phone || 'عميل')}</span>
+            <span class="text-[10px] text-slate-500">${getTimeAgo(new Date(m.created_at))}</span>
+          </div>
+          <div class="text-xs text-slate-300 truncate mt-0.5">${esc(m.message_text || '...')}</div>
+          <div class="text-[10px] text-slate-500 mt-1">${m.phone || ''}</div>
+        </div>
+        <div class="w-2.5 h-2.5 rounded-full bg-green-500 animate-pulse flex-shrink-0 mt-1.5"></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function openLeadFromInbox(leadId) {
+  // Remove from unread
+  const idx = unreadMessages.findIndex(m => m.lead_id === leadId);
+  if (idx !== -1) unreadMessages.splice(idx, 1);
+  renderInbox();
+  // Open the lead
+  await openLead(leadId);
+}
+
+function appendChatMessage(msg, direction) {
+  const chatEl = document.getElementById('chat-messages');
+  if (!chatEl) return;
+  // Remove "no messages" placeholder if exists
+  const empty = chatEl.querySelector('.text-center');
+  if (empty) empty.remove();
+  const div = document.createElement('div');
+  div.className = `text-xs p-2 rounded ${direction === 'inbound' ? 'bg-crm-surface border-l-2 border-green-500/50' : 'bg-crm-primary/10 border-r-2 border-blue-500/50'} slide`;
+  div.innerHTML = `<div class="text-slate-400 text-[10px] mb-1">${direction === 'inbound' ? '📩 من العميل' : '📤 مبعوت'} · ${new Date(msg.created_at || Date.now()).toLocaleString('ar-EG')}</div>${esc(msg.message_text || '—')}`;
+  chatEl.appendChild(div);
+  chatEl.scrollTop = chatEl.scrollHeight;
+}
+
+async function sendWaReply() {
+  if (!currentLead) return;
+  const input = document.getElementById('wa-reply-input');
+  if (!input) return;
+  const text = input.value.trim();
+  if (!text) return;
+  input.disabled = true;
+  try {
+    await api('/api/actions/whatsapp', { method: 'POST', body: {
+      lead_id: currentLead.id,
+      message: text
+    }});
+    appendChatMessage({ message_text: text, created_at: new Date().toISOString() }, 'outbound');
+    input.value = '';
+    toast('تم الإرسال ✅', 'ok');
+  } catch (err) {
+    toast('فشل الإرسال: ' + err.message, 'error');
+  }
+  input.disabled = false;
+  input.focus();
+}
+
+async function loadRecentInbox() {
+  try {
+    const data = await api('/api/leads?status=all&limit=50');
+    const leads = data.leads || data || [];
+    // We'll check which leads have recent inbound messages via a simple approach
+    // The realtime subscription will handle new ones going forward
+  } catch(e) {}
+}
+
+// ============ REALTIME ============
+
+// --- Notification state & helpers ---
+const notifications = [];
+const NOTIF_BEEP_URI = 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1sbmx0e4GHjIyKiIaEgX55dXBsa2ptcHR5f4WIi4uKiIWCf3t2';
+
+function playNotifSound() {
+  try {
+    const muteBtn = document.getElementById('mute-btn');
+    if (muteBtn && muteBtn.textContent.trim() === '🔇') return;
+    const a = new Audio(NOTIF_BEEP_URI);
+    a.volume = 0.3;
+    a.play().catch(() => {});
+  } catch (e) { /* ignore audio errors */ }
+}
+
+function pushNotification(title, body, priority) {
+  const notif = { id: Date.now(), title, body, priority, time: new Date(), read: false };
+  notifications.unshift(notif);
+  if (notifications.length > 50) notifications.length = 50;
+  renderNotifications();
+  if (priority === 'high') {
+    playNotifSound();
+    showBrowserNotification(title, body);
+  }
+}
+
+function renderNotifications() {
+  const list = document.getElementById('notif-list');
+  const badge = document.getElementById('notif-badge');
+  const unread = notifications.filter(n => !n.read).length;
+  if (unread > 0) {
+    badge.textContent = unread > 99 ? '99+' : unread;
+    badge.classList.remove('hidden');
+  } else {
+    badge.classList.add('hidden');
+  }
+  if (!list) return;
+  if (notifications.length === 0) {
+    list.innerHTML = '<div class="px-3 py-4 text-center text-slate-500 text-xs">لا يوجد إشعارات</div>';
+    return;
+  }
+  list.innerHTML = notifications.map(n => {
+    const ago = getTimeAgo(n.time);
+    const dot = n.read ? '' : '<span class="w-2 h-2 rounded-full bg-crm-primary flex-shrink-0"></span>';
+    const pColor = n.priority === 'high' ? 'border-l-crm-danger' : 'border-l-crm-primary/30';
+    return `<div class="px-3 py-2 flex items-start gap-2 border-l-2 ${pColor} hover:bg-crm-primary/5 cursor-pointer" onclick="markNotifRead(${n.id})">
+      ${dot}
+      <div class="flex-1 min-w-0">
+        <div class="text-xs font-semibold text-slate-200 truncate">${esc(n.title)}</div>
+        <div class="text-[10px] text-slate-400 truncate">${esc(n.body)}</div>
+        <div class="text-[9px] text-slate-500 mt-0.5">${ago}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function getTimeAgo(date) {
+  const s = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (s < 60) return 'الآن';
+  if (s < 3600) return Math.floor(s / 60) + ' د';
+  if (s < 86400) return Math.floor(s / 3600) + ' س';
+  return Math.floor(s / 86400) + ' ي';
+}
+
+function esc(str) {
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+function markNotifRead(id) {
+  const n = notifications.find(x => x.id === id);
+  if (n) n.read = true;
+  renderNotifications();
+}
+
+function toggleNotifPanel() {
+  const panel = document.getElementById('notif-panel');
+  panel.classList.toggle('hidden');
+  // Close when clicking outside
+  if (!panel.classList.contains('hidden')) {
+    setTimeout(() => {
+      const closer = (e) => {
+        if (!panel.contains(e.target) && e.target.id !== 'notif-bell' && !e.target.closest('#notif-bell')) {
+          panel.classList.add('hidden');
+          document.removeEventListener('click', closer);
+        }
+      };
+      document.addEventListener('click', closer);
+    }, 10);
+  }
+}
+
+function clearNotifications() {
+  notifications.length = 0;
+  renderNotifications();
+}
+
+// --- Browser Notification API ---
+function requestNotifPermission() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission().catch(() => {});
+  }
+}
+
+function showBrowserNotification(title, body) {
+  if ('Notification' in window && Notification.permission === 'granted') {
+    try {
+      new Notification(title, { body, icon: '/static/icon-192.png', tag: 'crm-' + Date.now() });
+    } catch (e) { /* ignore */ }
+  }
+}
+
+// --- Enhanced Realtime Subscriptions ---
+function subscribeEvents() {
+  try {
+    // Request browser notification permission
+    requestNotifPermission();
+
+    // Channel 1: Activity feed (deals, level ups, badges)
+    supabase.channel('agent-activity')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'activity_feed' },
+        (p) => {
+          const ev = p.new;
+          if (!ev) return;
+          const isMe = ev.employee_id === me.id;
+          if (ev.event_type === 'deal_closed' && !isMe) {
+            toast(`🎉 ${ev.title}`);
+            pushNotification('صفقة جديدة!', ev.title || 'زميلك قفل صفقة', 'high');
+          }
+          if (ev.event_type === 'level_up') {
+            const msg = isMe ? `🎊 مبروك! وصلت مستوى جديد!` : `⬆️ ${ev.title}`;
+            toast(msg, 'xp');
+            pushNotification(isMe ? 'مبروك! مستوى جديد' : 'مستوى جديد', ev.title || '', isMe ? 'high' : 'low');
+          }
+          if (ev.event_type === 'badge_earned' && !isMe) {
+            toast(`🏅 ${ev.title}`);
+            pushNotification('شارة جديدة!', ev.title || '', 'low');
+          }
+        })
+      .subscribe();
+
+    // Channel 2: Lead assignments (leads updated where assigned_to = me)
+    supabase.channel('agent-leads')
+      .on('postgres_changes', {
+        event: 'UPDATE', schema: 'public', table: 'leads',
+        filter: `assigned_to=eq.${me.id}`
+      },
+        (p) => {
+          const lead = p.new;
+          if (!lead) return;
+          const old = p.old;
+          // Notify when lead is newly assigned or reassigned to this agent
+          if (old && old.assigned_to !== me.id) {
+            toast(`📋 تم تعيين ليد جديد لك: ${lead.name || lead.phone || ''}`, 'ok');
+            pushNotification('ليد جديد!', `تم تعيين ${lead.name || lead.phone || 'ليد'} لك`, 'high');
+          }
+        })
+      .subscribe();
+
+    // Channel 3: Quest completion
+    supabase.channel('agent-quests')
+      .on('postgres_changes', {
+        event: 'UPDATE', schema: 'public', table: 'quests',
+        filter: `employee_id=eq.${me.id}`
+      },
+        (p) => {
+          const q = p.new;
+          if (!q) return;
+          if (q.status === 'completed' && p.old && p.old.status !== 'completed') {
+            toast(`🏆 مهمة مكتملة: ${q.title || ''}`, 'xp');
+            pushNotification('مهمة مكتملة!', q.title || 'أكملت مهمة بنجاح', 'high');
+          }
+        })
+      .subscribe();
+
+    // Channel 4: Power Hours (affects everyone)
+    supabase.channel('agent-power-hours')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'power_hours' },
+        (p) => {
+          const ph = p.new;
+          if (!ph) return;
+          const mult = ph.multiplier || 2;
+          toast(`⚡ ساعة القوة بدأت! x${mult} XP`, 'xp');
+          pushNotification('ساعة القوة!', `x${mult} XP لفترة محدودة - يلا!`, 'high');
+        })
+      .subscribe();
+
+    // Channel 5: Hot Lead Events
+    supabase.channel('agent-hot-leads')
+      .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'hot_lead_events' },
+        (p) => {
+          const hl = p.new;
+          if (!hl) return;
+          toast(`🔥 ليد ساخن ظهر! سارع للحصول عليه`, 'xp');
+          pushNotification('ليد ساخن!', 'ليد ساخن ظهر - اللي يوصل الأول يكسب!', 'high');
+        })
+      .subscribe();
+
+    // Channel 6: WhatsApp Incoming Messages (CRITICAL for CRM)
+    supabase.channel('agent-whatsapp')
+      .on('postgres_changes', {
+        event: 'INSERT', schema: 'public', table: 'whatsapp_messages',
+        filter: 'direction=eq.inbound'
+      },
+        async (p) => {
+          const msg = p.new;
+          if (!msg) return;
+          // Try to find lead info
+          let leadName = '';
+          let phone = msg.from_number || msg.wa_id || '';
+          let leadId = msg.lead_id || '';
+          if (leadId) {
+            try {
+              const ld = await api('/api/leads/' + leadId);
+              const lead = ld.lead || ld;
+              leadName = lead.name || '';
+              phone = lead.phone || phone;
+              // Only notify if lead belongs to this agent
+              if (lead.assigned_to && lead.assigned_to !== me.id) return;
+            } catch(e) {}
+          }
+          addInboxMessage({
+            lead_id: leadId,
+            lead_name: leadName,
+            phone: phone,
+            message_text: msg.message_text || msg.body || '',
+            created_at: msg.created_at || new Date().toISOString()
+          });
+        })
+      .subscribe();
+
+  } catch (err) { console.warn('Realtime subscription error:', err); }
+}
+
+boot();
+</script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+[build]
+builder = "NIXPACKS"
+
+[deploy]
+startCommand = "gunicorn -w 4 -k gthread --threads 8 -b 0.0.0.0:$PORT --access-logfile - --error-logfile - app:app"
+healthcheckPath = "/api/config"
+healthcheckTimeout = 5
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 3

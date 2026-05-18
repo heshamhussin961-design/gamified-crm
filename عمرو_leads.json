@@ -1,0 +1,5420 @@
+[
+  {
+    "phone": "521537005",
+    "phone_clean": "521537005",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "561908190",
+    "phone_clean": "561908190",
+    "name": null,
+    "country_code": "+971",
+    "project": null,
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919871886712",
+    "phone_clean": "919871886712",
+    "name": null,
+    "country_code": "+91",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508050575",
+    "phone_clean": "508050575",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "553419060",
+    "phone_clean": "553419060",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506271571",
+    "phone_clean": "506271571",
+    "name": null,
+    "country_code": "+971",
+    "project": "Silicon Oasis",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562474429",
+    "phone_clean": "562474429",
+    "name": null,
+    "country_code": "+971",
+    "project": null,
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919904215452",
+    "phone_clean": "919904215452",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555804726",
+    "phone_clean": "555804726",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505792713",
+    "phone_clean": "505792713",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "32476765918",
+    "phone_clean": "32476765918",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "568561718",
+    "phone_clean": "568561718",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503211994",
+    "phone_clean": "503211994",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "528780173",
+    "phone_clean": "528780173",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552263554",
+    "phone_clean": "552263554",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507777091",
+    "phone_clean": "507777091",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "569887776",
+    "phone_clean": "569887776",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508287212",
+    "phone_clean": "508287212",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502923008",
+    "phone_clean": "502923008",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501125272",
+    "phone_clean": "501125272",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "545515355",
+    "phone_clean": "545515355",
+    "name": "Fatma",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "567724279",
+    "phone_clean": "567724279",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "918895977339",
+    "phone_clean": "918895977339",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919944265996",
+    "phone_clean": "919944265996",
+    "name": null,
+    "country_code": "+91",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919322589555",
+    "phone_clean": "919322589555",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "16262031182",
+    "phone_clean": "16262031182",
+    "name": "Janani",
+    "country_code": "+1",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "918072727645",
+    "phone_clean": "918072727645",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919502076876",
+    "phone_clean": "919502076876",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "989131120351////505314051",
+    "phone_clean": "989131120351",
+    "name": null,
+    "country_code": "+98",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585882258",
+    "phone_clean": "585882258",
+    "name": "Sanam",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "381637673081",
+    "phone_clean": "381637673081",
+    "name": null,
+    "country_code": "+381",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "966538677765",
+    "phone_clean": "966538677765",
+    "name": "Sara",
+    "country_code": "+966",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "561196633",
+    "phone_clean": "561196633",
+    "name": "Badrya",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506148847",
+    "phone_clean": "506148847",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506001313",
+    "phone_clean": "506001313",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "521729233",
+    "phone_clean": "521729233",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "27832006958",
+    "phone_clean": "27832006958",
+    "name": null,
+    "country_code": "+27",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585910581",
+    "phone_clean": "585910581",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506969924",
+    "phone_clean": "506969924",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919987000840",
+    "phone_clean": "919987000840",
+    "name": null,
+    "country_code": "+91",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504727157",
+    "phone_clean": "504727157",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "566470360",
+    "phone_clean": "566470360",
+    "name": "Sammer",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502664200",
+    "phone_clean": "502664200",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919840473979",
+    "phone_clean": "919840473979",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "918591080055",
+    "phone_clean": "918591080055",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "917894473968",
+    "phone_clean": "917894473968",
+    "name": "Abharti",
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505520600",
+    "phone_clean": "505520600",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551362049",
+    "phone_clean": "551362049",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "917304099474",
+    "phone_clean": "917304099474",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507694600",
+    "phone_clean": "507694600",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "558893800",
+    "phone_clean": "558893800",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "918867600651",
+    "phone_clean": "918867600651",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "918000009961",
+    "phone_clean": "918000009961",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503676743",
+    "phone_clean": "503676743",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551122150",
+    "phone_clean": "551122150",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507622656",
+    "phone_clean": "507622656",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555885833",
+    "phone_clean": "555885833",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919112393858",
+    "phone_clean": "919112393858",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "523586274",
+    "phone_clean": "523586274",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554316878",
+    "phone_clean": "554316878",
+    "name": "Khaled",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919706917604",
+    "phone_clean": "919706917604",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562471539",
+    "phone_clean": "562471539",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "529502068",
+    "phone_clean": "529502068",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "556703433",
+    "phone_clean": "556703433",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585058730",
+    "phone_clean": "585058730",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "966542376538",
+    "phone_clean": "966542376538",
+    "name": null,
+    "country_code": "+966",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "557238757",
+    "phone_clean": "557238757",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503507033",
+    "phone_clean": "503507033",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919914869647",
+    "phone_clean": "919914869647",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507466355",
+    "phone_clean": "507466355",
+    "name": null,
+    "country_code": "+971",
+    "project": "Silicon Oasis",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "918867307943",
+    "phone_clean": "918867307943",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919346327800",
+    "phone_clean": "919346327800",
+    "name": null,
+    "country_code": "+91",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505272255",
+    "phone_clean": "505272255",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "916379164297",
+    "phone_clean": "916379164297",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503714444",
+    "phone_clean": "503714444",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501449114",
+    "phone_clean": "501449114",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919789934567",
+    "phone_clean": "919789934567",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "16174833317",
+    "phone_clean": "16174833317",
+    "name": null,
+    "country_code": "+1",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585820898",
+    "phone_clean": "585820898",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "553290199",
+    "phone_clean": "553290199",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "97431569210",
+    "phone_clean": "97431569210",
+    "name": null,
+    "country_code": "+974",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919220200200",
+    "phone_clean": "919220200200",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "917309504131",
+    "phone_clean": "917309504131",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504793002",
+    "phone_clean": "504793002",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506086000",
+    "phone_clean": "506086000",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "6580739707",
+    "phone_clean": "6580739707",
+    "name": "Marcus",
+    "country_code": null,
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "918192991499",
+    "phone_clean": "918192991499",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "543426353",
+    "phone_clean": "543426353",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506509070",
+    "phone_clean": "506509070",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507705700",
+    "phone_clean": "507705700",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555156969",
+    "phone_clean": "555156969",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919704081213",
+    "phone_clean": "919704081213",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "917416477426",
+    "phone_clean": "917416477426",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "447925632478",
+    "phone_clean": "447925632478",
+    "name": null,
+    "country_code": "+44",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "588567584",
+    "phone_clean": "588567584",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "917977467989",
+    "phone_clean": "917977467989",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "923332659465",
+    "phone_clean": "923332659465",
+    "name": null,
+    "country_code": null,
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "543635666",
+    "phone_clean": "543635666",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "559564309",
+    "phone_clean": "559564309",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555496163",
+    "phone_clean": "555496163",
+    "name": "Ebtisam",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "5642110001",
+    "phone_clean": "5642110001",
+    "name": null,
+    "country_code": null,
+    "project": "Samana Offices",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "966562540405",
+    "phone_clean": "966562540405",
+    "name": null,
+    "country_code": "+966",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "527557440",
+    "phone_clean": "527557440",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana Offices",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "917738911682",
+    "phone_clean": "917738911682",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "557830735",
+    "phone_clean": "557830735",
+    "name": "Rasha",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "586421786",
+    "phone_clean": "586421786",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "918208394497",
+    "phone_clean": "918208394497",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919657012302",
+    "phone_clean": "919657012302",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509216345",
+    "phone_clean": "509216345",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551440591",
+    "phone_clean": "551440591",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919676177816",
+    "phone_clean": "919676177816",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "97450535404",
+    "phone_clean": "97450535404",
+    "name": null,
+    "country_code": "+974",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "97142899523",
+    "phone_clean": "97142899523",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "565645433",
+    "phone_clean": "565645433",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana Offices",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919425942935",
+    "phone_clean": "919425942935",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "567655330",
+    "phone_clean": "567655330",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "589467465",
+    "phone_clean": "589467465",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "566911000",
+    "phone_clean": "566911000",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585166010",
+    "phone_clean": "585166010",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502917774",
+    "phone_clean": "502917774",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503108050",
+    "phone_clean": "503108050",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503273050",
+    "phone_clean": "503273050",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508553059",
+    "phone_clean": "508553059",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "91948573379",
+    "phone_clean": "91948573379",
+    "name": null,
+    "country_code": null,
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507976988",
+    "phone_clean": "507976988",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551272252",
+    "phone_clean": "551272252",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919673047572",
+    "phone_clean": "919673047572",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503674987",
+    "phone_clean": "503674987",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "966556004744",
+    "phone_clean": "966556004744",
+    "name": null,
+    "country_code": "+966",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "9198290147316",
+    "phone_clean": "9198290147316",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503060577",
+    "phone_clean": "503060577",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "544541600",
+    "phone_clean": "544541600",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana Offices",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555538861",
+    "phone_clean": "555538861",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "522284204",
+    "phone_clean": "522284204",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504274898",
+    "phone_clean": "504274898",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506159636",
+    "phone_clean": "506159636",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana Offices",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501001077",
+    "phone_clean": "501001077",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "522548686",
+    "phone_clean": "522548686",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana Offices",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508676367",
+    "phone_clean": "508676367",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505479048",
+    "phone_clean": "505479048",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585166008",
+    "phone_clean": "585166008",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "559950140",
+    "phone_clean": "559950140",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504275729",
+    "phone_clean": "504275729",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "521419550",
+    "phone_clean": "521419550",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "559712000",
+    "phone_clean": "559712000",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "545714207",
+    "phone_clean": "545714207",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "564542184",
+    "phone_clean": "564542184",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503552344",
+    "phone_clean": "503552344",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "589577201",
+    "phone_clean": "589577201",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506417775",
+    "phone_clean": "506417775",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585628599",
+    "phone_clean": "585628599",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505826553",
+    "phone_clean": "505826553",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504134403",
+    "phone_clean": "504134403",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501047948",
+    "phone_clean": "501047948",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "553376223",
+    "phone_clean": "553376223",
+    "name": null,
+    "country_code": "+971",
+    "project": "Taormina",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "565533443",
+    "phone_clean": "565533443",
+    "name": "Saad",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509070036",
+    "phone_clean": "509070036",
+    "name": "Mohammed Ahmed",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505380106",
+    "phone_clean": "505380106",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507594497",
+    "phone_clean": "507594497",
+    "name": null,
+    "country_code": "+971",
+    "project": null,
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508736233",
+    "phone_clean": "508736233",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562829994",
+    "phone_clean": "562829994",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "588870214",
+    "phone_clean": "588870214",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "522535288",
+    "phone_clean": "522535288",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "249100209200",
+    "phone_clean": "249100209200",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "547528056",
+    "phone_clean": "547528056",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "522045335",
+    "phone_clean": "522045335",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562390938",
+    "phone_clean": "562390938",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "565483090",
+    "phone_clean": "565483090",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "556718589",
+    "phone_clean": "556718589",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "524977748",
+    "phone_clean": "524977748",
+    "name": null,
+    "country_code": "+971",
+    "project": null,
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509883127",
+    "phone_clean": "509883127",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "524969126",
+    "phone_clean": "524969126",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "522621099",
+    "phone_clean": "522621099",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "557878710",
+    "phone_clean": "557878710",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501737199",
+    "phone_clean": "501737199",
+    "name": null,
+    "country_code": "+971",
+    "project": null,
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555511790",
+    "phone_clean": "555511790",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "563912559",
+    "phone_clean": "563912559",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "521053066",
+    "phone_clean": "521053066",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "547510897",
+    "phone_clean": "547510897",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "563809095",
+    "phone_clean": "563809095",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506110457",
+    "phone_clean": "506110457",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506294567",
+    "phone_clean": "506294567",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505760666",
+    "phone_clean": "505760666",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562452330",
+    "phone_clean": "562452330",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "543270527",
+    "phone_clean": "543270527",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501476336",
+    "phone_clean": "501476336",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "447707804238",
+    "phone_clean": "447707804238",
+    "name": null,
+    "country_code": "+44",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503893255",
+    "phone_clean": "503893255",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554400399",
+    "phone_clean": "554400399",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555984253",
+    "phone_clean": "555984253",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "564333381",
+    "phone_clean": "564333381",
+    "name": "ام احمد",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506311688",
+    "phone_clean": "506311688",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "561708107",
+    "phone_clean": "561708107",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "565658691",
+    "phone_clean": "565658691",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "589027646",
+    "phone_clean": "589027646",
+    "name": "سعيد",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508206056",
+    "phone_clean": "508206056",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "545551134",
+    "phone_clean": "545551134",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "545111576",
+    "phone_clean": "545111576",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585896299",
+    "phone_clean": "585896299",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503827627",
+    "phone_clean": "503827627",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "544431658",
+    "phone_clean": "544431658",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508161138",
+    "phone_clean": "508161138",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502526326",
+    "phone_clean": "502526326",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502736690",
+    "phone_clean": "502736690",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "522396940",
+    "phone_clean": "522396940",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "549980532",
+    "phone_clean": "549980532",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "596649080",
+    "phone_clean": "596649080",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509910034",
+    "phone_clean": "509910034",
+    "name": "شهد",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554123354",
+    "phone_clean": "554123354",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "556696898",
+    "phone_clean": "556696898",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "380505146486",
+    "phone_clean": "380505146486",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "521422291",
+    "phone_clean": "521422291",
+    "name": "فاطمة",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508888722",
+    "phone_clean": "508888722",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555905735",
+    "phone_clean": "555905735",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "543353878",
+    "phone_clean": "543353878",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "989122771708",
+    "phone_clean": "989122771708",
+    "name": null,
+    "country_code": "+98",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504949165",
+    "phone_clean": "504949165",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552206161",
+    "phone_clean": "552206161",
+    "name": "مياس",
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554079415",
+    "phone_clean": "554079415",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "545775662",
+    "phone_clean": "545775662",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "568636360",
+    "phone_clean": "568636360",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "566860677",
+    "phone_clean": "566860677",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "558232001",
+    "phone_clean": "558232001",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562876278",
+    "phone_clean": "562876278",
+    "name": null,
+    "country_code": "+971",
+    "project": null,
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "527326552",
+    "phone_clean": "527326552",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "306942026813",
+    "phone_clean": "306942026813",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "568795665",
+    "phone_clean": "568795665",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505937601",
+    "phone_clean": "505937601",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "561888622",
+    "phone_clean": "561888622",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585746689",
+    "phone_clean": "585746689",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "14257539982",
+    "phone_clean": "14257539982",
+    "name": null,
+    "country_code": "+1",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "526143212",
+    "phone_clean": "526143212",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "563570028",
+    "phone_clean": "563570028",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "566528686",
+    "phone_clean": "566528686",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "447943722201",
+    "phone_clean": "447943722201",
+    "name": null,
+    "country_code": "+44",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "543444006",
+    "phone_clean": "543444006",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585856281",
+    "phone_clean": "585856281",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "597351552",
+    "phone_clean": "597351552",
+    "name": "Aamir",
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554841204",
+    "phone_clean": "554841204",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "923337860358",
+    "phone_clean": "923337860358",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "582222256",
+    "phone_clean": "582222256",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585664466",
+    "phone_clean": "585664466",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "522373716",
+    "phone_clean": "522373716",
+    "name": null,
+    "country_code": "+971",
+    "project": null,
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "523333412",
+    "phone_clean": "523333412",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554042522",
+    "phone_clean": "554042522",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555155011",
+    "phone_clean": "555155011",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "529605577",
+    "phone_clean": "529605577",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501336628",
+    "phone_clean": "501336628",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "44786647682",
+    "phone_clean": "44786647682",
+    "name": null,
+    "country_code": "+44",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501489971",
+    "phone_clean": "501489971",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554031782",
+    "phone_clean": "554031782",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562413669",
+    "phone_clean": "562413669",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585074893",
+    "phone_clean": "585074893",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509647364",
+    "phone_clean": "509647364",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501927972",
+    "phone_clean": "501927972",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "595194303",
+    "phone_clean": "595194303",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "564985401",
+    "phone_clean": "564985401",
+    "name": null,
+    "country_code": "+971",
+    "project": "Tiger",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919810675666",
+    "phone_clean": "919810675666",
+    "name": null,
+    "country_code": "+91",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562604250",
+    "phone_clean": "562604250",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554103987",
+    "phone_clean": "554103987",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509552922",
+    "phone_clean": "509552922",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552336555",
+    "phone_clean": "552336555",
+    "name": "Hessa",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552451099",
+    "phone_clean": "552451099",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "15165094384",
+    "phone_clean": "15165094384",
+    "name": null,
+    "country_code": "+1",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585174004",
+    "phone_clean": "585174004",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "527439900",
+    "phone_clean": "527439900",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552594100",
+    "phone_clean": "552594100",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "564254544",
+    "phone_clean": "564254544",
+    "name": null,
+    "country_code": "+971",
+    "project": null,
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "545882900",
+    "phone_clean": "545882900",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552398904",
+    "phone_clean": "552398904",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "545996697",
+    "phone_clean": "545996697",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504826299",
+    "phone_clean": "504826299",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "545552321",
+    "phone_clean": "545552321",
+    "name": null,
+    "country_code": "+971",
+    "project": "Binghatti",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "558171177",
+    "phone_clean": "558171177",
+    "name": null,
+    "country_code": "+971",
+    "project": null,
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "561382138",
+    "phone_clean": "561382138",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "556006160",
+    "phone_clean": "556006160",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507994252",
+    "phone_clean": "507994252",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "420602716991",
+    "phone_clean": "420602716991",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "917250499460",
+    "phone_clean": "917250499460",
+    "name": null,
+    "country_code": "+91",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585855141",
+    "phone_clean": "585855141",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "561147198",
+    "phone_clean": "561147198",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "542220027",
+    "phone_clean": "542220027",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "586656436",
+    "phone_clean": "586656436",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "567611161",
+    "phone_clean": "567611161",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551155916",
+    "phone_clean": "551155916",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Reem Island Project",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "380930042969",
+    "phone_clean": "380930042969",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "553355605",
+    "phone_clean": "553355605",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552556600",
+    "phone_clean": "552556600",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "553557690",
+    "phone_clean": "553557690",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508406092",
+    "phone_clean": "508406092",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504348666",
+    "phone_clean": "504348666",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501666717",
+    "phone_clean": "501666717",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505770700",
+    "phone_clean": "505770700",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551111501",
+    "phone_clean": "551111501",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "524934200",
+    "phone_clean": "524934200",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "564480609",
+    "phone_clean": "564480609",
+    "name": null,
+    "country_code": "+971",
+    "project": "Riviera",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502350606",
+    "phone_clean": "502350606",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "553397789",
+    "phone_clean": "553397789",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "64273227744",
+    "phone_clean": "64273227744",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554567727",
+    "phone_clean": "554567727",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503999143",
+    "phone_clean": "503999143",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503951087",
+    "phone_clean": "503951087",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "566644700",
+    "phone_clean": "566644700",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "543727666",
+    "phone_clean": "543727666",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505437212",
+    "phone_clean": "505437212",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "521426641",
+    "phone_clean": "521426641",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501555313",
+    "phone_clean": "501555313",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "564955577",
+    "phone_clean": "564955577",
+    "name": "أحمد",
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "558122047",
+    "phone_clean": "558122047",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "588824978",
+    "phone_clean": "588824978",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502304919",
+    "phone_clean": "502304919",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504585280",
+    "phone_clean": "504585280",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504043394",
+    "phone_clean": "504043394",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "586177597",
+    "phone_clean": "586177597",
+    "name": null,
+    "country_code": "+971",
+    "project": "Binghatti",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585513398",
+    "phone_clean": "585513398",
+    "name": null,
+    "country_code": "+971",
+    "project": "Butterfly",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503142777",
+    "phone_clean": "503142777",
+    "name": null,
+    "country_code": "+971",
+    "project": "The District",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552008391",
+    "phone_clean": "552008391",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502948687",
+    "phone_clean": "502948687",
+    "name": null,
+    "country_code": "+971",
+    "project": "Riviera",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551009910",
+    "phone_clean": "551009910",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509028270",
+    "phone_clean": "509028270",
+    "name": null,
+    "country_code": "+971",
+    "project": "Binghatti",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505033076",
+    "phone_clean": "505033076",
+    "name": null,
+    "country_code": "+971",
+    "project": "The District",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "16139811448",
+    "phone_clean": "16139811448",
+    "name": null,
+    "country_code": "+1",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "525860884",
+    "phone_clean": "525860884",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508568100",
+    "phone_clean": "508568100",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509584899",
+    "phone_clean": "509584899",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "523794104",
+    "phone_clean": "523794104",
+    "name": null,
+    "country_code": "+971",
+    "project": "Binghatti",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585826520",
+    "phone_clean": "585826520",
+    "name": null,
+    "country_code": "+971",
+    "project": "Binghatti",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507661166",
+    "phone_clean": "507661166",
+    "name": "أحمد",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "393475700057",
+    "phone_clean": "393475700057",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "5527490112",
+    "phone_clean": "5527490112",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "558232735",
+    "phone_clean": "558232735",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505441768",
+    "phone_clean": "505441768",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509038300",
+    "phone_clean": "509038300",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "547957948",
+    "phone_clean": "547957948",
+    "name": null,
+    "country_code": "+971",
+    "project": null,
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504204201",
+    "phone_clean": "504204201",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "563868204",
+    "phone_clean": "563868204",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501000252",
+    "phone_clean": "501000252",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501210120",
+    "phone_clean": "501210120",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585454589",
+    "phone_clean": "585454589",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504502299",
+    "phone_clean": "504502299",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562877094",
+    "phone_clean": "562877094",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919381374324",
+    "phone_clean": "919381374324",
+    "name": null,
+    "country_code": "+91",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501099120",
+    "phone_clean": "501099120",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504800753",
+    "phone_clean": "504800753",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554301064",
+    "phone_clean": "554301064",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585385582",
+    "phone_clean": "585385582",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502933434",
+    "phone_clean": "502933434",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555905643",
+    "phone_clean": "555905643",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "563247714",
+    "phone_clean": "563247714",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508361536",
+    "phone_clean": "508361536",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "586780000",
+    "phone_clean": "586780000",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503552888",
+    "phone_clean": "503552888",
+    "name": "لطيفة",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "526166467",
+    "phone_clean": "526166467",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501118927",
+    "phone_clean": "501118927",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509831477",
+    "phone_clean": "509831477",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "91987188712",
+    "phone_clean": "91987188712",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "559962559",
+    "phone_clean": "559962559",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504415123",
+    "phone_clean": "504415123",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "566981606",
+    "phone_clean": "566981606",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555005584",
+    "phone_clean": "555005584",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "556666053",
+    "phone_clean": "556666053",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "566767663",
+    "phone_clean": "566767663",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585331766",
+    "phone_clean": "585331766",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "543933272",
+    "phone_clean": "543933272",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505152686",
+    "phone_clean": "505152686",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "547973223",
+    "phone_clean": "547973223",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506996459",
+    "phone_clean": "506996459",
+    "name": "هيثم",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503909439",
+    "phone_clean": "503909439",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "96565522607",
+    "phone_clean": "96565522607",
+    "name": null,
+    "country_code": null,
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "527773304",
+    "phone_clean": "527773304",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "588692522",
+    "phone_clean": "588692522",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "528098548",
+    "phone_clean": "528098548",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "529012723",
+    "phone_clean": "529012723",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506658690",
+    "phone_clean": "506658690",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562179732",
+    "phone_clean": "562179732",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "558943759",
+    "phone_clean": "558943759",
+    "name": "ايناس",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "526652036",
+    "phone_clean": "526652036",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506746888",
+    "phone_clean": "506746888",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "589143105",
+    "phone_clean": "589143105",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "989173746578",
+    "phone_clean": "989173746578",
+    "name": null,
+    "country_code": "+98",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501790071",
+    "phone_clean": "501790071",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "558883064",
+    "phone_clean": "558883064",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501800600",
+    "phone_clean": "501800600",
+    "name": "الزروني",
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "566355652",
+    "phone_clean": "566355652",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509236368",
+    "phone_clean": "509236368",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "522181481",
+    "phone_clean": "522181481",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562629337",
+    "phone_clean": "562629337",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "564130474",
+    "phone_clean": "564130474",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503677680",
+    "phone_clean": "503677680",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "966504493564",
+    "phone_clean": "966504493564",
+    "name": null,
+    "country_code": "+966",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585659946",
+    "phone_clean": "585659946",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502395228",
+    "phone_clean": "502395228",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "529223587",
+    "phone_clean": "529223587",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502706442",
+    "phone_clean": "502706442",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "966504150165",
+    "phone_clean": "966504150165",
+    "name": null,
+    "country_code": "+966",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552571270",
+    "phone_clean": "552571270",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509444117",
+    "phone_clean": "509444117",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "528999437",
+    "phone_clean": "528999437",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "523441870",
+    "phone_clean": "523441870",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "564756968",
+    "phone_clean": "564756968",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502262265",
+    "phone_clean": "502262265",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "559996007",
+    "phone_clean": "559996007",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "568585804",
+    "phone_clean": "568585804",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "97477228510",
+    "phone_clean": "97477228510",
+    "name": null,
+    "country_code": "+974",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "566640555",
+    "phone_clean": "566640555",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "966502805742",
+    "phone_clean": "966502805742",
+    "name": null,
+    "country_code": "+966",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "563436016",
+    "phone_clean": "563436016",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552999487",
+    "phone_clean": "552999487",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "201210788831",
+    "phone_clean": "201210788831",
+    "name": null,
+    "country_code": null,
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "916235586688",
+    "phone_clean": "916235586688",
+    "name": null,
+    "country_code": "+91",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508967600",
+    "phone_clean": "508967600",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504168581",
+    "phone_clean": "504168581",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554943545",
+    "phone_clean": "554943545",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "567747407",
+    "phone_clean": "567747407",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "8613566717147",
+    "phone_clean": "8613566717147",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508900894",
+    "phone_clean": "508900894",
+    "name": "محمد",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551983011",
+    "phone_clean": "551983011",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504290890",
+    "phone_clean": "504290890",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505532780",
+    "phone_clean": "505532780",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "547728502",
+    "phone_clean": "547728502",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "561770407",
+    "phone_clean": "561770407",
+    "name": "Kamal",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554797738",
+    "phone_clean": "554797738",
+    "name": null,
+    "country_code": "+971",
+    "project": "DAMAC Island",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "529209399",
+    "phone_clean": "529209399",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "8623986676487",
+    "phone_clean": "8623986676487",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503333619",
+    "phone_clean": "503333619",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555977788",
+    "phone_clean": "555977788",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "589669613",
+    "phone_clean": "589669613",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "528997564",
+    "phone_clean": "528997564",
+    "name": null,
+    "country_code": "+971",
+    "project": "DAMAC Island",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "564335917",
+    "phone_clean": "564335917",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555222183",
+    "phone_clean": "555222183",
+    "name": "Ammar",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552292266",
+    "phone_clean": "552292266",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "525096677",
+    "phone_clean": "525096677",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505154055",
+    "phone_clean": "505154055",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507771688",
+    "phone_clean": "507771688",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503673757",
+    "phone_clean": "503673757",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "201097414726",
+    "phone_clean": "201097414726",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502984310",
+    "phone_clean": "502984310",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506463944",
+    "phone_clean": "506463944",
+    "name": "محمد الراشد",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "563449930",
+    "phone_clean": "563449930",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501003939",
+    "phone_clean": "501003939",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "543777850",
+    "phone_clean": "543777850",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504011633",
+    "phone_clean": "504011633",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "554436659",
+    "phone_clean": "554436659",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504941188",
+    "phone_clean": "504941188",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "557886344",
+    "phone_clean": "557886344",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "923329888900",
+    "phone_clean": "923329888900",
+    "name": null,
+    "country_code": null,
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505695292",
+    "phone_clean": "505695292",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "96566000319",
+    "phone_clean": "96566000319",
+    "name": null,
+    "country_code": null,
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555504099",
+    "phone_clean": "555504099",
+    "name": null,
+    "country_code": "+971",
+    "project": null,
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "529485922",
+    "phone_clean": "529485922",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "965900762677",
+    "phone_clean": "965900762677",
+    "name": "هاني",
+    "country_code": null,
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "543535301",
+    "phone_clean": "543535301",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506072952",
+    "phone_clean": "506072952",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507727045",
+    "phone_clean": "507727045",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502768400",
+    "phone_clean": "502768400",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501940660",
+    "phone_clean": "501940660",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919624528228",
+    "phone_clean": "919624528228",
+    "name": null,
+    "country_code": "+91",
+    "project": "Tiger",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919680632223",
+    "phone_clean": "919680632223",
+    "name": null,
+    "country_code": "+91",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "588341610",
+    "phone_clean": "588341610",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "528922062",
+    "phone_clean": "528922062",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "557627855",
+    "phone_clean": "557627855",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "989122268974",
+    "phone_clean": "989122268974",
+    "name": null,
+    "country_code": "+98",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504320044",
+    "phone_clean": "504320044",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555737700",
+    "phone_clean": "555737700",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "559683301",
+    "phone_clean": "559683301",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "529661005",
+    "phone_clean": "529661005",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508417252",
+    "phone_clean": "508417252",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "529087987",
+    "phone_clean": "529087987",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508547725",
+    "phone_clean": "508547725",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "527587196",
+    "phone_clean": "527587196",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "542522000",
+    "phone_clean": "542522000",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507443799",
+    "phone_clean": "507443799",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506277935",
+    "phone_clean": "506277935",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "14378551466",
+    "phone_clean": "14378551466",
+    "name": null,
+    "country_code": "+1",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562222090",
+    "phone_clean": "562222090",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "201142991888",
+    "phone_clean": "201142991888",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506969372",
+    "phone_clean": "506969372",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "527464082",
+    "phone_clean": "527464082",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585248328",
+    "phone_clean": "585248328",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504895542",
+    "phone_clean": "504895542",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "582256567",
+    "phone_clean": "582256567",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507974996",
+    "phone_clean": "507974996",
+    "name": null,
+    "country_code": "+971",
+    "project": "Samana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "586135444",
+    "phone_clean": "586135444",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "589032323",
+    "phone_clean": "589032323",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551181181",
+    "phone_clean": "551181181",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562319991",
+    "phone_clean": "562319991",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501802147",
+    "phone_clean": "501802147",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "581000004",
+    "phone_clean": "581000004",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508985855",
+    "phone_clean": "508985855",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "528593550",
+    "phone_clean": "528593550",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506214747",
+    "phone_clean": "506214747",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "547829777",
+    "phone_clean": "547829777",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501444169",
+    "phone_clean": "501444169",
+    "name": null,
+    "country_code": "+971",
+    "project": "Ready",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585544290",
+    "phone_clean": "585544290",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "97466868917",
+    "phone_clean": "97466868917",
+    "name": null,
+    "country_code": "+974",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504451212",
+    "phone_clean": "504451212",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503250550",
+    "phone_clean": "503250550",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "201065588447",
+    "phone_clean": "201065588447",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "556174372",
+    "phone_clean": "556174372",
+    "name": null,
+    "country_code": "+971",
+    "project": "Ready",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "521689534",
+    "phone_clean": "521689534",
+    "name": null,
+    "country_code": "+971",
+    "project": "Ready",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "586443656",
+    "phone_clean": "586443656",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "561936999",
+    "phone_clean": "561936999",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "568788549",
+    "phone_clean": "568788549",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "553744111",
+    "phone_clean": "553744111",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505189207",
+    "phone_clean": "505189207",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502227357",
+    "phone_clean": "502227357",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "527998405",
+    "phone_clean": "527998405",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "523588849",
+    "phone_clean": "523588849",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555579606",
+    "phone_clean": "555579606",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "562701557",
+    "phone_clean": "562701557",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "543877266",
+    "phone_clean": "543877266",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504104923",
+    "phone_clean": "504104923",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "545589898",
+    "phone_clean": "545589898",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552451554",
+    "phone_clean": "552451554",
+    "name": null,
+    "country_code": "+971",
+    "project": "Reportage Al Saadiyat",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507012129",
+    "phone_clean": "507012129",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "525894200",
+    "phone_clean": "525894200",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "96170456636",
+    "phone_clean": "96170456636",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "567471770",
+    "phone_clean": "567471770",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "582582900",
+    "phone_clean": "582582900",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502838097",
+    "phone_clean": "502838097",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "588397096",
+    "phone_clean": "588397096",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506335484",
+    "phone_clean": "506335484",
+    "name": "امال",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "553989450",
+    "phone_clean": "553989450",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506965949",
+    "phone_clean": "506965949",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "527883065",
+    "phone_clean": "527883065",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "16138690691",
+    "phone_clean": "16138690691",
+    "name": null,
+    "country_code": "+1",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "552323513",
+    "phone_clean": "552323513",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505838935",
+    "phone_clean": "505838935",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "522441985",
+    "phone_clean": "522441985",
+    "name": "ريان",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "565555446",
+    "phone_clean": "565555446",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "543335288",
+    "phone_clean": "543335288",
+    "name": "ام فاطمة",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585847950",
+    "phone_clean": "585847950",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509226429",
+    "phone_clean": "509226429",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585201200",
+    "phone_clean": "585201200",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "558808629",
+    "phone_clean": "558808629",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505397651",
+    "phone_clean": "505397651",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919900566667",
+    "phone_clean": "919900566667",
+    "name": null,
+    "country_code": "+91",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "569831094",
+    "phone_clean": "569831094",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "569409631",
+    "phone_clean": "569409631",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504262157",
+    "phone_clean": "504262157",
+    "name": "عيسي",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503614144",
+    "phone_clean": "503614144",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506399997",
+    "phone_clean": "506399997",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "565340501",
+    "phone_clean": "565340501",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501501201",
+    "phone_clean": "501501201",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "558583825",
+    "phone_clean": "558583825",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "524526808",
+    "phone_clean": "524526808",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "568518804",
+    "phone_clean": "568518804",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "506293962",
+    "phone_clean": "506293962",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505158655",
+    "phone_clean": "505158655",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551896583",
+    "phone_clean": "551896583",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507319515",
+    "phone_clean": "507319515",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "588811116",
+    "phone_clean": "588811116",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551400166",
+    "phone_clean": "551400166",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504786466",
+    "phone_clean": "504786466",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "995557638282",
+    "phone_clean": "995557638282",
+    "name": null,
+    "country_code": null,
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507074008",
+    "phone_clean": "507074008",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505898741",
+    "phone_clean": "505898741",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari Offices",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502146938",
+    "phone_clean": "502146938",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "528875550",
+    "phone_clean": "528875550",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505595890",
+    "phone_clean": "505595890",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "542350233",
+    "phone_clean": "542350233",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari Offices",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "588009224",
+    "phone_clean": "588009224",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "509155777",
+    "phone_clean": "509155777",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501633557",
+    "phone_clean": "501633557",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505200505",
+    "phone_clean": "505200505",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "558953347",
+    "phone_clean": "558953347",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "529843100",
+    "phone_clean": "529843100",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "966599344894",
+    "phone_clean": "966599344894",
+    "name": null,
+    "country_code": "+966",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501885374",
+    "phone_clean": "501885374",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "561161118",
+    "phone_clean": "561161118",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "502087463",
+    "phone_clean": "502087463",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "581171829",
+    "phone_clean": "581171829",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "507060450",
+    "phone_clean": "507060450",
+    "name": "محمد",
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "566694141",
+    "phone_clean": "566694141",
+    "name": null,
+    "country_code": "+971",
+    "project": "Azizi",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "551417200",
+    "phone_clean": "551417200",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "504687065",
+    "phone_clean": "504687065",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "585336007",
+    "phone_clean": "585336007",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "529011111",
+    "phone_clean": "529011111",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "567294755",
+    "phone_clean": "567294755",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "553011301",
+    "phone_clean": "553011301",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "505300888",
+    "phone_clean": "505300888",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "544057011",
+    "phone_clean": "544057011",
+    "name": "عمر",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "567683190",
+    "phone_clean": "567683190",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "553393458",
+    "phone_clean": "553393458",
+    "name": null,
+    "country_code": "+971",
+    "project": "Azizi",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555183345",
+    "phone_clean": "555183345",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "917596933926",
+    "phone_clean": "917596933926",
+    "name": null,
+    "country_code": "+91",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "544339477",
+    "phone_clean": "544339477",
+    "name": "سدرة",
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919526996143",
+    "phone_clean": "919526996143",
+    "name": null,
+    "country_code": "+91",
+    "project": "Azizi",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501120576",
+    "phone_clean": "501120576",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "566441847",
+    "phone_clean": "566441847",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "96896374455",
+    "phone_clean": "96896374455",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "966504585157",
+    "phone_clean": "966504585157",
+    "name": null,
+    "country_code": "+966",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "547915141",
+    "phone_clean": "547915141",
+    "name": null,
+    "country_code": "+971",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "508049307",
+    "phone_clean": "508049307",
+    "name": null,
+    "country_code": "+971",
+    "project": "Azizi",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "501795393",
+    "phone_clean": "501795393",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "589877555",
+    "phone_clean": "589877555",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "555374122",
+    "phone_clean": "555374122",
+    "name": null,
+    "country_code": "+971",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "96560405030",
+    "phone_clean": "96560405030",
+    "name": null,
+    "country_code": null,
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919879722722",
+    "phone_clean": "919879722722",
+    "name": null,
+    "country_code": "+91",
+    "project": "Azizi",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "503191093",
+    "phone_clean": "503191093",
+    "name": null,
+    "country_code": "+971",
+    "project": "Sport City",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "97477773235",
+    "phone_clean": "97477773235",
+    "name": null,
+    "country_code": "+974",
+    "project": "Verdana",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  },
+  {
+    "phone": "919582754306",
+    "phone_clean": "919582754306",
+    "name": null,
+    "country_code": "+91",
+    "project": "Al Barari",
+    "source": "excel_import",
+    "imported_from": "عمرو.xlsx"
+  }
+]
