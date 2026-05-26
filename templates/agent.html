@@ -3,23 +3,57 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
-<meta name="theme-color" content="#3b82f6" />
+<meta name="theme-color" content="#D4A847" />
+<link rel="icon" type="image/png" href="/static/logo.png" />
+<link rel="apple-touch-icon" href="/static/logo.png" />
 <link rel="manifest" href="/static/manifest.json" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
-<title>AlSaeb CRM — Agent</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Cairo:wght@400;500;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<title>AL SAEB CRM — Agent</title>
+<!-- Phase 1: Pixxi-inspired design tokens (Gold/Black brand) -->
+<link rel="stylesheet" href="/static/css/tokens.css" />
+<link rel="stylesheet" href="/static/css/components.css" />
 <script src="https://cdn.tailwindcss.com"></script>
+<script src="/static/i18n.js"></script>
+<script>
+// Apply saved theme BEFORE first paint to avoid flash
+(function() {
+  const saved = localStorage.getItem('alsaeb_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+})();
+function toggleTheme() {
+  const cur = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('alsaeb_theme', next);
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = next === 'dark' ? '🌙' : '☀️';
+  // Update theme-color meta for PWA status bar
+  const meta = document.querySelector('meta[name="theme-color"]');
+  if (meta) meta.setAttribute('content', next === 'dark' ? '#0a0a0a' : '#ffffff');
+}
+document.addEventListener('DOMContentLoaded', () => {
+  const t = document.documentElement.getAttribute('data-theme') || 'dark';
+  const icon = document.getElementById('theme-icon');
+  if (icon) icon.textContent = t === 'dark' ? '🌙' : '☀️';
+});
+</script>
 <script>
 tailwind.config = {
   theme: {
     extend: {
       colors: {
         crm: {
-          bg: '#0c0f1a', surface: '#151929', card: '#1a1f35',
-          border: 'rgba(148,163,184,0.08)',
-          primary: '#3b82f6', secondary: '#06b6d4', accent: '#8b5cf6',
+          // ═══ AL SAEB Brand — Black + Gold ═══
+          bg: '#0a0a0a', surface: '#141414', card: '#1a1a1a',
+          border: 'rgba(212,168,71,0.12)',
+          primary: '#D4A847',   // ذهبي رئيسي (من اللوجو)
+          secondary: '#A88128', // ذهبي غامق
+          accent: '#F4C962',    // ذهبي مشرق
           success: '#22c55e', danger: '#ef4444', warning: '#f59e0b',
-          muted: '#64748b',
+          muted: '#6b6b6b',
+          gold: '#D4A847', goldDark: '#A88128', goldLight: '#F4C962',
         }
       },
       fontFamily: {
@@ -29,7 +63,8 @@ tailwind.config = {
       boxShadow: {
         'soft': '0 1px 3px rgba(0,0,0,0.3), 0 1px 2px rgba(0,0,0,0.2)',
         'card': '0 4px 6px -1px rgba(0,0,0,0.25), 0 2px 4px -2px rgba(0,0,0,0.15)',
-        'glow': '0 0 15px rgba(59,130,246,0.15)',
+        'glow': '0 0 15px rgba(212,168,71,0.25)',
+        'gold': '0 4px 16px rgba(212,168,71,0.25)',
       }
     }
   }
@@ -38,16 +73,18 @@ tailwind.config = {
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
   /* ═══════════════════════════════════════════════════════════
-     AlSaeb CRM — Agent Mobile Professional Theme
+     AL SAEB CRM — Agent Mobile (Black + Gold Brand)
      ═══════════════════════════════════════════════════════════ */
   :root {
-    --crm-primary: #3b82f6;
-    --crm-accent: #8b5cf6;
+    --crm-primary: #D4A847;      /* ذهبي رئيسي */
+    --crm-accent: #F4C962;       /* ذهبي مشرق */
+    --crm-secondary: #A88128;    /* ذهبي غامق */
     --crm-success: #22c55e;
     --crm-danger: #ef4444;
-    --crm-bg: #0c0f1a;
-    --crm-card: rgba(26, 31, 53, 0.85);
-    --crm-border: rgba(148,163,184,0.08);
+    --crm-bg: #0a0a0a;
+    --crm-card: rgba(26, 26, 26, 0.85);
+    --crm-border: rgba(212,168,71,0.12);
+    --crm-gold-grad: linear-gradient(135deg, #F4C962 0%, #D4A847 50%, #A88128 100%);
   }
 
   body {
@@ -55,9 +92,80 @@ tailwind.config = {
     overscroll-behavior: none;
     background: var(--crm-bg);
     background-image:
-      radial-gradient(ellipse at 20% 80%, rgba(59,130,246,0.03) 0%, transparent 50%),
-      radial-gradient(ellipse at 80% 20%, rgba(139,92,246,0.02) 0%, transparent 50%);
+      radial-gradient(ellipse at 20% 80%, rgba(212,168,71,0.04) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 20%, rgba(212,168,71,0.025) 0%, transparent 55%);
+    color: #e8e8e8;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
+
+  /* ═══════════════════════════════════════════════════════════
+     LIGHT MODE — applies when html has data-theme="light"
+     ═══════════════════════════════════════════════════════════ */
+  [data-theme="light"] {
+    --crm-bg: #f5f5f5;
+    --crm-card: rgba(255,255,255,0.95);
+    --crm-border: rgba(212,168,71,0.25);
+  }
+  [data-theme="light"] body {
+    background: #f5f5f5;
+    background-image:
+      radial-gradient(ellipse at 20% 80%, rgba(212,168,71,0.08) 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 20%, rgba(212,168,71,0.05) 0%, transparent 55%);
+    color: #1a1a1a;
+  }
+  [data-theme="light"] .bg-crm-bg { background-color: #f5f5f5 !important; }
+  [data-theme="light"] .bg-crm-card,
+  [data-theme="light"] .bg-crm-surface { background-color: #ffffff !important; }
+  [data-theme="light"] .bg-crm-bg\/90,
+  [data-theme="light"] .bg-crm-bg\/80 { background-color: rgba(255,255,255,0.92) !important; }
+  /* Text colors */
+  [data-theme="light"] .text-slate-100,
+  [data-theme="light"] .text-slate-200,
+  [data-theme="light"] .text-white { color: #1a1a1a !important; }
+  [data-theme="light"] .text-slate-300 { color: #2a2a2a !important; }
+  [data-theme="light"] .text-slate-400 { color: #4a4a4a !important; }
+  [data-theme="light"] .text-slate-500 { color: #5a5a5a !important; }
+  [data-theme="light"] .text-slate-600 { color: #6a6a6a !important; }
+  [data-theme="light"] .text-slate-700 { color: #7a7a7a !important; }
+  /* Borders */
+  [data-theme="light"] .border-slate-700,
+  [data-theme="light"] .border-slate-800,
+  [data-theme="light"] .border-slate-700\/50,
+  [data-theme="light"] .border-slate-800\/50 { border-color: #e0e0e0 !important; }
+  [data-theme="light"] .border-crm-border { border-color: rgba(212,168,71,0.2) !important; }
+  /* Inputs */
+  [data-theme="light"] input,
+  [data-theme="light"] select,
+  [data-theme="light"] textarea {
+    background-color: #ffffff !important;
+    color: #1a1a1a !important;
+    border-color: rgba(0,0,0,0.1) !important;
+  }
+  [data-theme="light"] input::placeholder,
+  [data-theme="light"] textarea::placeholder { color: #999 !important; }
+  /* Cards */
+  [data-theme="light"] .card {
+    background: rgba(255,255,255,0.95);
+    border-color: rgba(212,168,71,0.18);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  }
+  /* Scrollbar */
+  [data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); }
+  /* Drawer */
+  [data-theme="light"] #nav-drawer { background: #ffffff !important; border-left-color: rgba(212,168,71,0.2) !important; }
+  [data-theme="light"] #nav-drawer .drawer-item { color: #4a4a4a; }
+  [data-theme="light"] #nav-drawer .drawer-item:hover { background: rgba(212,168,71,0.06); color: #1a1a1a; }
+  /* Header sticky */
+  [data-theme="light"] header { background: rgba(255,255,255,0.92) !important; border-bottom-color: rgba(212,168,71,0.18) !important; }
+  /* Notification panel */
+  [data-theme="light"] #notif-panel { background: #ffffff !important; border-color: rgba(212,168,71,0.2) !important; }
+  [data-theme="light"] #notif-banner-host .notif-banner { background: #ffffff !important; color: #1a1a1a !important; border-color: rgba(212,168,71,0.2) !important; }
+  /* Status chips keep their gold tint but text becomes darker for readability */
+  [data-theme="light"] .status-new,
+  [data-theme="light"] .status-contacted,
+  [data-theme="light"] .status-meeting_set { color: #8a6a20 !important; }
+  /* Buttons keep their styles, but ensure contrast on light bg */
+  [data-theme="light"] button.bg-crm-card { color: #1a1a1a; }
 
   h1, h2, h3 { font-family: 'Inter', 'IBM Plex Sans Arabic', sans-serif; letter-spacing: 0; }
 
@@ -69,7 +177,7 @@ tailwind.config = {
     transition: border-color 0.2s, box-shadow 0.2s;
   }
   .card:hover {
-    border-color: rgba(59,130,246,0.2);
+    border-color: rgba(212,168,71,0.2);
     box-shadow: 0 4px 12px rgba(0,0,0,0.25);
   }
 
@@ -78,24 +186,31 @@ tailwind.config = {
     font-weight: 600;
   }
 
-  /* ── Status Chips ── */
-  .status-new          { background: rgba(59,130,246,0.12); color: #60a5fa; border: 1px solid rgba(59,130,246,0.25); }
-  .status-contacted    { background: rgba(14,165,233,0.12); color: #38bdf8; border: 1px solid rgba(14,165,233,0.25); }
-  .status-interested   { background: rgba(250,204,21,0.12); color: #facc15; border: 1px solid rgba(250,204,21,0.25); }
-  .status-meeting_set  { background: rgba(168,85,247,0.12); color: #c084fc; border: 1px solid rgba(168,85,247,0.25); }
-  .status-negotiation  { background: rgba(251,146,60,0.12); color: #fb923c; border: 1px solid rgba(251,146,60,0.25); }
-  .status-closed_won   { background: rgba(34,197,94,0.12); color: #22c55e; border: 1px solid rgba(34,197,94,0.25); }
-  .status-closed_lost  { background: rgba(239,68,68,0.12); color: #ef4444; border: 1px solid rgba(239,68,68,0.25); }
+  /* ── Status Chips (Gold-tinted) ── */
+  .status-new          { background: rgba(212,168,71,0.14); color: #F4C962; border: 1px solid rgba(212,168,71,0.3); }
+  .status-contacted    { background: rgba(244,201,98,0.10); color: #F4C962; border: 1px solid rgba(244,201,98,0.25); }
+  .status-interested   { background: rgba(250,204,21,0.14); color: #facc15; border: 1px solid rgba(250,204,21,0.28); }
+  .status-meeting_set  { background: rgba(168,129,40,0.16); color: #D4A847; border: 1px solid rgba(168,129,40,0.3); }
+  .status-negotiation  { background: rgba(251,146,60,0.14); color: #fb923c; border: 1px solid rgba(251,146,60,0.28); }
+  .status-closed_won   { background: rgba(34,197,94,0.14); color: #22c55e; border: 1px solid rgba(34,197,94,0.28); }
+  .status-closed_lost  { background: rgba(239,68,68,0.14); color: #ef4444; border: 1px solid rgba(239,68,68,0.28); }
 
   /* ── Animations ── */
   @keyframes pop { 0% { transform: scale(.5); opacity: 0; } 50% { transform: scale(1.1); } 100% { transform: scale(1); opacity: 1; } }
   .pop { animation: pop .35s ease; }
   @keyframes slide { from { transform: translateX(100%); } }
   .slide { animation: slide .25s ease; }
+  @keyframes bell-shake { 0%,100%{transform:rotate(0)} 15%{transform:rotate(14deg)} 30%{transform:rotate(-14deg)} 45%{transform:rotate(10deg)} 60%{transform:rotate(-8deg)} 75%{transform:rotate(4deg)} }
+  .bell-ring { animation: bell-shake .8s ease; }
 
-  /* ── XP Bar ── */
+  @keyframes notif-slide-in { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+  @keyframes notif-slide-out { from { transform: translateX(0); opacity: 1; } to { transform: translateX(100%); opacity: 0; } }
+  .notif-banner { animation: notif-slide-in .4s ease forwards; pointer-events: auto; }
+  .notif-banner.removing { animation: notif-slide-out .3s ease forwards; }
+
+  /* ── XP Bar (Gold) ── */
   .xp-bar {
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    background: linear-gradient(90deg, #F4C962, #D4A847, #A88128);
     background-size: 200% 100%;
     animation: shine 3s linear infinite;
   }
@@ -114,9 +229,9 @@ tailwind.config = {
     position: fixed; left: 50%; top: 120px;
     padding: 6px 16px; border-radius: 999px;
     font-weight: 800; font-size: 14px; font-family: 'Inter', sans-serif;
-    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
-    color: #fff;
-    box-shadow: 0 4px 15px rgba(59,130,246,0.3);
+    background: linear-gradient(135deg, #F4C962, #D4A847, #A88128);
+    color: #1a1a1a;
+    box-shadow: 0 4px 15px rgba(212,168,71,0.4);
     animation: combo-float 1.4s ease forwards;
     z-index: 55; pointer-events: none;
   }
@@ -124,32 +239,32 @@ tailwind.config = {
   @keyframes flame { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15); } }
   .flame { animation: flame 1.4s ease-in-out infinite; display: inline-block; }
 
-  /* ── Badges ── */
+  /* ── Badges (Gold) ── */
   .badge-unlocked {
-    background: linear-gradient(135deg, rgba(59,130,246,0.1), rgba(139,92,246,0.1));
-    border: 1px solid rgba(59,130,246,0.25);
+    background: linear-gradient(135deg, rgba(244,201,98,0.12), rgba(168,129,40,0.12));
+    border: 1px solid rgba(212,168,71,0.3);
   }
   .badge-locked { opacity: .25; filter: grayscale(1) brightness(0.4); }
 
   /* ── Input Focus ── */
   input:focus, select:focus {
     border-color: var(--crm-primary) !important;
-    box-shadow: 0 0 0 3px rgba(59,130,246,0.15) !important;
+    box-shadow: 0 0 0 3px rgba(212,168,71,0.18) !important;
     outline: none;
   }
 
   /* ── Active Nav ── */
-  .nav-active { color: #3b82f6 !important; }
+  .nav-active { color: #D4A847 !important; }
 
   /* ── Side Drawer ── */
-  #nav-drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:45;display:none;backdrop-filter:blur(2px)}
+  #nav-drawer-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:45;display:none;backdrop-filter:blur(2px)}
   #nav-drawer-backdrop.open{display:block}
-  #nav-drawer{position:fixed;top:0;right:-260px;width:250px;height:100%;background:var(--crm-bg);border-left:1px solid rgba(59,130,246,.15);z-index:46;transition:right .25s ease;overflow-y:auto;padding:20px 0}
+  #nav-drawer{position:fixed;top:0;right:-260px;width:250px;height:100%;background:var(--crm-bg);border-left:1px solid rgba(212,168,71,.2);z-index:46;transition:right .25s ease;overflow-y:auto;padding:20px 0}
   #nav-drawer.open{right:0}
   #nav-drawer .drawer-item{display:flex;align-items:center;gap:12px;padding:12px 20px;font-size:14px;color:#94a3b8;cursor:pointer;transition:all .15s;border-right:3px solid transparent}
-  #nav-drawer .drawer-item:hover{background:rgba(59,130,246,.06);color:#e2e8f0}
-  #nav-drawer .drawer-item.nav-active{color:#3b82f6;background:rgba(59,130,246,.08);border-right-color:#3b82f6}
-  #hamburger-btn{position:fixed;bottom:16px;right:16px;z-index:44;width:48px;height:48px;border-radius:50%;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:#3b82f6;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,.3);transition:transform .15s}
+  #nav-drawer .drawer-item:hover{background:rgba(212,168,71,.06);color:#e2e8f0}
+  #nav-drawer .drawer-item.nav-active{color:#D4A847;background:rgba(212,168,71,.08);border-right-color:#D4A847}
+  #hamburger-btn{position:fixed;bottom:16px;right:16px;z-index:44;width:48px;height:48px;border-radius:50%;background:rgba(212,168,71,.15);border:1px solid rgba(212,168,71,.35);color:#D4A847;font-size:22px;display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(10px);box-shadow:0 2px 12px rgba(0,0,0,.4);transition:transform .15s}
   #hamburger-btn:active{transform:scale(.9)}
 
   /* ── Scrollbar ── */
@@ -190,6 +305,7 @@ tailwind.config = {
   <!-- HEADER -->
   <header class="sticky top-0 z-40 bg-crm-bg/90 backdrop-blur-xl border-b border-crm-primary/15 px-4 py-3" style="">
     <div class="flex items-center gap-3">
+      <img src="/static/logo.png" alt="AL SAEB" class="w-10 h-10 rounded-lg object-contain bg-white/5 p-1" style="filter: drop-shadow(0 0 8px rgba(212,168,71,0.3))"/>
       <div id="me-avatar" class="w-10 h-10 rounded-full bg-gradient-to-br from-crm-primary to-crm-accent flex items-center justify-center text-xl shadow-soft" style="">🎯</div>
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-2">
@@ -206,19 +322,25 @@ tailwind.config = {
       </div>
       <!-- Notification Bell -->
       <div class="relative">
-        <button id="notif-bell" class="relative text-slate-400 hover:text-crm-primary transition-colors p-1" title="الإشعارات" onclick="toggleNotifPanel()">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <button id="lang-toggle" class="text-yellow-400 hover:text-yellow-300 transition-colors p-2 rounded-xl bg-crm-primary/10 border border-crm-primary/20 hover:bg-crm-primary/20" title="Language" onclick="toggleLang()" style="margin-left:4px;min-width:38px">
+          <span id="lang-toggle-label" style="font-size:13px;font-weight:700">EN</span>
+        </button>
+        <button id="theme-toggle" class="text-yellow-400 hover:text-yellow-300 transition-colors p-2 rounded-xl bg-crm-primary/10 border border-crm-primary/20 hover:bg-crm-primary/20 ml-2" title="تبديل المظهر" onclick="toggleTheme()" style="margin-left:6px">
+          <span id="theme-icon" style="font-size:18px">🌙</span>
+        </button>
+        <button id="notif-bell" class="relative text-yellow-400 hover:text-yellow-300 transition-colors p-2 rounded-xl bg-crm-primary/10 border border-crm-primary/20 hover:bg-crm-primary/20" title="الإشعارات" onclick="toggleNotifPanel()">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
           </svg>
-          <span id="notif-badge" class="hidden absolute -top-1 -right-1 bg-crm-danger text-white text-[9px] font-bold rounded-full min-w-[16px] h-4 flex items-center justify-center px-1">0</span>
+          <span id="notif-badge" class="hidden absolute -top-2 -right-2 bg-crm-danger text-white text-[10px] font-bold rounded-full min-w-[20px] h-5 flex items-center justify-center px-1 shadow-lg animate-pulse">0</span>
         </button>
-        <div id="notif-panel" class="hidden absolute right-0 top-full mt-2 w-[calc(100vw-2rem)] sm:w-72 max-h-80 overflow-y-auto bg-crm-surface border border-crm-primary/20 rounded-xl shadow-lg z-50">
-          <div class="flex items-center justify-between px-3 py-2 border-b border-crm-primary/10">
-            <span class="text-xs font-bold text-slate-200">الإشعارات</span>
-            <button class="text-[10px] text-crm-primary hover:underline" onclick="clearNotifications()">مسح الكل</button>
+        <div id="notif-panel" class="hidden fixed left-4 right-4 top-14 max-w-lg mx-auto max-h-[70vh] overflow-y-auto bg-crm-surface border border-crm-primary/20 rounded-xl shadow-2xl z-50">
+          <div class="flex items-center justify-between px-4 py-3 border-b border-crm-primary/10 bg-crm-primary/5">
+            <span class="text-sm font-bold text-slate-100" data-i18n="notifications">الإشعارات</span>
+            <button class="text-xs text-crm-primary hover:underline" onclick="clearNotifications()" data-i18n="clear_all">مسح الكل</button>
           </div>
           <div id="notif-list" class="divide-y divide-crm-primary/5">
-            <div class="px-3 py-4 text-center text-slate-500 text-xs">لا يوجد إشعارات</div>
+            <div class="px-3 py-4 text-center text-slate-500 text-xs" data-i18n="no_notifications">لا يوجد إشعارات</div>
           </div>
         </div>
       </div>
@@ -226,7 +348,7 @@ tailwind.config = {
         <div class="text-crm-primary font-bold text-sm flex items-center gap-1 gm-only" style="">🪙 <span id="me-coins">0</span></div>
         <div class="flex items-center gap-2 justify-end">
           <button id="mute-btn"   class="text-xs text-slate-500 hover:text-crm-primary transition-colors" title="كتم الصوت">🔊</button>
-          <button id="logout-btn" class="text-xs text-slate-500 hover:text-crm-danger transition-colors">خروج</button>
+          <button id="logout-btn" class="text-xs text-slate-500 hover:text-crm-danger transition-colors" data-i18n="logout">خروج</button>
         </div>
       </div>
     </div>
@@ -239,61 +361,74 @@ tailwind.config = {
     <div data-view="home" class="view">
 
       <!-- DAILY STREAK banner -->
-      <div id="streak-banner" class="card rounded-xl p-3 mb-3 flex items-center gap-3 border-crm-danger/20 gm-section">
+      <div id="streak-banner" class="card-v2 gm-section" style="padding: var(--space-3); margin-bottom: var(--space-3); display: flex; align-items: center; gap: var(--space-3); border-color: rgba(239, 68, 68, 0.18);">
         <div class="text-3xl flame">🔥</div>
         <div class="flex-1">
-          <div class="text-sm font-bold text-crm-primary"><span id="streak-days">0</span> يوم متواصل</div>
-          <div class="text-[11px] text-slate-400" id="streak-sub">ادخل كل يوم عشان تاخد بونس!</div>
+          <div style="font-size: var(--fs-sm); font-weight: var(--fw-bold); color: var(--color-primary);"><span id="streak-days">0</span> يوم متواصل</div>
+          <div style="font-size: 11px; color: var(--color-text-muted);" id="streak-sub">ادخل كل يوم عشان تاخد بونس!</div>
         </div>
-        <button id="streak-claim" class="hidden bg-gradient-to-r from-crm-primary to-crm-accent text-crm-bg font-bold text-xs px-3 py-2 rounded-lg shadow-soft font-heading">
+        <button id="streak-claim" class="hidden btn btn-primary btn-sm">
           استلم +50 🪙
         </button>
       </div>
 
       <!-- ATTENDANCE CHECK-IN / CHECK-OUT -->
-      <div id="attendance-card" class="card rounded-xl p-4 mb-3 border-crm-success/20">
+      <div id="attendance-card" class="card-v2" style="padding: var(--space-4); margin-bottom: var(--space-3); border-color: rgba(34, 197, 94, 0.18);">
         <div class="flex items-center justify-between">
           <div class="flex items-center gap-3">
             <div id="att-icon" class="text-3xl">📍</div>
             <div>
-              <div id="att-title" class="text-sm font-bold text-slate-200">تسجيل الحضور</div>
-              <div id="att-sub" class="text-[11px] text-slate-400">سجل وصولك للمكتب</div>
+              <div id="att-title" style="font-size: var(--fs-sm); font-weight: var(--fw-bold); color: var(--color-text);" data-i18n="attendance_log">تسجيل الحضور</div>
+              <div id="att-sub" style="font-size: 11px; color: var(--color-text-muted);" data-i18n="arrival_logged">سجل وصولك للمكتب</div>
             </div>
           </div>
-          <button id="att-btn" onclick="toggleAttendance()" class="bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg hover:shadow-green-500/25 transition-all font-heading">
-            📍 وصلت
+          <button id="att-btn" onclick="toggleAttendance()" class="btn btn-success btn-sm">
+            <span>📍</span><span>وصلت</span>
           </button>
         </div>
-        <div id="att-gps" class="hidden mt-2 text-[10px] flex items-center gap-1.5 text-slate-500">
-          <span id="att-gps-dot" class="inline-block w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+        <div id="att-gps" class="hidden" style="margin-top: var(--space-2); font-size: 10px; display: flex; align-items: center; gap: 6px; color: var(--color-text-dim);">
+          <span id="att-gps-dot" style="display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--color-text-dim);"></span>
           <span id="att-gps-text">جاري تحديد الموقع...</span>
         </div>
-        <div id="att-timer" class="hidden mt-3 text-center">
-          <div class="text-[10px] text-slate-500 mb-1">وقت العمل</div>
-          <div id="att-elapsed" class="text-lg font-bold font-heading text-crm-primary">00:00:00</div>
+        <div id="att-timer" class="hidden" style="margin-top: var(--space-3); text-align: center;">
+          <div style="font-size: 10px; color: var(--color-text-dim); margin-bottom: 4px;">وقت العمل</div>
+          <div id="att-elapsed" style="font-size: var(--fs-xl); font-weight: var(--fw-bold); font-family: var(--font-heading); color: var(--color-primary);">00:00:00</div>
         </div>
       </div>
 
-      <div class="grid grid-cols-3 gap-2 mb-4">
-        <div class="card rounded-xl p-3 text-center border-crm-primary/10">
-          <div class="text-2xl" style="filter: drop-shadow(0 0 6px rgba(59,130,246,0.4))">💬</div>
-          <div id="h-messages" class="font-bold text-lg text-crm-primary font-heading">0</div>
-          <div class="text-[10px] text-slate-400">رسالة اليوم</div>
+      <!-- Today's stat tiles (Pixxi KPI cards adapted for mobile) -->
+      <div class="grid grid-cols-3 gap-2" style="margin-bottom: var(--space-4);">
+        <div class="kpi-card" style="padding: var(--space-3); text-align: center; gap: 4px;">
+          <div style="font-size: 24px; filter: drop-shadow(0 0 6px rgba(212,168,71,0.35));">💬</div>
+          <div id="h-messages" style="font-size: var(--fs-xl); font-weight: var(--fw-extrabold); color: var(--color-primary); font-family: var(--font-heading); line-height: 1;">0</div>
+          <div style="font-size: 10px; color: var(--color-text-muted);" data-i18n="today_msgs">رسالة اليوم</div>
         </div>
-        <div class="card rounded-xl p-3 text-center border-crm-accent/10">
-          <div class="text-2xl" style="filter: drop-shadow(0 0 6px rgba(14,165,233,0.4))">📞</div>
-          <div id="h-calls" class="font-bold text-lg text-crm-accent font-heading">0</div>
-          <div class="text-[10px] text-slate-400">مكالمة اليوم</div>
+        <div class="kpi-card" style="padding: var(--space-3); text-align: center; gap: 4px;">
+          <div style="font-size: 24px; filter: drop-shadow(0 0 6px rgba(56,189,248,0.35));">📞</div>
+          <div id="h-calls" style="font-size: var(--fs-xl); font-weight: var(--fw-extrabold); color: var(--color-info); font-family: var(--font-heading); line-height: 1;">0</div>
+          <div style="font-size: 10px; color: var(--color-text-muted);" data-i18n="today_calls">مكالمة اليوم</div>
         </div>
-        <div class="card rounded-xl p-3 text-center border-crm-success/10">
-          <div class="text-2xl" style="filter: drop-shadow(0 0 6px rgba(34,197,94,0.4))">🏆</div>
-          <div id="h-deals" class="font-bold text-lg text-crm-success font-heading">0</div>
-          <div class="text-[10px] text-slate-400">صفقة اليوم</div>
+        <div class="kpi-card" style="padding: var(--space-3); text-align: center; gap: 4px;">
+          <div style="font-size: 24px; filter: drop-shadow(0 0 6px rgba(34,197,94,0.35));">🏆</div>
+          <div id="h-deals" style="font-size: var(--fs-xl); font-weight: var(--fw-extrabold); color: var(--color-success); font-family: var(--font-heading); line-height: 1;">0</div>
+          <div style="font-size: 10px; color: var(--color-text-muted);" data-i18n="today_deals">صفقة اليوم</div>
+        </div>
+      </div>
+
+      <!-- NOTIFICATIONS SECTION (على الشاشة مباشرة) -->
+      <div class="mb-4">
+        <h2 class="font-bold mb-2 flex items-center gap-2 text-yellow-400 font-heading text-sm tracking-wider">
+          🔔 <span data-i18n="notifications">الإشعارات</span>
+          <span id="notif-inline-badge" class="hidden bg-crm-danger text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center animate-pulse">0</span>
+          <button class="mr-auto text-[10px] text-crm-primary hover:underline" onclick="clearNotifications()" data-i18n="clear_all">مسح الكل</button>
+        </h2>
+        <div id="notif-inline-list" class="space-y-2 max-h-60 overflow-y-auto">
+          <div class="text-slate-500 text-xs text-center py-3 card rounded-xl" data-i18n="no_notifications">لا يوجد إشعارات</div>
         </div>
       </div>
 
       <div class="gm-section">
-        <h2 class="font-bold mb-2 flex items-center gap-2 text-crm-primary font-heading text-sm tracking-wider">🎯 مهماتك اليوم</h2>
+        <h2 class="font-bold mb-2 flex items-center gap-2 text-crm-primary font-heading text-sm tracking-wider">🎯 <span data-i18n="your_quests_today">مهماتك اليوم</span></h2>
         <div id="quests-list" class="space-y-2"></div>
       </div>
 
@@ -304,7 +439,7 @@ tailwind.config = {
           <span id="wa-inbox-badge" class="hidden bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center animate-pulse">0</span>
         </h2>
         <div id="wa-inbox-list" class="space-y-2">
-          <div class="text-slate-500 text-xs text-center py-3">لا يوجد رسائل جديدة</div>
+          <div class="text-slate-500 text-xs text-center py-3" data-i18n="no_new_messages">لا يوجد رسائل جديدة</div>
         </div>
       </div>
 
@@ -335,7 +470,9 @@ tailwind.config = {
 
     <!-- LEAD DETAIL -->
     <div data-view="detail" class="view hidden">
-      <button onclick="show('leads')" class="text-indigo-400 text-sm mb-3 flex items-center gap-1">← رجوع</button>
+      <button onclick="show('leads')" class="btn btn-ghost btn-sm" style="margin-bottom: var(--space-3);">
+        <span>‹</span><span>الرجوع للقائمة</span>
+      </button>
       <div id="lead-detail"></div>
     </div>
 
@@ -359,21 +496,16 @@ tailwind.config = {
       <iframe id="map-frame" class="w-full border-0 rounded-xl" style="height:calc(100vh - 130px)" loading="lazy"></iframe>
     </div>
 
-    <!-- GAME -->
-    <div data-view="game" class="view hidden">
-      <iframe id="game-frame" class="w-full border-0 rounded-xl" style="height:calc(100vh - 130px)" loading="lazy"></iframe>
-    </div>
-
     <!-- SETTINGS -->
     <div data-view="settings" class="view hidden">
-      <h2 class="font-bold mb-4 text-crm-primary font-heading text-lg">الإعدادات</h2>
+      <h2 class="font-bold mb-4 text-crm-primary font-heading text-lg" data-i18n="settings">الإعدادات</h2>
 
       <!-- Mode Toggle -->
       <div class="card rounded-xl p-4 mb-3">
         <div class="flex items-center justify-between">
           <div>
             <div class="font-semibold text-slate-200 text-sm">وضع العرض</div>
-            <div class="text-[11px] text-slate-400 mt-0.5" id="mode-desc">الوضع الاحترافي يخفي عناصر اللعب (XP، كوينز، شارات، مهمات)</div>
+            <div class="text-[11px] text-slate-400 mt-0.5" id="mode-desc">الوضع الاحترافي يخفي عناصر اللعب (XPعملات، شارات، مهمات)</div>
           </div>
           <div class="flex bg-crm-surface rounded-lg overflow-hidden border border-crm-primary/20">
             <button id="mode-game-btn" onclick="setMode(false)"
@@ -415,23 +547,26 @@ tailwind.config = {
   <!-- SIDE DRAWER -->
   <div id="nav-drawer-backdrop" onclick="toggleDrawer(false)"></div>
   <nav id="nav-drawer">
-    <div style="padding:16px 20px 20px;border-bottom:1px solid rgba(59,130,246,.1);margin-bottom:8px">
+    <div style="padding:16px 20px 20px;border-bottom:1px solid rgba(212,168,71,.1);margin-bottom:8px">
       <div class="text-sm font-bold text-slate-200" id="drawer-name">—</div>
       <div class="text-xs text-slate-500" id="drawer-email">—</div>
     </div>
-    <button data-nav="home"        class="drawer-item nav-btn"><span class="text-lg">🏠</span> الرئيسية</button>
-    <button data-nav="leads"       class="drawer-item nav-btn"><span class="text-lg">🎯</span> الليدز</button>
-    <button data-nav="map"         class="drawer-item nav-btn"><span class="text-lg">🗺️</span> الخريطة</button>
-    <button data-nav="game"        class="drawer-item nav-btn"><span class="text-lg">🎮</span> اللعبة</button>
-    <button data-nav="leaderboard" class="drawer-item nav-btn"><span class="text-lg">🏆</span> الترتيب</button>
-    <button data-nav="store"       class="drawer-item nav-btn"><span class="text-lg">🛒</span> المتجر</button>
-    <div style="border-top:1px solid rgba(59,130,246,.1);margin:8px 0"></div>
-    <button data-nav="settings"    class="drawer-item nav-btn"><span class="text-lg">⚙️</span> إعدادات</button>
+    <button data-nav="home"        class="drawer-item nav-btn"><span class="text-lg">🏠</span> <span data-i18n="home">الرئيسية</span></button>
+    <button data-nav="leads"       class="drawer-item nav-btn"><span class="text-lg">🎯</span> <span data-i18n="leads">الليدز</span></button>
+    <button data-nav="map"         class="drawer-item nav-btn"><span class="text-lg">🗺️</span> <span data-i18n="map">الخريطة</span></button>
+    <button onclick="window.location.href='/game3d'" class="drawer-item nav-btn"><span class="text-lg">🎮</span> <span data-i18n="games">العالم 3D</span></button>
+    <button data-nav="leaderboard" class="drawer-item nav-btn"><span class="text-lg">🏆</span> <span data-i18n="leaderboard">الترتيب</span></button>
+    <button data-nav="store"       class="drawer-item nav-btn"><span class="text-lg">🛒</span> <span data-i18n="store">المتجر</span></button>
+    <div style="border-top:1px solid rgba(212,168,71,.1);margin:8px 0"></div>
+    <button data-nav="settings"    class="drawer-item nav-btn"><span class="text-lg">⚙️</span> <span data-i18n="settings">إعدادات</span></button>
   </nav>
 </section>
 
 <!-- XP TOAST -->
 <div id="toast-host" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 space-y-2"></div>
+
+<!-- LIVE NOTIFICATION BANNERS (تظهر على الشاشة مباشرة) -->
+<div id="notif-banner-host" class="fixed top-16 right-2 left-2 sm:right-2 sm:left-auto sm:w-96 z-[60] flex flex-col gap-2 pointer-events-none"></div>
 
 <!-- CONFETTI -->
 <canvas id="confetti-canvas"></canvas>
@@ -440,9 +575,9 @@ tailwind.config = {
 <div id="level-up" class="hidden fixed inset-0 bg-black/85 z-50 flex items-center justify-center backdrop-blur-sm">
   <div class="text-center pop relative">
     <!-- Neon ring effect -->
-    <div class="absolute inset-0 -m-16 rounded-full" style="background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%); animation: none;"></div>
-    <div class="text-8xl mb-4" style="filter: drop-shadow(0 0 30px rgba(59,130,246,0.8))">🎉</div>
-    <div class="text-4xl font-black font-heading bg-gradient-to-r from-crm-primary to-crm-danger bg-clip-text text-transparent" style="text-shadow: none; filter: drop-shadow(0 0 20px rgba(59,130,246,0.5))">LEVEL UP!</div>
+    <div class="absolute inset-0 -m-16 rounded-full" style="background: radial-gradient(circle, rgba(212,168,71,0.15) 0%, transparent 70%); animation: none;"></div>
+    <div class="text-8xl mb-4" style="filter: drop-shadow(0 0 30px rgba(212,168,71,0.8))">🎉</div>
+    <div class="text-4xl font-black font-heading bg-gradient-to-r from-crm-primary to-crm-danger bg-clip-text text-transparent" style="text-shadow: none; filter: drop-shadow(0 0 20px rgba(212,168,71,0.5))">LEVEL UP!</div>
     <div id="lu-text" class="text-2xl mt-2 text-crm-primary font-heading">—</div>
     <button onclick="document.getElementById('level-up').classList.add('hidden')"
             class="mt-6 bg-gradient-to-r from-crm-primary to-crm-accent text-crm-bg px-8 py-2 rounded-lg font-heading font-bold tracking-wider shadow-glow hover:shadow-glow transition-shadow">تمام!</button>
@@ -460,7 +595,9 @@ async function boot() {
       navigator.serviceWorker.register('/static/sw.js').catch(() => {});
     }
     const cfg = await fetch('/api/config').then(r => r.json());
-    supabase = window.supabase.createClient(cfg.supabase_url, cfg.supabase_anon_key);
+    supabase = window.supabase.createClient(cfg.supabase_url, cfg.supabase_anon_key, {
+      auth: { persistSession: true, autoRefreshToken: true, storageKey: 'alsaeb-auth', storage: window.localStorage }
+    });
     // Auto-refresh token when it expires
     supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
@@ -524,13 +661,21 @@ async function onLogin() {
   } catch { $('#login-view').classList.remove('hidden'); }
 }
 
+// Re-render dynamic content when language changes
+window.addEventListener('langchange', () => {
+  try { if (typeof loadAttendance === 'function') loadAttendance(); } catch (e) {}
+  try { if (typeof loadHome === 'function') loadHome(); } catch (e) {}
+  try { if (typeof renderMe === 'function') renderMe(); } catch (e) {}
+  try { if (typeof renderNotifications === 'function') renderNotifications(); } catch (e) {}
+});
+
 function applyMode() {
   // عناصر اللعب في الهيدر
   document.querySelectorAll('.gm-only').forEach(el => el.classList.toggle('hidden', proMode));
   document.querySelectorAll('.pro-only').forEach(el => el.classList.toggle('hidden', !proMode));
 
   // التابات السفلية — إخفاء الخاصة باللعب
-  const gameTabs = ['map', 'game', 'leaderboard', 'store'];
+  const gameTabs = ['map', 'leaderboard', 'store'];
   document.querySelectorAll('nav [data-nav]').forEach(btn => {
     if (gameTabs.includes(btn.dataset.nav)) btn.classList.toggle('hidden', proMode);
   });
@@ -582,7 +727,7 @@ function toast(msg, type = 'ok') {
   const el = document.createElement('div');
   const styles = {
     error: 'background: rgba(239,68,68,0.9); border: 1px solid rgba(239,68,68,0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.3);',
-    xp:    'background: linear-gradient(90deg, rgba(59,130,246,0.9), rgba(139,92,246,0.9)); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.3);',
+    xp:    'background: linear-gradient(90deg, rgba(212,168,71,0.9), rgba(244,201,98,0.9)); color: #fff; font-weight: 700; box-shadow: 0 4px 12px rgba(0,0,0,0.3);',
     ok:    'background: rgba(34,197,94,0.9); color: #fff; font-weight: 600; box-shadow: 0 4px 12px rgba(0,0,0,0.3);',
   };
   el.className = 'slide px-4 py-2 rounded-lg text-sm font-medium';
@@ -676,7 +821,7 @@ const FX = (() => {
   }
 
   // confetti canvas ------------------------------------------------
-  const COLORS = ['#3b82f6','#8b5cf6','#06b6d4','#22c55e','#f59e0b','#ec4899','#10b981'];
+  const COLORS = ['#D4A847','#F4C962','#A88128','#22c55e','#f59e0b','#ec4899','#10b981'];
   let particles = [], running = false, canvas, ctx;
 
   function ensureCanvas() {
@@ -810,28 +955,45 @@ function toggleDrawer(forceOpen) {
 $$('[data-nav]').forEach(b => b.addEventListener('click', () => { toggleDrawer(false); show(b.dataset.nav); }));
 
 const STATUS_LABELS = {
-  new: 'جديد', contacted: 'اتواصل', interested: 'مهتم',
+  new: 'جديد', contacted: 'تم التواصل', interested: 'مهتم',
   meeting_set: 'ميتنج', negotiation: 'تفاوض',
   closed_won: 'فاز 🏆', closed_lost: 'خسارة',
 };
 
-function show(name) {
+function show(name, fromPopState) {
   $$('.view').forEach(v => v.classList.toggle('hidden', v.dataset.view !== name));
   $$('.nav-btn').forEach(b => {
     const isActive = b.dataset.nav === name;
     b.classList.toggle('nav-active', isActive);
   });
-  // Lazy-load map/game iframes on first visit
+  // Lazy-load map iframe on first visit
   if (name === 'map') {
     const f = $('#map-frame');
     if (!f.src || !f.src.includes('/map')) f.src = '/map';
-  } else if (name === 'game') {
-    const f = $('#game-frame');
-    if (!f.src || !f.src.includes('/game')) f.src = '/game';
   }
   const loader = { home: loadHome, leads: () => loadLeads(), leaderboard: loadLeaderboard, store: loadStore, settings: loadSettings }[name];
   if (loader) loader();
+  // Push to browser history so back-button works
+  if (!fromPopState) {
+    try {
+      history.pushState({ view: name }, '', '#' + name);
+    } catch (e) {}
+  }
 }
+
+// Listen for browser back/forward
+window.addEventListener('popstate', (e) => {
+  const name = (e.state && e.state.view) || (location.hash.replace('#', '')) || 'home';
+  show(name, true);
+});
+
+// Restore initial view from hash on load (if any)
+window.addEventListener('DOMContentLoaded', () => {
+  const initial = location.hash.replace('#', '');
+  if (initial && document.querySelector(`[data-view="${initial}"]`)) {
+    setTimeout(() => show(initial, true), 50);
+  }
+});
 
 function loadSettings() {
   if (!me) return;
@@ -901,17 +1063,21 @@ async function loadAttendance() {
     const icon = document.getElementById('att-icon');
     const timer = document.getElementById('att-timer');
 
+    const lang = (window.getLang && getLang()) || 'ar';
+    const L = (ar, en) => lang === 'en' ? en : ar;
+
     if (st === 'checked_in') {
       // الموظف موجود — اعرض زرار الانصراف
-      btn.innerHTML = '👋 مشيت';
+      btn.innerHTML = L('👋 مشيت', '👋 Check out');
       btn.className = 'bg-gradient-to-r from-red-500 to-orange-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg hover:shadow-red-500/25 transition-all font-heading';
-      title.textContent = 'أنت في الشغل ✅';
+      title.textContent = L('أنت في الشغل ✅', 'You\'re at work ✅');
       const checkIn = res.record?.check_in;
       if (checkIn) {
         attendanceCheckIn = new Date(checkIn).getTime();
-        sub.textContent = 'وصلت ' + new Date(checkIn).toLocaleTimeString('ar-EG', {hour:'2-digit', minute:'2-digit'});
+        const timeStr = new Date(checkIn).toLocaleTimeString(lang === 'en' ? 'en-US' : 'ar-EG', {hour:'2-digit', minute:'2-digit'});
+        sub.textContent = L('وصلت ' + timeStr, 'Arrived at ' + timeStr);
       } else {
-        sub.textContent = 'تم تسجيل حضورك';
+        sub.textContent = L('تم تسجيل حضورك', 'Attendance logged');
       }
       icon.textContent = '🏢';
       timer.classList.remove('hidden');
@@ -921,23 +1087,25 @@ async function loadAttendance() {
 
     } else if (st === 'checked_out') {
       // خلص يومه
-      btn.innerHTML = '✅ تم';
+      btn.innerHTML = L('✅ تم', '✅ Done');
       btn.disabled = true;
       btn.className = 'bg-slate-700 text-slate-400 font-bold text-xs px-4 py-2.5 rounded-xl font-heading cursor-not-allowed';
-      title.textContent = 'انتهى يوم العمل';
+      title.textContent = L('انتهى يوم العمل', 'Workday ended');
       const hw = res.record?.hours_worked;
-      sub.textContent = hw ? `اشتغلت ${parseFloat(hw).toFixed(1)} ساعة` : 'تم تسجيل الانصراف';
+      sub.textContent = hw
+        ? L(`اشتغلت ${parseFloat(hw).toFixed(1)} ساعة`, `Worked ${parseFloat(hw).toFixed(1)} hours`)
+        : L('تم تسجيل الانصراف', 'Check-out logged');
       icon.textContent = '🏠';
       timer.classList.add('hidden');
       if (attendanceTimer) { clearInterval(attendanceTimer); attendanceTimer = null; }
 
     } else {
       // لم يسجل حضور
-      btn.innerHTML = '📍 وصلت';
+      btn.innerHTML = L('📍 وصلت', '📍 Check in');
       btn.disabled = false;
       btn.className = 'bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold text-xs px-4 py-2.5 rounded-xl shadow-lg hover:shadow-green-500/25 transition-all font-heading';
-      title.textContent = 'تسجيل الحضور';
-      sub.textContent = 'سجل وصولك للمكتب';
+      title.textContent = L('تسجيل الحضور', 'Check in');
+      sub.textContent = L('سجل وصولك للمكتب', 'Log your office arrival');
       icon.textContent = '📍';
       timer.classList.add('hidden');
     }
@@ -1037,7 +1205,7 @@ async function loadHome() {
           <span class="text-xs text-slate-400">${q.progress||0}/${q.target_count}</span>
         </div>
       </div>`;
-    }).join('') : '<div class="text-slate-1000/40 text-sm text-center py-4">لسه مفيش مهام اليوم</div>';
+    }).join('') : '<div class="text-slate-1000/40 text-sm text-center py-4">لا توجد مهام اليوم</div>';
   } catch {}
 
   try {
@@ -1091,7 +1259,7 @@ async function loadLeads(append = false) {
     if (append) {
       $('#leads-list').insertAdjacentHTML('beforeend', html);
     } else {
-      $('#leads-list').innerHTML = leads.length ? html : '<div class="text-slate-1000/40 text-center py-8">مفيش ليدز في القسم ده</div>';
+      $('#leads-list').innerHTML = leads.length ? html : '<div class="text-slate-1000/40 text-center py-8">لا توجد ليدز في هذا القسم</div>';
     }
 
     // Show/hide load more
@@ -1122,68 +1290,85 @@ async function openLead(id) {
 
 function renderLeadDetail(lead, actions, messages) {
   $('#lead-detail').innerHTML = `
-    <div class="card rounded-xl p-4 mb-3">
-      <div class="flex items-center justify-between mb-2">
+    <!-- Lead header card -->
+    <div class="card-v2" style="padding: var(--space-4); margin-bottom: var(--space-3);">
+      <div class="flex items-center justify-between" style="margin-bottom: var(--space-2);">
         <div>
-          <div class="text-xl font-bold">${lead.name || 'مجهول'}</div>
-          <a href="tel:${lead.phone}" class="text-sm text-indigo-400 font-mono">${lead.phone}</a>
+          <div style="font-size: var(--fs-xl); font-weight: var(--fw-bold); color: var(--color-text);">${lead.name || 'مجهول'}</div>
+          <a href="tel:${lead.phone}" style="font-size: var(--fs-sm); color: var(--color-primary); font-family: var(--font-mono);">${lead.phone || '—'}</a>
         </div>
         <span class="chip status-${lead.status}">${STATUS_LABELS[lead.status] || lead.status}</span>
       </div>
-      ${lead.projects?.name ? `<div class="text-xs text-slate-400">الحملة: ${lead.projects.name}</div>` : ''}
+      ${lead.projects?.name ? `<div style="font-size: var(--fs-xs); color: var(--color-text-muted);">📁 ${lead.projects.name}</div>` : ''}
 
-      <div class="grid grid-cols-4 gap-2 mt-4">
-        <a href="https://wa.me/${lead.phone?.replace(/\\D/g,'')}" target="_blank"
-           class="rounded-lg py-2 text-center text-sm border border-green-500/30 text-green-400 hover:bg-green-500/10 transition-all"
-           onclick="logAction('whatsapp')">💬 واتس</a>
-        <a href="tel:${lead.phone}"
-           class="rounded-lg py-2 text-center text-sm border border-crm-accent/30 text-crm-accent hover:bg-crm-accent/10 transition-all"
-           onclick="logCall()">📞 اتصال</a>
-        <button onclick="bookMeeting()" class="rounded-lg py-2 text-sm border border-purple-500/30 text-purple-400 hover:bg-purple-500/10 transition-all">📅 ميتنج</button>
-        <button onclick="closeDealPrompt()" class="rounded-lg py-2 text-sm border border-crm-primary/40 text-crm-primary hover:bg-crm-primary/10 transition-all font-bold shadow-soft">🏆 صفقة</button>
+      <!-- Primary actions -->
+      <div class="grid grid-cols-4 gap-2" style="margin-top: var(--space-4);">
+        <a href="https://wa.me/${lead.phone?.replace(/\\D/g,'')}" target="_blank" onclick="logAction('whatsapp')" class="btn btn-success btn-sm" style="padding: 0 var(--space-2); flex-direction: column; gap: 2px; height: auto; min-height: 48px;">
+          <span style="font-size: 18px;">💬</span><span style="font-size: 10px;">واتس</span>
+        </a>
+        <a href="tel:${lead.phone}" onclick="logCall()" class="btn btn-secondary btn-sm" style="padding: 0 var(--space-2); flex-direction: column; gap: 2px; height: auto; min-height: 48px; color: var(--color-info); border-color: rgba(56,189,248,0.3);">
+          <span style="font-size: 18px;">📞</span><span style="font-size: 10px;">اتصال</span>
+        </a>
+        <button onclick="bookMeeting()" class="btn btn-secondary btn-sm" style="padding: 0 var(--space-2); flex-direction: column; gap: 2px; height: auto; min-height: 48px;">
+          <span style="font-size: 18px;">📅</span><span style="font-size: 10px;">ميتنج</span>
+        </button>
+        <button onclick="closeDealPrompt()" class="btn btn-primary btn-sm" style="padding: 0 var(--space-2); flex-direction: column; gap: 2px; height: auto; min-height: 48px;">
+          <span style="font-size: 18px;">🏆</span><span style="font-size: 10px;">صفقة</span>
+        </button>
       </div>
 
-      <div class="grid grid-cols-2 gap-2 mt-2">
-        <button onclick="changeStatus()" class="bg-crm-surface border border-crm-primary/10 rounded-lg py-2 text-sm text-slate-300 hover:border-crm-primary/30 transition-all">🔄 تغيير حالة</button>
-        <button onclick="addNotePrompt()" class="bg-crm-surface border border-crm-primary/10 rounded-lg py-2 text-sm text-slate-300 hover:border-crm-primary/30 transition-all">📝 ملاحظة</button>
-      </div>
-    </div>
-
-    <div class="card rounded-xl p-4 mb-3">
-      <div class="flex items-center justify-between mb-2">
-        <h3 class="font-bold text-sm">🤖 AI Hint</h3>
-        <button onclick="getAiHint()" class="text-xs bg-indigo-600 px-3 py-1 rounded">طلب نصيحة</button>
-      </div>
-      <div id="ai-hint-box" class="text-sm text-slate-400">اضغط "طلب نصيحة" للحصول على اقتراح من الـ AI.</div>
-    </div>
-
-    <div class="card rounded-xl p-4 mb-3">
-      <h3 class="font-bold text-sm mb-2 flex items-center gap-2">💬 محادثة واتساب <span id="chat-live-dot" class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span></h3>
-      <div id="chat-messages" class="space-y-1 max-h-60 overflow-y-auto scroll-smooth" style="scrollbar-width:thin;">
-        ${messages.length ? messages.map(m => `
-          <div class="text-xs p-2 rounded ${m.direction === 'inbound' ? 'bg-crm-surface border-l-2 border-green-500/50' : 'bg-crm-primary/10 border-r-2 border-blue-500/50'}">
-            <div class="text-slate-400 text-[10px] mb-1">${m.direction === 'inbound' ? '📩 من العميل' : '📤 مبعوت'} · ${new Date(m.created_at).toLocaleString('ar-EG')}</div>
-            ${esc(m.message_text || '—')}
-          </div>`).join('') : '<div class="text-slate-500 text-xs text-center py-2">لسه مفيش رسايل</div>'}
-      </div>
-      <div class="mt-2 flex gap-2">
-        <input id="wa-reply-input" type="text" placeholder="اكتب رد للعميل..."
-          class="flex-1 bg-crm-surface border border-crm-primary/20 rounded-lg px-3 py-2 text-sm text-slate-200 placeholder-slate-500 focus:border-green-500/50 focus:outline-none transition-all"
-          onkeydown="if(event.key==='Enter')sendWaReply()">
-        <button onclick="sendWaReply()" class="bg-green-600 hover:bg-green-500 text-white rounded-lg px-4 py-2 text-sm font-bold transition-all shadow-lg hover:shadow-green-500/25 flex items-center gap-1">
-          📤 ارسل
+      <!-- Secondary actions -->
+      <div class="grid grid-cols-2 gap-2" style="margin-top: var(--space-2);">
+        <button onclick="changeStatus()" class="btn btn-ghost btn-sm">
+          <span>🔄</span><span>تغيير حالة</span>
+        </button>
+        <button onclick="addNotePrompt()" class="btn btn-ghost btn-sm">
+          <span>📝</span><span>ملاحظة</span>
         </button>
       </div>
     </div>
 
-    <div class="card rounded-xl p-4">
-      <h3 class="font-bold text-sm mb-2">📜 السجل</h3>
-      <div class="space-y-1 max-h-40 overflow-y-auto">
+    <!-- AI Hint card -->
+    <div class="card-v2" style="padding: var(--space-4); margin-bottom: var(--space-3);">
+      <div class="flex items-center justify-between" style="margin-bottom: var(--space-2);">
+        <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-bold); color: var(--color-text); margin: 0;">🤖 AI Hint</h3>
+        <button onclick="getAiHint()" class="btn btn-primary btn-sm">طلب نصيحة</button>
+      </div>
+      <div id="ai-hint-box" style="font-size: var(--fs-sm); color: var(--color-text-muted); line-height: var(--lh-relaxed);">اضغط "طلب نصيحة" للحصول على اقتراح من الـ AI.</div>
+    </div>
+
+    <!-- WhatsApp chat -->
+    <div class="card-v2" style="padding: var(--space-4); margin-bottom: var(--space-3);">
+      <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-bold); color: var(--color-text); margin: 0 0 var(--space-2) 0; display: flex; align-items: center; gap: var(--space-2);">
+        💬 محادثة واتساب
+        <span id="chat-live-dot" style="width: 8px; height: 8px; border-radius: 50%; background: var(--color-success);" class="animate-pulse"></span>
+      </h3>
+      <div id="chat-messages" class="scrollbar-thin" style="max-height: 240px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
+        ${messages.length ? messages.map(m => {
+          const inbound = m.direction === 'inbound';
+          return `<div style="font-size: var(--fs-xs); padding: var(--space-2); border-radius: var(--radius-md); background: ${inbound ? 'var(--color-success-soft)' : 'var(--color-primary-soft)'}; border-inline-start: 2px solid ${inbound ? 'var(--color-success)' : 'var(--color-primary)'};">
+            <div style="color: var(--color-text-dim); font-size: 10px; margin-bottom: 2px;">${inbound ? '📩 من العميل' : '📤 مبعوت'} · ${new Date(m.created_at).toLocaleString('ar-EG')}</div>
+            <div style="color: var(--color-text);">${esc(m.message_text || '—')}</div>
+          </div>`;
+        }).join('') : '<div style="text-align: center; padding: var(--space-3); color: var(--color-text-dim); font-size: var(--fs-xs);">لا توجد رسائل</div>'}
+      </div>
+      <div class="flex gap-2" style="margin-top: var(--space-2);">
+        <input id="wa-reply-input" type="text" placeholder="اكتب رد للعميل..." class="input" style="flex: 1;" onkeydown="if(event.key==='Enter')sendWaReply()">
+        <button onclick="sendWaReply()" class="btn btn-success btn-sm">
+          <span>📤</span><span>ارسل</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Action history -->
+    <div class="card-v2" style="padding: var(--space-4);">
+      <h3 style="font-size: var(--fs-sm); font-weight: var(--fw-bold); color: var(--color-text); margin: 0 0 var(--space-2) 0;">📜 السجل</h3>
+      <div class="scrollbar-thin" style="max-height: 160px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px;">
         ${actions.length ? actions.map(a => `
-          <div class="text-xs flex justify-between p-1.5">
-            <span>${a.action}</span>
-            <span class="text-slate-1000/40">${new Date(a.created_at).toLocaleString('ar-EG')}</span>
-          </div>`).join('') : '<div class="text-slate-1000/40 text-xs">مفيش أكشنز</div>'}
+          <div style="font-size: var(--fs-xs); display: flex; justify-content: space-between; align-items: center; padding: 6px var(--space-2); border-radius: var(--radius-sm); background: var(--color-surface);">
+            <span style="color: var(--color-text);">${a.action}</span>
+            <span style="color: var(--color-text-dim); font-family: var(--font-mono);">${new Date(a.created_at).toLocaleString('ar-EG')}</span>
+          </div>`).join('') : '<div style="font-size: var(--fs-xs); color: var(--color-text-dim); text-align: center; padding: var(--space-3);">لا توجد إجراءات</div>'}
       </div>
     </div>
   `;
@@ -1287,7 +1472,7 @@ async function loadLeaderboard() {
         </div>
         <div class="text-crm-primary text-sm font-bold font-heading">${(row.total_xp||0).toLocaleString()}</div>
       </div>`;
-    }).join('') : '<div class="text-slate-1000/40 text-center py-6">لسه مفيش داتا</div>';
+    }).join('') : '<div class="text-slate-1000/40 text-center py-6">لا توجد بيانات</div>';
   } catch (err) { toast(err.message, 'error'); }
 }
 
@@ -1297,13 +1482,13 @@ async function loadStore() {
     const data = await api('/api/store');
     $('#store-list').innerHTML = (data.items || []).map(it => `
       <div class="card rounded-xl p-3 text-center ${!it.can_buy ? 'opacity-40' : 'border-crm-primary/15'}">
-        <div class="text-3xl mb-1" style="${it.can_buy ? 'filter: drop-shadow(0 0 8px rgba(59,130,246,0.4))' : ''}">${it.icon || '🎁'}</div>
+        <div class="text-3xl mb-1" style="${it.can_buy ? 'filter: drop-shadow(0 0 8px rgba(212,168,71,0.4))' : ''}">${it.icon || '🎁'}</div>
         <div class="font-semibold text-sm text-slate-100">${it.name}</div>
         <div class="text-xs text-slate-400 mb-2">${it.description || ''}</div>
         <div class="text-crm-primary text-sm font-bold mb-2 font-heading">🪙 ${it.coin_price}</div>
         <button onclick="buyItem('${it.id}')" ${!it.can_buy ? 'disabled' : ''}
                 class="w-full ${it.can_buy ? 'bg-gradient-to-r from-crm-primary/80 to-crm-accent text-crm-bg font-bold shadow-soft' : 'bg-crm-surface text-slate-500 border border-slate-700'} rounded py-1.5 text-xs transition-all">
-          ${it.can_buy ? 'شراء' : (it.level_met ? 'كوينز قليلة' : 'Level ' + it.level_required)}
+          ${it.can_buy ? 'شراء' : (it.level_met ? 'عملات غير كافية' : 'Level ' + it.level_required)}
         </button>
       </div>`).join('');
   } catch (err) { toast(err.message, 'error'); }
@@ -1477,40 +1662,110 @@ function pushNotification(title, body, priority) {
   notifications.unshift(notif);
   if (notifications.length > 50) notifications.length = 50;
   renderNotifications();
+  // Show live banner on screen
+  showNotifBanner(title, body, priority);
   if (priority === 'high') {
     playNotifSound();
     showBrowserNotification(title, body);
   }
 }
 
+function showNotifBanner(title, body, priority) {
+  const host = document.getElementById('notif-banner-host');
+  if (!host) return;
+  const colors = {
+    high: 'border-crm-danger bg-gradient-to-l from-red-900/90 to-red-800/90 border-l-4',
+    low: 'border-crm-primary bg-gradient-to-l from-blue-900/80 to-blue-800/80 border-l-4',
+  };
+  const icons = { high: '🔔', low: '💬' };
+  const el = document.createElement('div');
+  el.className = `notif-banner rounded-xl px-4 py-3 shadow-2xl backdrop-blur-sm ${colors[priority] || colors.low}`;
+  el.innerHTML = `
+    <div class="flex items-start gap-3">
+      <span class="text-2xl mt-0.5">${icons[priority] || icons.low}</span>
+      <div class="flex-1 min-w-0">
+        <div class="font-bold text-white text-sm">${esc(title)}</div>
+        <div class="text-slate-200 text-xs mt-0.5 leading-relaxed">${esc(body)}</div>
+      </div>
+      <button onclick="this.closest('.notif-banner').remove()" class="text-slate-400 hover:text-white text-lg leading-none">&times;</button>
+    </div>`;
+  host.appendChild(el);
+  // Auto-remove after 6 seconds
+  setTimeout(() => {
+    if (el.parentNode) { el.classList.add('removing'); setTimeout(() => el.remove(), 300); }
+  }, 6000);
+  // Max 3 banners visible
+  while (host.children.length > 3) host.firstElementChild.remove();
+}
+
 function renderNotifications() {
   const list = document.getElementById('notif-list');
   const badge = document.getElementById('notif-badge');
+  const bell = document.getElementById('notif-bell');
+  const inlineList = document.getElementById('notif-inline-list');
+  const inlineBadge = document.getElementById('notif-inline-badge');
   const unread = notifications.filter(n => !n.read).length;
+
+  // Bell badge
   if (unread > 0) {
     badge.textContent = unread > 99 ? '99+' : unread;
     badge.classList.remove('hidden');
+    if (bell) { bell.classList.remove('bell-ring'); void bell.offsetWidth; bell.classList.add('bell-ring'); }
   } else {
     badge.classList.add('hidden');
   }
-  if (!list) return;
+
+  // Inline badge
+  if (inlineBadge) {
+    if (unread > 0) { inlineBadge.textContent = unread > 99 ? '99+' : unread; inlineBadge.classList.remove('hidden'); }
+    else { inlineBadge.classList.add('hidden'); }
+  }
+
+  // Build HTML for notification items
+  const noNotifText = (window.t && t('no_notifications')) || 'لا يوجد إشعارات';
+  const emptyHtml = `<div class="text-slate-500 text-xs text-center py-3 card rounded-xl">${noNotifText}</div>`;
   if (notifications.length === 0) {
-    list.innerHTML = '<div class="px-3 py-4 text-center text-slate-500 text-xs">لا يوجد إشعارات</div>';
+    if (list) list.innerHTML = `<div class="px-3 py-4 text-center text-slate-500 text-xs">${noNotifText}</div>`;
+    if (inlineList) inlineList.innerHTML = emptyHtml;
     return;
   }
-  list.innerHTML = notifications.map(n => {
-    const ago = getTimeAgo(n.time);
-    const dot = n.read ? '' : '<span class="w-2 h-2 rounded-full bg-crm-primary flex-shrink-0"></span>';
-    const pColor = n.priority === 'high' ? 'border-l-crm-danger' : 'border-l-crm-primary/30';
-    return `<div class="px-3 py-2 flex items-start gap-2 border-l-2 ${pColor} hover:bg-crm-primary/5 cursor-pointer" onclick="markNotifRead(${n.id})">
-      ${dot}
-      <div class="flex-1 min-w-0">
-        <div class="text-xs font-semibold text-slate-200 truncate">${esc(n.title)}</div>
-        <div class="text-[10px] text-slate-400 truncate">${esc(n.body)}</div>
-        <div class="text-[9px] text-slate-500 mt-0.5">${ago}</div>
-      </div>
-    </div>`;
-  }).join('');
+
+  // Dropdown list (bell)
+  if (list) {
+    list.innerHTML = notifications.map(n => {
+      const ago = getTimeAgo(n.time);
+      const dot = n.read ? '' : '<span class="w-2 h-2 rounded-full bg-crm-primary flex-shrink-0"></span>';
+      const pColor = n.priority === 'high' ? 'border-l-crm-danger' : 'border-l-crm-primary/30';
+      return `<div class="px-3 py-2 flex items-start gap-2 border-l-2 ${pColor} hover:bg-crm-primary/5 cursor-pointer" onclick="markNotifRead(${n.id})">
+        ${dot}
+        <div class="flex-1 min-w-0">
+          <div class="text-xs font-semibold text-slate-200 truncate">${esc(n.title)}</div>
+          <div class="text-[10px] text-slate-400 truncate">${esc(n.body)}</div>
+          <div class="text-[9px] text-slate-500 mt-0.5">${ago}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  // Inline list (home screen)
+  if (inlineList) {
+    inlineList.innerHTML = notifications.slice(0, 10).map(n => {
+      const ago = getTimeAgo(n.time);
+      const icon = n.priority === 'high' ? '🔔' : '💬';
+      const borderColor = n.priority === 'high' ? 'border-r-red-500' : 'border-r-blue-500';
+      const bgColor = n.read ? 'bg-crm-card/50' : 'bg-crm-card';
+      const dot = n.read ? '' : '<span class="w-2.5 h-2.5 rounded-full bg-crm-danger flex-shrink-0 animate-pulse"></span>';
+      return `<div class="card rounded-xl p-3 flex items-start gap-3 border-r-4 ${borderColor} ${bgColor} cursor-pointer" onclick="markNotifRead(${n.id})">
+        <span class="text-xl">${icon}</span>
+        <div class="flex-1 min-w-0">
+          <div class="text-sm font-bold text-slate-100">${esc(n.title)}</div>
+          <div class="text-xs text-slate-400 mt-0.5">${esc(n.body)}</div>
+          <div class="text-[10px] text-slate-500 mt-1">${ago}</div>
+        </div>
+        ${dot}
+      </div>`;
+    }).join('');
+  }
 }
 
 function getTimeAgo(date) {
@@ -1558,8 +1813,39 @@ function clearNotifications() {
 // --- Browser Notification API ---
 function requestNotifPermission() {
   if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission().catch(() => {});
+    Notification.requestPermission().then(p => { if (p === 'granted') subscribePush(); }).catch(() => {});
+  } else if ('Notification' in window && Notification.permission === 'granted') {
+    subscribePush();
   }
+}
+
+async function subscribePush() {
+  try {
+    if (!('PushManager' in window) || !navigator.serviceWorker) return;
+    const reg = await navigator.serviceWorker.ready;
+    const cfg = await fetch('/api/config').then(r => r.json());
+    const vapidKey = cfg.vapid_public_key;
+    if (!vapidKey) return;
+    // Convert VAPID key from base64url to Uint8Array
+    const padding = '='.repeat((4 - vapidKey.length % 4) % 4);
+    const raw = atob(vapidKey.replace(/-/g, '+').replace(/_/g, '/') + padding);
+    const key = new Uint8Array(raw.length);
+    for (let i = 0; i < raw.length; i++) key[i] = raw.charCodeAt(i);
+
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: key,
+      });
+    }
+    // Send subscription to backend
+    await fetch('/api/push/subscribe', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + accessToken, 'X-Requested-With': 'XMLHttpRequest' },
+      body: JSON.stringify({ subscription: sub.toJSON() }),
+    });
+  } catch (e) { console.warn('Push subscribe failed:', e); }
 }
 
 function showBrowserNotification(title, body) {

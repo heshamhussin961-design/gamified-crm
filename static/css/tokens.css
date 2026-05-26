@@ -1,0 +1,155 @@
+/* ═══════════════════════════════════════════════════════════════
+   AL SAEB CRM — Design Tokens (Pixxi-inspired structure, Gold/Black brand)
+   Phase 1 of Pixxi migration. Loaded on every template before Tailwind.
+   ═══════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ─── Brand: Gold + Black (AL SAEB) ─── */
+  --color-primary:        #D4A847;
+  --color-primary-hover:  #C09838;
+  --color-primary-active: #A88128;
+  --color-primary-soft:   rgba(212, 168, 71, 0.10);
+  --color-primary-ring:   rgba(212, 168, 71, 0.30);
+  --color-secondary:      #A88128;
+  --color-accent:         #F4C962;
+
+  /* ─── Neutrals (dark default) ─── */
+  --color-bg:        #0a0a0a;
+  --color-surface:   #141414;
+  --color-card:      #1a1a1a;
+  --color-card-hover:#1f1f1f;
+  --color-border:    rgba(212, 168, 71, 0.12);
+  --color-border-strong: rgba(212, 168, 71, 0.22);
+  --color-divider:   rgba(148, 163, 184, 0.08);
+
+  /* ─── Text ─── */
+  --color-text:        #e8e8e8;
+  --color-text-muted:  #a0a0a0;
+  --color-text-dim:    #6b6b6b;
+  --color-text-on-primary: #0a0a0a;
+
+  /* ─── Semantic ─── */
+  --color-success: #22c55e;
+  --color-success-soft: rgba(34, 197, 94, 0.10);
+  --color-danger:  #ef4444;
+  --color-danger-soft:  rgba(239, 68, 68, 0.10);
+  --color-warning: #f59e0b;
+  --color-warning-soft: rgba(245, 158, 11, 0.10);
+  --color-info:    #38bdf8;
+  --color-info-soft:    rgba(56, 189, 248, 0.10);
+
+  /* ─── Spacing scale (4px base — Pixxi) ─── */
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+
+  /* ─── Border radius (Pixxi) ─── */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 20px;
+  --radius-full: 9999px;
+
+  /* ─── Shadows ─── */
+  --shadow-xs:   0 1px 2px rgba(0, 0, 0, 0.20);
+  --shadow-sm:   0 1px 3px rgba(0, 0, 0, 0.25), 0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-md:   0 4px 6px -1px rgba(0, 0, 0, 0.25), 0 2px 4px -2px rgba(0, 0, 0, 0.15);
+  --shadow-lg:   0 10px 20px -4px rgba(0, 0, 0, 0.30), 0 4px 6px -2px rgba(0, 0, 0, 0.15);
+  --shadow-xl:   0 20px 32px -8px rgba(0, 0, 0, 0.40);
+  --shadow-glow: 0 0 16px rgba(212, 168, 71, 0.25);
+  --shadow-ring: 0 0 0 3px var(--color-primary-ring);
+
+  /* ─── Typography ─── */
+  --font-heading: 'Inter', 'Cairo', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --font-body:    'Cairo', 'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', 'Fira Code', ui-monospace, monospace;
+
+  --fs-xs:   12px;
+  --fs-sm:   13px;
+  --fs-base: 14px;
+  --fs-md:   15px;
+  --fs-lg:   16px;
+  --fs-xl:   18px;
+  --fs-2xl:  20px;
+  --fs-3xl:  24px;
+  --fs-4xl:  28px;
+  --fs-5xl:  32px;
+  --fs-6xl:  40px;
+
+  --fw-regular:  400;
+  --fw-medium:   500;
+  --fw-semibold: 600;
+  --fw-bold:     700;
+  --fw-extrabold:800;
+
+  --lh-tight:  1.2;
+  --lh-snug:   1.35;
+  --lh-normal: 1.55;
+  --lh-relaxed:1.7;
+
+  /* ─── Layout (Pixxi structure) ─── */
+  --sidebar-width:        250px;
+  --sidebar-width-collapsed: 64px;
+  --topbar-height:        56px;
+  --container-max:        1400px;
+  --content-padding:      var(--space-6);
+
+  /* ─── Motion ─── */
+  --t-fast:   120ms;
+  --t-base:   180ms;
+  --t-slow:   260ms;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* ─── Z-index scale ─── */
+  --z-dropdown: 100;
+  --z-sticky:   200;
+  --z-overlay:  300;
+  --z-modal:    400;
+  --z-toast:    500;
+  --z-tooltip:  600;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   LIGHT MODE — flips neutrals, brand colors stay gold
+   ═══════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  --color-bg:        #f7f7f7;
+  --color-surface:   #ffffff;
+  --color-card:      #ffffff;
+  --color-card-hover:#fafafa;
+  --color-border:    rgba(212, 168, 71, 0.18);
+  --color-border-strong: rgba(212, 168, 71, 0.35);
+  --color-divider:   rgba(0, 0, 0, 0.06);
+
+  --color-text:       #1a1a1a;
+  --color-text-muted: #5a5a5a;
+  --color-text-dim:   #8a8a8a;
+  --color-text-on-primary: #0a0a0a;
+
+  --shadow-xs:  0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm:  0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md:  0 2px 8px rgba(0, 0, 0, 0.06);
+  --shadow-lg:  0 10px 20px -4px rgba(0, 0, 0, 0.10);
+  --shadow-xl:  0 20px 32px -8px rgba(0, 0, 0, 0.14);
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   Reduced motion
+   ═══════════════════════════════════════════════════════════════ */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --t-fast: 0ms;
+    --t-base: 0ms;
+    --t-slow: 0ms;
+  }
+}

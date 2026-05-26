@@ -1,26 +1,26 @@
 {
-  "name": "AlSaeb CRM",
-  "short_name": "AlSaeb",
-  "description": "Gamified CRM agent app",
+  "name": "AL SAEB CRM",
+  "short_name": "AL SAEB",
+  "description": "Gamified Real Estate CRM",
   "start_url": "/agent",
   "scope": "/agent",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#0c0f1a",
-  "theme_color": "#3b82f6",
+  "background_color": "#0a0a0a",
+  "theme_color": "#D4A847",
   "lang": "ar",
   "dir": "rtl",
   "icons": [
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192'%3E%3Crect width='192' height='192' rx='40' fill='%23050510'/%3E%3Ctext x='96' y='130' font-size='110' text-anchor='middle' fill='white'%3E🎯%3C/text%3E%3C/svg%3E",
+      "src": "/static/logo.png",
       "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
+      "type": "image/png",
+      "purpose": "any"
     },
     {
-      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%23050510'/%3E%3Ctext x='256' y='350' font-size='300' text-anchor='middle' fill='white'%3E🎯%3C/text%3E%3C/svg%3E",
+      "src": "/static/logo.png",
       "sizes": "512x512",
-      "type": "image/svg+xml",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ]

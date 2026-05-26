@@ -65,3 +65,35 @@ self.addEventListener('fetch', (e) => {
     );
   }
 });
+
+// ==================== Push Notifications ====================
+self.addEventListener('push', (e) => {
+  let data = { title: 'AlSaeb CRM', body: 'لديك إشعار جديد', url: '/agent' };
+  try {
+    if (e.data) data = Object.assign(data, e.data.json());
+  } catch (_) {}
+  e.waitUntil(
+    self.registration.showNotification(data.title, {
+      body: data.body,
+      icon: '/static/icon-192.png',
+      badge: '/static/icon-192.png',
+      tag: 'crm-push-' + Date.now(),
+      data: { url: data.url || '/agent' },
+      vibrate: [200, 100, 200],
+      requireInteraction: true,
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = (e.notification.data && e.notification.data.url) || '/agent';
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if (c.url.includes('/agent') && 'focus' in c) return c.focus();
+      }
+      return clients.openWindow(url);
+    })
+  );
+});

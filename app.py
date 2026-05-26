@@ -21,6 +21,7 @@ import os
 import re
 import smtplib
 import threading
+import time
 from datetime import datetime, timedelta
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -175,37 +176,49 @@ def landing():
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>AlSaeb CRM</title>
+<title>AL SAEB CRM</title>
+<link rel="icon" type="image/png" href="/static/logo.png" />
+<meta name="theme-color" content="#D4A847" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=IBM+Plex+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet"/>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'IBM Plex Sans Arabic','Inter',sans-serif;background:#0c0f1a;color:#e2e8f0;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem}
-.logo{width:72px;height:72px;border-radius:16px;background:rgba(59,130,246,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem}
-.logo svg{width:36px;height:36px;color:#3b82f6}
-h1{font-family:'Inter','IBM Plex Sans Arabic',sans-serif;font-size:2rem;font-weight:800;color:#3b82f6;margin-bottom:.25rem}
-.sub{color:#64748b;font-size:.9rem;margin-bottom:2.5rem}
+:root{--bg:#0a0a0a;--card:#1a1a1a;--text:#e8e8e8;--muted:#888;--footer:#444;--bg-glow1:rgba(212,168,71,0.05);--bg-glow2:rgba(244,201,98,0.03);--card-border:rgba(212,168,71,0.15);--card-border-hover:rgba(212,168,71,0.45)}
+[data-theme="light"]{--bg:#f5f5f5;--card:#ffffff;--text:#1a1a1a;--muted:#666;--footer:#999;--bg-glow1:rgba(212,168,71,0.1);--bg-glow2:rgba(244,201,98,0.06);--card-border:rgba(212,168,71,0.18);--card-border-hover:rgba(212,168,71,0.5)}
+body{font-family:'IBM Plex Sans Arabic','Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:1.5rem;background-image:radial-gradient(ellipse at 20% 80%, var(--bg-glow1) 0%, transparent 50%),radial-gradient(ellipse at 80% 20%, var(--bg-glow2) 0%, transparent 50%);transition:background-color .3s,color .3s}
+.logo-wrap{width:120px;height:120px;border-radius:24px;background:rgba(255,255,255,0.04);border:1px solid rgba(212,168,71,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;padding:12px;box-shadow:0 8px 32px rgba(212,168,71,0.15)}
+.logo-wrap img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 12px rgba(212,168,71,0.3))}
+h1{font-family:'Inter','IBM Plex Sans Arabic',sans-serif;font-size:2.4rem;font-weight:800;background:linear-gradient(135deg,#F4C962,#D4A847,#A88128);-webkit-background-clip:text;background-clip:text;color:transparent;letter-spacing:3px;margin-bottom:.25rem}
+.sub{color:var(--muted);font-size:.9rem;margin-bottom:2.5rem}
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;max-width:480px;width:100%}
 @media(max-width:480px){.cards{grid-template-columns:1fr}}
-.card{background:#1a1f35;border:1px solid rgba(148,163,184,0.08);border-radius:14px;padding:1.5rem;text-align:center;text-decoration:none;color:#e2e8f0;transition:all .2s}
-.card:hover{border-color:rgba(59,130,246,0.3);box-shadow:0 0 20px rgba(59,130,246,0.1);transform:translateY(-2px)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:14px;padding:1.5rem;text-align:center;text-decoration:none;color:var(--text);transition:all .25s}
+.card:hover{border-color:var(--card-border-hover);box-shadow:0 4px 24px rgba(212,168,71,0.15);transform:translateY(-3px)}
 .card .icon{font-size:2rem;margin-bottom:.75rem}
-.card .title{font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.25rem}
-.card .desc{font-size:.75rem;color:#64748b}
-.footer{margin-top:3rem;color:#334155;font-size:.75rem}
-.footer span{color:#3b82f6}
+.card .title{font-family:'Inter',sans-serif;font-weight:700;font-size:1rem;margin-bottom:.25rem;color:#D4A847}
+.card .desc{font-size:.75rem;color:var(--muted)}
+.footer{margin-top:3rem;color:var(--footer);font-size:.75rem}
+.footer span{color:#D4A847}
+.theme-btn{position:fixed;top:1rem;left:1rem;background:rgba(212,168,71,0.12);border:1px solid rgba(212,168,71,0.3);color:#D4A847;width:44px;height:44px;border-radius:12px;font-size:18px;cursor:pointer;backdrop-filter:blur(10px);transition:transform .15s}
+.theme-btn:hover{transform:scale(1.08)}
 </style>
+<script>
+(function(){var s=localStorage.getItem('alsaeb_theme')||'dark';document.documentElement.setAttribute('data-theme',s);})();
+function toggleTheme(){var c=document.documentElement.getAttribute('data-theme')||'dark';var n=c==='dark'?'light':'dark';document.documentElement.setAttribute('data-theme',n);localStorage.setItem('alsaeb_theme',n);var b=document.getElementById('theme-btn');if(b)b.textContent=n==='dark'?'🌙':'☀️';var m=document.querySelector('meta[name="theme-color"]');if(m)m.setAttribute('content',n==='dark'?'#0a0a0a':'#ffffff');}
+document.addEventListener('DOMContentLoaded',function(){var t=document.documentElement.getAttribute('data-theme')||'dark';var b=document.getElementById('theme-btn');if(b)b.textContent=t==='dark'?'🌙':'☀️';});
+</script>
 </head>
 <body>
-<div class="logo"><svg fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg></div>
-<h1>AlSaeb CRM</h1>
+<button id="theme-btn" class="theme-btn" onclick="toggleTheme()" title="تبديل المظهر">🌙</button>
+<div class="logo-wrap"><img src="/static/logo.png" alt="AL SAEB"/></div>
+<h1>AL SAEB</h1>
 <p class="sub">نظام إدارة العملاء الذكي</p>
 <div class="cards">
   <a href="/admin" class="card"><div class="icon">📊</div><div class="title">لوحة التحكم</div><div class="desc">إدارة الفريق والليدز والإعلانات</div></a>
   <a href="/agent" class="card"><div class="icon">🎯</div><div class="title">صفحة الموظف</div><div class="desc">متابعة الليدز والأداء</div></a>
-  <a href="/game" class="card"><div class="icon">🎮</div><div class="title">اللعبة</div><div class="desc">المكتب التفاعلي ثنائي الأبعاد</div></a>
-  <a href="/map" class="card"><div class="icon">🗺️</div><div class="title">الخريطة</div><div class="desc">رحلة المدينة السيبربنك</div></a>
+  <a href="/game3d" class="card"><div class="icon">🎮</div><div class="title">العالم ثلاثي الأبعاد</div><div class="desc">المكتب 3D التفاعلي</div></a>
+  <a href="/map" class="card"><div class="icon">🗺️</div><div class="title">الخريطة</div><div class="desc">رحلة الإنجاز</div></a>
 </div>
-<p class="footer">AlSaeb CRM <span>v1.0.1</span> — Enterprise Build</p>
+<p class="footer">AL SAEB CRM <span>v1.1.0</span> — Gold Edition</p>
 </body>
 </html>'''
 
@@ -228,16 +241,19 @@ def journey_map():
     return render_template('map.html')
 
 
-@app.route('/game')
-def office_game():
-    """Antigravity 2D office game — Phaser 3 pixel-art CRM."""
-    return render_template('game.html')
-
+@app.route('/game3d')
+def office_game_3d():
+    """AlSaeb 3D Game — Three.js immersive CRM experience."""
+    return render_template('game3d.html')
 
 
 @app.route('/favicon.ico')
 def favicon():
-    return send_from_directory('static', 'favicon.ico', mimetype='image/x-icon')
+    # Use brand logo as favicon (browsers accept PNG via .ico route)
+    import os as _os
+    if _os.path.exists(_os.path.join(app.static_folder, 'favicon.ico')):
+        return send_from_directory('static', 'favicon.ico', mimetype='image/x-icon')
+    return send_from_directory('static', 'logo.png', mimetype='image/png')
 
 
 @app.route('/api/config')
@@ -249,6 +265,7 @@ def public_config():
     return jsonify({
         'supabase_url':      os.getenv('SUPABASE_URL'),
         'supabase_anon_key': os.getenv('SUPABASE_ANON_KEY'),
+        'vapid_public_key':  os.getenv('VAPID_PUBLIC_KEY', ''),
     })
 
 @app.route('/api/debug/stats')
@@ -267,23 +284,164 @@ def debug_stats():
 
 # ==================== Auth & RBAC Middleware ====================
 
+# ──────────────── Auth + Rate Limit in-memory caches (Perf) ────────────────
+# JWT token verification cache: avoids a Supabase HTTP call on every request.
+# TTL is short (5 min) so revoked sessions don't linger long.
+_token_cache = {}             # token_str -> (user_id, user_obj, expires_at)
+_token_cache_lock = threading.Lock()
+_TOKEN_CACHE_TTL = 300        # 5 minutes
+_TOKEN_CACHE_MAX = 1000
+
+def _verify_token_cached(token):
+    """Verify Supabase JWT — uses local cache to avoid network calls per request."""
+    if not token:
+        return None
+    now_ts = time.time()
+    with _token_cache_lock:
+        entry = _token_cache.get(token)
+        if entry and entry[2] > now_ts:
+            return entry[0], entry[1]
+    try:
+        user = supabase.auth.get_user(token)
+        result = (user.user.id, user.user)
+    except Exception:
+        return None
+    with _token_cache_lock:
+        _token_cache[token] = (result[0], result[1], now_ts + _TOKEN_CACHE_TTL)
+        if len(_token_cache) > _TOKEN_CACHE_MAX:
+            # Drop expired entries
+            stale = [t for t, e in list(_token_cache.items()) if e[2] < now_ts]
+            for t in stale:
+                _token_cache.pop(t, None)
+    return result
+
+
+# Rate-limit cache: in-memory sliding window (60s)
+_rate_cache = {}              # (user_id, endpoint_key) -> [timestamps]
+_rate_cache_lock = threading.Lock()
+
+# Per-user response cache (for frequently-polled GET endpoints like /api/me, leaderboard)
+_resp_cache = {}              # key -> (payload, expires_at)
+_resp_cache_lock = threading.Lock()
+
+
+def cached_response(ttl=15):
+    """Caches the JSON response of a GET endpoint per user for `ttl` seconds.
+    Use only for safe (idempotent) endpoints whose data tolerates a small staleness."""
+    def decorator(f):
+        @wraps(f)
+        def decorated(*args, **kwargs):
+            uid = getattr(request, 'user_id', None) or 'anon'
+            cache_key = (uid, request.path, request.query_string.decode('utf-8', 'ignore'))
+            now_ts = time.time()
+            with _resp_cache_lock:
+                entry = _resp_cache.get(cache_key)
+                if entry and entry[1] > now_ts:
+                    cached_payload, _ = entry
+                    # Return a fresh Response so headers can still be modified
+                    resp = jsonify(cached_payload[0])
+                    resp.status_code = cached_payload[1]
+                    return resp
+            result = f(*args, **kwargs)
+            # Extract data + status from Flask response
+            try:
+                if isinstance(result, tuple):
+                    body_resp, status = result
+                else:
+                    body_resp, status = result, 200
+                payload_json = body_resp.get_json() if hasattr(body_resp, 'get_json') else None
+                if payload_json is not None and status < 400:
+                    with _resp_cache_lock:
+                        _resp_cache[cache_key] = ((payload_json, status), now_ts + ttl)
+                        if len(_resp_cache) > 2000:
+                            stale = [k for k, e in list(_resp_cache.items()) if e[1] < now_ts]
+                            for k in stale:
+                                _resp_cache.pop(k, None)
+            except Exception:
+                pass
+            return result
+        return decorated
+    return decorator
+
+
+def invalidate_user_cache(user_id):
+    """Drop cached responses for a user (call after mutations)."""
+    if not user_id:
+        return
+    with _resp_cache_lock:
+        for k in list(_resp_cache.keys()):
+            if k[0] == user_id:
+                _resp_cache.pop(k, None)
+
+
+# Lock-check cache so we don't query the DB on every request
+_locked_cache = {}  # user_id -> (is_locked, expires_at)
+_locked_cache_lock = threading.Lock()
+_LOCKED_CACHE_TTL = 30  # 30s — short so unlock takes effect quickly
+
+
+def _is_user_locked(user_id):
+    if not user_id:
+        return False
+    now_ts = time.time()
+    with _locked_cache_lock:
+        entry = _locked_cache.get(user_id)
+        if entry and entry[1] > now_ts:
+            return entry[0]
+    try:
+        r = supabase.table('employees').select('is_locked').eq('id', user_id).single().execute()
+        locked = bool((r.data or {}).get('is_locked'))
+    except Exception:
+        locked = False
+    with _locked_cache_lock:
+        _locked_cache[user_id] = (locked, now_ts + _LOCKED_CACHE_TTL)
+    return locked
+
+
+def _invalidate_lock_cache(user_id):
+    with _locked_cache_lock:
+        _locked_cache.pop(user_id, None)
+
+
 def require_auth(f):
-    """Verifies the JWT token and attaches user to request context."""
+    """Verifies the JWT token and attaches user to request context (cached)."""
     @wraps(f)
     def decorated(*args, **kwargs):
         token = request.headers.get('Authorization', '').replace('Bearer ', '')
         if not token:
             return error_response('No token provided', 401)
-
-        try:
-            user = supabase.auth.get_user(token)
-            request.user_id = user.user.id
-            request.user = user.user
-        except Exception:
+        result = _verify_token_cached(token)
+        if not result:
             return error_response('انتهت صلاحية الجلسة — سجل دخول مرة تانية', 401)
-
+        # Block locked employees from accessing anything except their /api/me
+        if _is_user_locked(result[0]):
+            return error_response('حسابك مقفول — تواصل مع الأدمن لفتحه', 403)
+        request.user_id = result[0]
+        request.user = result[1]
+        # Update last_seen_at (cheap — only every ~60s to avoid DB hammering)
+        global _last_seen_throttle
+        try:
+            now_ts = time.time()
+            last = _last_seen_throttle.get(result[0], 0)
+            if now_ts - last > 60:
+                _last_seen_throttle[result[0]] = now_ts
+                # Fire and forget — non-blocking
+                threading.Thread(target=_update_last_seen, args=(result[0],), daemon=True).start()
+        except Exception:
+            pass
         return f(*args, **kwargs)
     return decorated
+
+
+_last_seen_throttle = {}
+
+def _update_last_seen(user_id):
+    try:
+        supabase.table('employees').update({
+            'last_seen_at': datetime.utcnow().isoformat()
+        }).eq('id', user_id).execute()
+    except Exception:
+        pass
 
 
 def check_role(roles):
@@ -331,22 +489,29 @@ def audit_log(action_name, target_type=None):
 
 
 def rate_limit(endpoint_key, max_per_min=60):
-    """Rate limiter via check_rate_limit RPC. Fails open if the RPC throws."""
+    """Rate limiter using in-memory sliding window (60s). No DB call per request."""
     def decorator(f):
         @wraps(f)
         @require_auth
         def decorated(*args, **kwargs):
-            try:
-                allowed = supabase.rpc('check_rate_limit', {
-                    'p_employee_id': getattr(request, 'user_id', None),
-                    'p_endpoint':    endpoint_key,
-                    'p_max_per_min': max_per_min,
-                }).execute()
-                if allowed.data is False:
+            uid = getattr(request, 'user_id', None)
+            if not uid:
+                return f(*args, **kwargs)
+            now_ts = time.time()
+            key = (uid, endpoint_key)
+            with _rate_cache_lock:
+                hits = _rate_cache.get(key, [])
+                hits = [t for t in hits if t > now_ts - 60]
+                if len(hits) >= max_per_min:
                     return error_response('Rate limit exceeded', 429)
-            except Exception:
-                # Fail closed — block request if rate limit check fails
-                return error_response('Rate limit check failed, try again', 503)
+                hits.append(now_ts)
+                _rate_cache[key] = hits
+                # Light cleanup
+                if len(_rate_cache) > 5000:
+                    cutoff = now_ts - 60
+                    for k in list(_rate_cache.keys()):
+                        if not _rate_cache[k] or _rate_cache[k][-1] < cutoff:
+                            _rate_cache.pop(k, None)
             return f(*args, **kwargs)
         return decorated
     return decorator
@@ -1142,8 +1307,9 @@ def complete_quest(quest_id):
 
 @app.route('/api/leaderboard', methods=['GET'])
 @require_auth
+@cached_response(ttl=30)
 def get_leaderboard():
-    """لوحة الشرف"""
+    """لوحة الشرف (مخزن مؤقتاً 30 ثانية)"""
     period = request.args.get('period', 'weekly')
 
     try:
@@ -1426,8 +1592,9 @@ def buy_item():
 
 @app.route('/api/me', methods=['GET'])
 @require_auth
+@cached_response(ttl=10)
 def get_profile():
-    """بروفايل الموظف الحالي"""
+    """بروفايل الموظف الحالي (يتخزن مؤقتاً 10 ثوانٍ لتخفيف الضغط)"""
     try:
         emp = supabase.table('employees').select('*').eq(
             'id', request.user_id
@@ -1483,8 +1650,9 @@ def toggle_professional_mode():
 
 @app.route('/api/me/stats', methods=['GET'])
 @require_auth
+@cached_response(ttl=20)
 def get_my_stats():
-    """إحصائيات مفصلة للموظف"""
+    """إحصائيات مفصلة للموظف (مخزن مؤقتاً 20 ثانية)"""
     days = int(request.args.get('days', 7))
     since = (datetime.utcnow() - timedelta(days=days)).isoformat()
 
@@ -1527,6 +1695,384 @@ def get_my_stats():
         stats['daily_breakdown'][day]['actions'] += 1
 
     return jsonify({'stats': stats, 'period_days': days})
+
+
+# ═══════════════════════════════════════════════════════════════
+# DOCUMENT ARCHIVE
+# ═══════════════════════════════════════════════════════════════
+
+@app.route('/api/documents', methods=['GET'])
+@require_auth
+def list_documents():
+    """قائمة المستندات (مع تصفية حسب entity_type + entity_id + category)."""
+    try:
+        q = supabase.table('documents').select('*').is_('deleted_at', 'null').order('uploaded_at', desc=True)
+        et = request.args.get('entity_type')
+        eid = request.args.get('entity_id')
+        cat = request.args.get('category')
+        if et:
+            q = q.eq('entity_type', et)
+        if eid:
+            q = q.eq('entity_id', eid)
+        if cat:
+            q = q.eq('category', cat)
+        limit = min(int(request.args.get('limit', 100)), 500)
+        result = q.limit(limit).execute()
+        return jsonify({'documents': result.data or []})
+    except Exception as e:
+        return error_response(str(e), 500)
+
+
+@app.route('/api/documents', methods=['POST'])
+@require_auth
+def upload_document_meta():
+    """تسجيل مستند جديد (الـ file URL بييجي من Supabase Storage بعد الـ upload الـ client-side)."""
+    try:
+        body = request.get_json() or {}
+        required = ['title', 'file_url', 'file_name', 'entity_type']
+        for k in required:
+            if not body.get(k):
+                return error_response(f'الحقل {k} مطلوب', 400)
+        if body['entity_type'] not in ('employee', 'lead', 'transaction', 'property', 'contract', 'general'):
+            return error_response('entity_type غير صحيح', 400)
+        record = {
+            'title': body['title'][:200],
+            'description': (body.get('description') or '')[:1000] or None,
+            'file_url': body['file_url'],
+            'file_name': body['file_name'][:255],
+            'file_size': body.get('file_size'),
+            'mime_type': (body.get('mime_type') or '')[:100] or None,
+            'entity_type': body['entity_type'],
+            'entity_id': body.get('entity_id'),
+            'category': (body.get('category') or 'other')[:50],
+            'tags': body.get('tags') or [],
+            'uploaded_by': request.user_id,
+            'metadata': body.get('metadata') or {},
+        }
+        r = supabase.table('documents').insert(record).execute()
+        return success_response({'document': (r.data or [None])[0]}, 'تم رفع المستند')
+    except Exception as e:
+        return error_response(str(e), 500)
+
+
+@app.route('/api/documents/<doc_id>', methods=['DELETE'])
+@check_role(['admin', 'manager'])
+@audit_log('document_deleted', 'document')
+def delete_document(doc_id):
+    """حذف مستند (soft delete)."""
+    try:
+        supabase.table('documents').update({
+            'deleted_at': datetime.utcnow().isoformat()
+        }).eq('id', doc_id).execute()
+        return success_response(None, 'تم الحذف')
+    except Exception as e:
+        return error_response(str(e), 500)
+
+
+@app.route('/api/admin/employees/<user_id>/profile', methods=['GET'])
+@require_auth
+@cached_response(ttl=20)
+def admin_employee_profile(user_id):
+    """بروفايل تفصيلي لموظف — بيانات أساسية + إحصائيات + شارات + آخر النشاطات."""
+    try:
+        # Basic employee info
+        emp = supabase.table('employees').select(
+            'id, email, full_name, avatar_color, role, level, title, total_xp, current_xp, '
+            'syb_coins, total_deals, total_leads, total_messages, total_calls, '
+            'is_active, is_locked, daily_streak, stamina, last_seen_at, created_at'
+        ).eq('id', user_id).single().execute()
+        emp_data = emp.data
+        if not emp_data:
+            return error_response('الموظف غير موجود', 404)
+
+        # Last 30 days stats
+        since = (datetime.utcnow() - timedelta(days=30)).isoformat()
+        actions = supabase.table('actions_log').select('action, xp_earned, coins_earned, created_at').eq(
+            'employee_id', user_id
+        ).gte('created_at', since).execute()
+        action_rows = actions.data or []
+        stats_30d = {
+            'messages_sent': sum(1 for a in action_rows if a.get('action') == 'whatsapp_sent'),
+            'calls_made': sum(1 for a in action_rows if a.get('action') == 'call_made'),
+            'deals_closed': sum(1 for a in action_rows if a.get('action') == 'deal_closed'),
+            'meetings_booked': sum(1 for a in action_rows if a.get('action') == 'meeting_booked'),
+            'total_xp_30d': sum(a.get('xp_earned', 0) for a in action_rows),
+            'total_actions': len(action_rows),
+        }
+
+        # Daily breakdown for last 14 days
+        daily = {}
+        for a in action_rows:
+            day = (a.get('created_at') or '')[:10]
+            if not day:
+                continue
+            if day not in daily:
+                daily[day] = {'xp': 0, 'actions': 0, 'deals': 0}
+            daily[day]['xp'] += a.get('xp_earned', 0)
+            daily[day]['actions'] += 1
+            if a.get('action') == 'deal_closed':
+                daily[day]['deals'] += 1
+
+        # Badges earned (try; table may not exist)
+        badges = []
+        try:
+            b = supabase.table('employee_badges').select(
+                '*, badges:badge_id(name, description, icon, tier)'
+            ).eq('employee_id', user_id).execute()
+            badges = b.data or []
+        except Exception:
+            pass
+
+        # Active leads count
+        active_leads = 0
+        try:
+            r = supabase.table('leads').select('id', count='exact').eq(
+                'assigned_to', user_id
+            ).in_('status', ['new', 'contacted', 'interested', 'meeting_set', 'negotiation']).execute()
+            active_leads = r.count or 0
+        except Exception:
+            pass
+
+        # Recent leads (5 most recently updated)
+        recent_leads = []
+        try:
+            r = supabase.table('leads').select('id, name, phone, status, updated_at').eq(
+                'assigned_to', user_id
+            ).order('updated_at', desc=True).limit(5).execute()
+            recent_leads = r.data or []
+        except Exception:
+            pass
+
+        # Current rank
+        rank_info = {'rank': None, 'total_employees': 0}
+        try:
+            ranked = supabase.rpc('get_leaderboard_rank', {'p_employee_id': user_id}).execute()
+            if ranked.data:
+                rank_info = ranked.data if isinstance(ranked.data, dict) else {'rank': ranked.data}
+        except Exception:
+            # Fallback: count manually
+            try:
+                all_emps = supabase.table('employees').select('id, total_xp').eq('is_active', True).execute().data or []
+                sorted_emps = sorted(all_emps, key=lambda e: e.get('total_xp', 0), reverse=True)
+                for idx, e in enumerate(sorted_emps):
+                    if e['id'] == user_id:
+                        rank_info = {'rank': idx + 1, 'total_employees': len(sorted_emps)}
+                        break
+            except Exception:
+                pass
+
+        return jsonify({
+            'employee': emp_data,
+            'stats_30d': stats_30d,
+            'daily_breakdown': daily,
+            'badges': badges,
+            'active_leads_count': active_leads,
+            'recent_leads': recent_leads,
+            'rank': rank_info,
+        })
+    except Exception as e:
+        return error_response(f'فشل التحميل: {str(e)}', 500)
+
+
+# ═══════════════════════════════════════════════════════════════
+# AI BOT ADMIN ENDPOINTS
+# ═══════════════════════════════════════════════════════════════
+
+@app.route('/api/admin/bot/conversations', methods=['GET'])
+@check_role(['admin', 'manager'])
+@cached_response(ttl=10)
+def admin_bot_conversations():
+    """قائمة محادثات البوت (آخر ٥٠ محادثة)."""
+    try:
+        state = request.args.get('state')
+        q = supabase.table('bot_conversations').select('*').order('last_message_at', desc=True).limit(50)
+        if state:
+            q = q.eq('state', state)
+        r = q.execute()
+        return jsonify({'conversations': r.data or []})
+    except Exception as e:
+        return error_response(str(e), 500)
+
+
+@app.route('/api/admin/bot/conversations/<conv_id>/messages', methods=['GET'])
+@check_role(['admin', 'manager'])
+def admin_bot_messages(conv_id):
+    """رسائل محادثة محددة."""
+    try:
+        r = supabase.table('bot_messages').select('*').eq(
+            'conversation_id', conv_id
+        ).order('created_at', desc=False).execute()
+        return jsonify({'messages': r.data or []})
+    except Exception as e:
+        return error_response(str(e), 500)
+
+
+@app.route('/api/admin/job-applications', methods=['GET'])
+@check_role(['admin', 'manager'])
+@cached_response(ttl=10)
+def admin_job_applications():
+    """قائمة طلبات التوظيف من بوت سارة."""
+    try:
+        status = request.args.get('status')
+        q = supabase.table('job_applications').select('*').order('created_at', desc=True).limit(100)
+        if status:
+            q = q.eq('status', status)
+        r = q.execute()
+        return jsonify({'applications': r.data or []})
+    except Exception as e:
+        return error_response(str(e), 500)
+
+
+@app.route('/api/admin/job-applications/<app_id>/status', methods=['PATCH'])
+@check_role(['admin', 'manager'])
+@audit_log('job_app_status_change', 'job_application')
+def admin_change_job_status(app_id):
+    """تعديل حالة متقدم وظيفة (مثلاً: قبول/رفض/تعيين)."""
+    try:
+        body = request.get_json() or {}
+        new_status = (body.get('status') or '').strip()
+        allowed = ['pending', 'screening', 'qualified', 'rejected', 'hired', 'archived']
+        if new_status not in allowed:
+            return error_response(f'حالة غير صحيحة. المسموح: {allowed}', 400)
+        supabase.table('job_applications').update({
+            'status': new_status,
+            'updated_at': datetime.utcnow().isoformat(),
+        }).eq('id', app_id).execute()
+        return success_response(None, 'تم التحديث')
+    except Exception as e:
+        return error_response(str(e), 500)
+
+
+@app.route('/api/admin/online-users', methods=['GET'])
+@require_auth
+@cached_response(ttl=10)
+def admin_online_users():
+    """الموظفين الفاتحين السيستم في آخر 5 دقايق."""
+    try:
+        cutoff = (datetime.utcnow() - timedelta(minutes=5)).isoformat()
+        r = supabase.table('employees').select(
+            'id, full_name, email, avatar_color, role, title, level, last_seen_at, is_locked'
+        ).gte('last_seen_at', cutoff).order('last_seen_at', desc=True).execute()
+        users = r.data or []
+        # Filter out locked + add online status (active in last 2 min)
+        now = datetime.utcnow()
+        for u in users:
+            try:
+                ls = datetime.fromisoformat(u['last_seen_at'].replace('Z', '+00:00')).replace(tzinfo=None)
+                u['minutes_ago'] = int((now - ls).total_seconds() / 60)
+                u['is_active'] = u['minutes_ago'] < 2
+            except Exception:
+                u['minutes_ago'] = 99; u['is_active'] = False
+        return jsonify({'users': users, 'count': len(users), 'active_count': sum(1 for u in users if u.get('is_active'))})
+    except Exception as e:
+        return jsonify({'users': [], 'count': 0, 'active_count': 0, 'error': str(e)})
+
+
+@app.route('/api/ai/coach', methods=['GET'])
+@require_auth
+def ai_coach_tip():
+    """نصيحة سريعة من AI بناء على بيانات الموظف الحالية (للعبة 3D)."""
+    try:
+        emp = supabase.table('employees').select(
+            'full_name, level, total_xp, syb_coins, total_deals, total_leads, stamina, title'
+        ).eq('id', request.user_id).single().execute().data or {}
+
+        # Get recent activity (last 24h)
+        since = (datetime.utcnow() - timedelta(hours=24)).isoformat()
+        try:
+            recent = supabase.table('actions_log').select('action, xp_earned').eq(
+                'employee_id', request.user_id
+            ).gte('created_at', since).execute().data or []
+        except Exception:
+            recent = []
+
+        deals_today = sum(1 for a in recent if a.get('action') == 'deal_closed')
+        msgs_today = sum(1 for a in recent if a.get('action') == 'whatsapp_sent')
+        calls_today = sum(1 for a in recent if a.get('action') == 'call_made')
+
+        # Build context for AI
+        context = (
+            f"اللاعب اسمه {emp.get('full_name','')} لقبه {emp.get('title','')}، "
+            f"المستوى {emp.get('level',1)}، عدد الصفقات اليوم {deals_today}، "
+            f"رسائل اليوم {msgs_today}، مكالمات اليوم {calls_today}، "
+            f"رصيد العملات {emp.get('syb_coins',0)}، إجمالي الصفقات {emp.get('total_deals',0)}."
+        )
+        prompt = (
+            f"{context}\n"
+            "اقترح نصيحة قصيرة جداً (سطر واحد، أقل من 70 حرف، عربي) لتحفيز اللاعب أو "
+            "تذكيره بحاجة مهمة بناء على أرقامه. لا تكتب مقدمات."
+        )
+
+        # Try Gemini → fallback to canned tip
+        tip = ''
+        try:
+            from ai_client import generate_text
+            tip = (generate_text(prompt, max_tokens=80) or '').strip().strip('"').strip("'")
+            if len(tip) > 140:
+                tip = tip[:140] + '...'
+        except Exception as e:
+            print('AI coach failed:', e)
+
+        # Fallback tips based on player state
+        if not tip:
+            tips = []
+            if deals_today == 0:
+                tips.append('لسه ماقفلتش صفقة اليوم — يلا 💪')
+            if msgs_today < 5:
+                tips.append('ابعت رسالة WhatsApp جديدة لليدز بتاعك')
+            if calls_today < 3:
+                tips.append('مكالمة سريعة بترفع XP — جرب الآن')
+            if emp.get('stamina', 100) < 30:
+                tips.append('طاقتك قليلة — روح غرفة الاستراحة ☕')
+            if not tips:
+                tips.append(f"أنت في {emp.get('title','نجم')}! استمر 🚀")
+            import random as _r
+            tip = _r.choice(tips)
+
+        return jsonify({'tip': tip})
+    except Exception as e:
+        return jsonify({'tip': 'استمر في العمل! 💪', 'error': str(e)}), 200
+
+
+@app.route('/api/ai/npc-chat', methods=['POST'])
+@require_auth
+def ai_npc_chat():
+    """محادثة مع زميل افتراضي (NPC) باستخدام Gemini AI."""
+    try:
+        body = request.get_json() or {}
+        user_msg = (body.get('message') or '').strip()[:500]
+        npc_name = (body.get('npc_name') or 'زميل')[:30]
+        if not user_msg:
+            return jsonify({'reply': 'إيه عاوز؟ كلمني'}), 200
+
+        prompt = (
+            f"أنت {npc_name}، مندوب مبيعات شغّال في شركة AlSaeb CRM. ردك يكون قصير "
+            f"(جملة أو اثنين)، عربي عامية مصرية، وشخصيتك ودودة ومتحمسة للشغل. "
+            f"الزميل بيقولك: \"{user_msg}\""
+        )
+        reply = ''
+        try:
+            from ai_client import generate_text
+            reply = (generate_text(prompt, max_tokens=120) or '').strip().strip('"').strip("'")
+            if len(reply) > 240:
+                reply = reply[:240] + '...'
+        except Exception as e:
+            print('NPC chat Gemini failed:', e)
+
+        if not reply:
+            replies = [
+                'هلا، أنا شغال على ليد جديد 💪',
+                'صفقاتك كام النهارده؟',
+                'لازم نقفل أكتر صفقات الأسبوع ده',
+                'العميل بتاع آخر مكالمة طلع كويس!',
+                'تعال نشرب قهوة بعد ما تخلص الليد ده ☕',
+            ]
+            import random as _r
+            reply = _r.choice(replies)
+
+        return jsonify({'reply': reply}), 200
+    except Exception as e:
+        return jsonify({'reply': 'مش فاهم، قول تاني', 'error': str(e)}), 200
 
 
 # ==================== ADMIN: EMPLOYEE MANAGEMENT ====================
@@ -1642,6 +2188,42 @@ def update_employee(user_id):
         return error_response(f"Employee Update Error: {str(e)}", 500)
 
 
+@app.route('/api/admin/employees/<user_id>/lock', methods=['POST'])
+@check_role(['admin'])
+@audit_log('employee_locked', 'employee')
+def lock_employee(user_id):
+    """قفل الموظف — يمنعه من تسجيل الدخول."""
+    try:
+        body = request.get_json(silent=True) or {}
+        reason = (body.get('reason') or '').strip()[:200] or 'تم القفل بواسطة الأدمن'
+        supabase.table('employees').update({
+            'is_locked': True,
+            'locked_at': datetime.utcnow().isoformat(),
+            'locked_reason': reason,
+        }).eq('id', user_id).execute()
+        _invalidate_lock_cache(user_id)
+        return success_response(None, 'تم قفل الموظف')
+    except Exception as e:
+        return error_response(f'فشل القفل: {str(e)}', 500)
+
+
+@app.route('/api/admin/employees/<user_id>/unlock', methods=['POST'])
+@check_role(['admin'])
+@audit_log('employee_unlocked', 'employee')
+def unlock_employee(user_id):
+    """فتح القفل — يسمح للموظف بتسجيل الدخول مرة أخرى."""
+    try:
+        supabase.table('employees').update({
+            'is_locked': False,
+            'locked_at': None,
+            'locked_reason': None,
+        }).eq('id', user_id).execute()
+        _invalidate_lock_cache(user_id)
+        return success_response(None, 'تم فتح القفل')
+    except Exception as e:
+        return error_response(f'فشل الفتح: {str(e)}', 500)
+
+
 @app.route('/api/admin/employees/<user_id>', methods=['DELETE'])
 @check_role(['admin'])
 @audit_log('employee_delete', target_type='employee')
@@ -1699,6 +2281,76 @@ def delete_employee(user_id):
         return success_response(None, 'تم حذف الموظف')
     except Exception as e:
         return error_response(f'خطأ في الحذف: {str(e)}', 500)
+
+
+# ==================== PUSH NOTIFICATIONS ====================
+
+def send_push_to_employee(employee_id: str, title: str, body: str, url: str = '/agent'):
+    """ابعت Push Notification لموظف محدد (كل أجهزته)."""
+    vapid_private = os.getenv('VAPID_PRIVATE_KEY', '')
+    vapid_email = os.getenv('VAPID_EMAIL', 'mailto:admin@al-saeb-crm.online')
+    if not vapid_private:
+        return
+    def _send():
+        try:
+            from pywebpush import webpush, WebPushException
+            subs = supabase.table('push_subscriptions').select('subscription').eq(
+                'employee_id', employee_id).execute()
+            for row in (subs.data or []):
+                sub_info = row['subscription']
+                if isinstance(sub_info, str):
+                    sub_info = json.loads(sub_info)
+                try:
+                    webpush(
+                        subscription_info=sub_info,
+                        data=json.dumps({'title': title, 'body': body, 'url': url}),
+                        vapid_private_key=vapid_private,
+                        vapid_claims={'sub': vapid_email},
+                        timeout=10,
+                    )
+                except WebPushException:
+                    # Subscription expired — clean up
+                    with contextlib.suppress(Exception):
+                        supabase.table('push_subscriptions').delete().eq(
+                            'subscription', json.dumps(sub_info)).execute()
+        except Exception:
+            pass
+    threading.Thread(target=_send, daemon=True).start()
+
+
+@app.route('/api/push/subscribe', methods=['POST'])
+@require_auth
+def push_subscribe():
+    """سجّل اشتراك Push Notification لجهاز الموظف."""
+    try:
+        body = request.get_json() or {}
+        subscription = body.get('subscription')
+        if not subscription:
+            return error_response('subscription مطلوب', 400)
+        sub_str = json.dumps(subscription) if isinstance(subscription, dict) else subscription
+        # Upsert — لو الاشتراك موجود قبل كده، متضيفوش تاني
+        existing = supabase.table('push_subscriptions').select('id').eq(
+            'employee_id', request.user_id).eq('subscription', sub_str).execute()
+        if not existing.data:
+            supabase.table('push_subscriptions').insert({
+                'employee_id': request.user_id,
+                'subscription': sub_str,
+            }).execute()
+        return success_response(None, 'تم تسجيل الإشعارات')
+    except Exception as e:
+        return error_response(str(e), 500)
+
+
+@app.route('/api/push/unsubscribe', methods=['POST'])
+@require_auth
+def push_unsubscribe():
+    """إلغاء اشتراك Push."""
+    try:
+        supabase.table('push_subscriptions').delete().eq(
+            'employee_id', request.user_id).execute()
+        return success_response(None, 'تم إلغاء الإشعارات')
+    except Exception as e:
+        return error_response(str(e), 500)
 
 
 # ==================== TEMPLATES ====================
@@ -2740,6 +3392,19 @@ def refresh_leaderboard_period():
 
 # ==================== WHATSAPP INBOUND WEBHOOK ====================
 
+def _is_bot_conversation_active(phone: str) -> bool:
+    """Check if there's an active bot conversation (not yet handed off) for this phone."""
+    try:
+        r = supabase.table('bot_conversations').select('state').eq(
+            'whatsapp_number', phone
+        ).order('created_at', desc=True).limit(1).execute()
+        if not r.data:
+            return False
+        return (r.data[0].get('state') or '') == 'active'
+    except Exception:
+        return False
+
+
 def _auto_create_lead_from_whatsapp(phone_clean: str, msg: dict) -> dict | None:
     """
     إنشاء ليد جديد تلقائي لما رقم مش موجود يبعت رسالة واتساب.
@@ -2907,6 +3572,32 @@ def whatsapp_inbound():
             # mark as read in Meta
             whatsapp_client.mark_as_read(m.get('message_id'))
 
+            # 🤖 BOT HANDLING — لو الليد جديد أو مفيش موظف مكلف بيه أو لسه البوت بيتعامل معاه
+            try:
+                from bot_agents import handle_incoming_message
+                bot_active = _is_bot_conversation_active(from_phone)
+                if (not target.get('assigned_to')) or is_new or bot_active:
+                    bot_result = handle_incoming_message(supabase, from_phone, text)
+                    if bot_result.get('reply'):
+                        whatsapp_client.send_message(from_phone, bot_result['reply'])
+                    # If bot handed off, assign the lead to the chosen human
+                    if bot_result.get('handoff_to') and target.get('id'):
+                        supabase.table('leads').update({
+                            'assigned_to': bot_result['handoff_to'],
+                        }).eq('id', target['id']).execute()
+                        target['assigned_to'] = bot_result['handoff_to']
+                    # Send notification to the human about the handoff
+                    notify = bot_result.get('notify')
+                    if notify and notify.get('employee_id'):
+                        send_push_to_employee(
+                            notify['employee_id'],
+                            notify.get('title', 'إشعار جديد'),
+                            notify.get('body', ''),
+                            f"/agent#lead-{target['id']}" if target.get('id') else '/agent',
+                        )
+            except Exception as bot_err:
+                print('Bot handler error:', bot_err)
+
             # 🎮 XP للموظف لأن العميل رد عليه
             if target.get('assigned_to'):
                 xp_config = XP_CONFIG['whatsapp_received']
@@ -2924,6 +3615,15 @@ def whatsapp_inbound():
                     'xp_earned':   xp_config['xp'],
                 }).execute()
             processed += 1
+
+            # 📱 Push Notification للموظف
+            if target.get('assigned_to'):
+                send_push_to_employee(
+                    target['assigned_to'],
+                    f"📩 رسالة من {target.get('name') or from_phone}",
+                    text[:100] if text else 'رسالة جديدة',
+                    f"/agent#lead-{target['id']}",
+                )
 
             # Outbound webhook event
             fire_webhooks('whatsapp.inbound', {
@@ -3718,7 +4418,32 @@ def create_transaction():
             'commission_rate':  commission_rate,
             'commission_amount': body.get('commission_amount', amount * commission_rate / 100),
             'notes':           body.get('notes'),
+            # ─── Property details ───
+            'property_type':       body.get('property_type'),
+            'property_title':      body.get('property_title'),
+            'property_address':    body.get('property_address'),
+            'property_size':       body.get('property_size'),
+            'property_bedrooms':   body.get('property_bedrooms'),
+            'property_bathrooms':  body.get('property_bathrooms'),
+            'property_furnished':  body.get('property_furnished'),
+            'property_emirate':    body.get('property_emirate'),
+            # ─── Party details (owner/buyer/tenant) ───
+            'party_role':        body.get('party_role'),
+            'party_name':        body.get('party_name'),
+            'party_phone':       body.get('party_phone'),
+            'party_email':       body.get('party_email'),
+            'party_id_number':   body.get('party_id_number'),
+            'party_nationality': body.get('party_nationality'),
+            # ─── Broker company details ───
+            'broker_company':           body.get('broker_company'),
+            'broker_agent_name':        body.get('broker_agent_name'),
+            'broker_phone':             body.get('broker_phone'),
+            'broker_email':             body.get('broker_email'),
+            'broker_license':           body.get('broker_license'),
+            'broker_commission_split':  body.get('broker_commission_split'),
         }
+        # Strip None values so we don't overwrite defaults
+        row = {k: v for k, v in row.items() if v is not None}
         # Auto-set owner from listing
         if body.get('listing_id'):
             try:
@@ -3729,6 +4454,33 @@ def create_transaction():
                 pass
         data = supabase.table('transactions').insert(row).execute()
         return success_response({'transaction': data.data[0] if data.data else {}}, 'Transaction created', 201)
+    except Exception as e:
+        return error_response(f'خطأ: {str(e)}', 500)
+
+
+@app.route('/api/transactions/<txn_id>', methods=['PATCH'])
+@check_role(['admin', 'manager', 'agent'])
+@audit_log('transaction_update', 'transaction')
+def update_transaction(txn_id):
+    """Update transaction details — property, party, broker, etc."""
+    try:
+        body = request.get_json() or {}
+        allowed_keys = {
+            'type', 'amount', 'commission_rate', 'commission_amount', 'status',
+            'contract_date', 'completion_date', 'notes',
+            'property_type', 'property_title', 'property_address', 'property_size',
+            'property_bedrooms', 'property_bathrooms', 'property_furnished', 'property_emirate',
+            'party_role', 'party_name', 'party_phone', 'party_email',
+            'party_id_number', 'party_nationality',
+            'broker_company', 'broker_agent_name', 'broker_phone', 'broker_email',
+            'broker_license', 'broker_commission_split',
+        }
+        row = {k: v for k, v in body.items() if k in allowed_keys}
+        row['updated_at'] = datetime.utcnow().isoformat()
+        if not row:
+            return error_response('لا توجد حقول للتحديث', 400)
+        data = supabase.table('transactions').update(row).eq('id', txn_id).execute()
+        return success_response({'transaction': data.data[0] if data.data else {}}, 'تم التحديث')
     except Exception as e:
         return error_response(f'خطأ: {str(e)}', 500)
 

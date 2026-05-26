@@ -64,6 +64,93 @@ ALTER TABLE employees ADD COLUMN IF NOT EXISTS gdpr_deleted_at TIMESTAMPTZ;
 DO $$ BEGIN ALTER TABLE employees ADD COLUMN stamina INT DEFAULT 100; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
 DO $$ BEGIN ALTER TABLE employees ADD COLUMN max_stamina INT DEFAULT 100; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
 DO $$ BEGIN ALTER TABLE employees ADD COLUMN avatar_color TEXT DEFAULT '#3b82f6'; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+-- v8: Lock employee (block login)
+DO $$ BEGIN ALTER TABLE employees ADD COLUMN is_locked BOOLEAN DEFAULT false; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE employees ADD COLUMN locked_at TIMESTAMPTZ; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE employees ADD COLUMN locked_reason TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE employees ADD COLUMN last_seen_at TIMESTAMPTZ; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+
+-- ═══════════════════════════════════════════════════════════════
+-- v8: Document Archive System
+-- ═══════════════════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS documents (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    title           TEXT NOT NULL,
+    description     TEXT,
+    file_url        TEXT NOT NULL,           -- Supabase Storage public URL
+    file_name       TEXT NOT NULL,
+    file_size       BIGINT,
+    mime_type       TEXT,
+    -- Entity binding (one of these will be set)
+    entity_type     TEXT NOT NULL CHECK (entity_type IN ('employee', 'lead', 'transaction', 'property', 'contract', 'general')),
+    entity_id       UUID,                    -- nullable for 'general'
+    -- Tagging
+    category        TEXT,                    -- 'photo', 'contract', 'id', 'invoice', 'other'
+    tags            TEXT[],
+    -- Audit
+    uploaded_by     UUID REFERENCES employees(id) ON DELETE SET NULL,
+    uploaded_at     TIMESTAMPTZ DEFAULT now(),
+    deleted_at      TIMESTAMPTZ,
+    metadata        JSONB DEFAULT '{}'::jsonb
+);
+
+CREATE INDEX IF NOT EXISTS idx_docs_entity ON documents(entity_type, entity_id);
+CREATE INDEX IF NOT EXISTS idx_docs_category ON documents(category);
+CREATE INDEX IF NOT EXISTS idx_docs_uploaded_at ON documents(uploaded_at DESC);
+CREATE INDEX IF NOT EXISTS idx_docs_uploaded_by ON documents(uploaded_by);
+
+-- ═══════════════════════════════════════════════════════════════
+-- v9: AI Bot System (3 bots — Khaled / Yusuf / Sara)
+-- ═══════════════════════════════════════════════════════════════
+CREATE TABLE IF NOT EXISTS bot_conversations (
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    whatsapp_number   TEXT NOT NULL,
+    current_bot       TEXT NOT NULL DEFAULT 'khaled' CHECK (current_bot IN ('khaled', 'yusuf', 'sara')),
+    state             TEXT DEFAULT 'active' CHECK (state IN ('active', 'handed_off', 'rejected', 'closed')),
+    customer_name     TEXT,
+    customer_data     JSONB DEFAULT '{}'::jsonb,   -- collected info: budget, location, type, etc.
+    handed_off_to     UUID REFERENCES employees(id) ON DELETE SET NULL,
+    handed_off_at     TIMESTAMPTZ,
+    handoff_summary   TEXT,
+    created_at        TIMESTAMPTZ DEFAULT now(),
+    updated_at        TIMESTAMPTZ DEFAULT now(),
+    last_message_at   TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_botconv_phone ON bot_conversations(whatsapp_number);
+CREATE INDEX IF NOT EXISTS idx_botconv_state ON bot_conversations(state);
+CREATE INDEX IF NOT EXISTS idx_botconv_last ON bot_conversations(last_message_at DESC);
+
+CREATE TABLE IF NOT EXISTS bot_messages (
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    conversation_id   UUID REFERENCES bot_conversations(id) ON DELETE CASCADE,
+    role              TEXT NOT NULL CHECK (role IN ('user', 'bot', 'system')),
+    bot_name          TEXT,                          -- khaled/yusuf/sara if role='bot'
+    content           TEXT NOT NULL,
+    created_at        TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_botmsg_conv ON bot_messages(conversation_id, created_at);
+
+CREATE TABLE IF NOT EXISTS job_applications (
+    id                UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    whatsapp_number   TEXT,
+    applicant_name    TEXT,
+    cv_url            TEXT,
+    position_applied  TEXT,
+    experience_years  INT,
+    expected_salary   NUMERIC(10,2),
+    availability      TEXT,
+    skills            TEXT,
+    ai_evaluation     TEXT,
+    ai_score          INT,                          -- 0..100
+    is_qualified      BOOLEAN,
+    status            TEXT DEFAULT 'pending' CHECK (status IN ('pending','screening','qualified','rejected','hired','archived')),
+    forwarded_to      UUID REFERENCES employees(id) ON DELETE SET NULL,
+    rejection_reason  TEXT,
+    created_at        TIMESTAMPTZ DEFAULT now(),
+    updated_at        TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_jobs_status ON job_applications(status);
+CREATE INDEX IF NOT EXISTS idx_jobs_phone ON job_applications(whatsapp_number);
 DO $$ BEGIN ALTER TABLE employees ADD COLUMN status TEXT DEFAULT 'offline'; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
 DO $$ BEGIN ALTER TABLE employees ADD COLUMN professional_mode BOOLEAN DEFAULT false; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
 
@@ -356,6 +443,15 @@ CREATE TABLE IF NOT EXISTS admin_audit_log (
 CREATE INDEX IF NOT EXISTS idx_audit_admin  ON admin_audit_log(admin_id, created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_audit_action ON admin_audit_log(action, created_at DESC);
 
+-- Push Notification Subscriptions (Web Push / VAPID)
+CREATE TABLE IF NOT EXISTS push_subscriptions (
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    employee_id   UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+    subscription  JSONB NOT NULL,
+    created_at    TIMESTAMPTZ DEFAULT now()
+);
+CREATE INDEX IF NOT EXISTS idx_push_sub_emp ON push_subscriptions(employee_id);
+
 -- =====================================================================
 -- ORGANIZATIONS & MULTI-TENANCY (v4)
 -- =====================================================================
@@ -588,6 +684,36 @@ CREATE TABLE IF NOT EXISTS transactions (
 CREATE INDEX IF NOT EXISTS idx_transactions_status ON transactions(status);
 CREATE INDEX IF NOT EXISTS idx_transactions_agent ON transactions(agent_id);
 CREATE INDEX IF NOT EXISTS idx_transactions_listing ON transactions(listing_id);
+
+-- ═══════════════════════════════════════════════════════════════
+-- v8: Transactions extended details (property + person + broker)
+-- ═══════════════════════════════════════════════════════════════
+
+-- Property details (extra fields on transactions for the specific property in this deal)
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN property_type TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN property_title TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN property_address TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN property_size NUMERIC(10,2); EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN property_bedrooms INT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN property_bathrooms INT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN property_furnished BOOLEAN; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN property_emirate TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+
+-- Person/Party details (who is the other party — owner/buyer/tenant)
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN party_role TEXT CHECK (party_role IN ('owner', 'buyer', 'tenant', 'seller', 'landlord')); EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN party_name TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN party_phone TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN party_email TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN party_id_number TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN party_nationality TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+
+-- Broker / counter-party company details
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN broker_company TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN broker_agent_name TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN broker_phone TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN broker_email TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN broker_license TEXT; EXCEPTION WHEN duplicate_column THEN NULL; END $$;
+DO $$ BEGIN ALTER TABLE transactions ADD COLUMN broker_commission_split NUMERIC(5,2); EXCEPTION WHEN duplicate_column THEN NULL; END $$;
 
 -- Workflows
 CREATE TABLE IF NOT EXISTS workflows (

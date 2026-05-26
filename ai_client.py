@@ -1,6 +1,6 @@
 """
-🤖 AI Client — يدعم Claude (Anthropic) أو OpenAI.
-Priority: ANTHROPIC_API_KEY > OPENAI_API_KEY.
+🤖 AI Client — يدعم Gemini (مجاني) أو Claude (Anthropic) أو OpenAI.
+Priority: GEMINI_API_KEY > ANTHROPIC_API_KEY > OPENAI_API_KEY.
 Returns structured lead advice: suggestion, lead_score, sentiment, recommended_action.
 """
 
@@ -8,6 +8,7 @@ import json
 import os
 import re
 
+GEMINI_KEY    = os.getenv('GEMINI_API_KEY', '')
 ANTHROPIC_KEY = os.getenv('ANTHROPIC_API_KEY', '')
 OPENAI_KEY    = os.getenv('OPENAI_API_KEY', '')
 AI_MODEL      = os.getenv('AI_MODEL', '')  # override
@@ -60,6 +61,24 @@ def _parse_response(text: str) -> dict:
         'recommended_action': 'follow_up',
         'recommended_template': None,
     }
+
+
+def _call_gemini(lead: dict, messages: list) -> dict:
+    import urllib.request
+    model = AI_MODEL or 'gemini-2.0-flash'
+    url = f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}'
+    payload = json.dumps({
+        'contents': [{'parts': [{'text': SYSTEM_PROMPT + '\n\n' + _build_user_prompt(lead, messages)}]}],
+        'generationConfig': {'maxOutputTokens': 400, 'temperature': 0.3},
+    }).encode()
+    req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'})
+    with urllib.request.urlopen(req, timeout=15) as resp:
+        data = json.loads(resp.read())
+    text = data['candidates'][0]['content']['parts'][0]['text']
+    parsed = _parse_response(text)
+    parsed['_model'] = model
+    parsed['_provider'] = 'gemini'
+    return parsed
 
 
 def _call_anthropic(lead: dict, messages: list) -> dict:
@@ -153,16 +172,21 @@ def analyze_lead(lead: dict, messages: list) -> dict:
     """
     Entry point. Picks the best available provider or returns a heuristic fallback.
     """
+    if GEMINI_KEY:
+        try:
+            return _call_gemini(lead, messages)
+        except Exception as e:
+            pass  # fallthrough to next provider
     if ANTHROPIC_KEY:
         try:
             return _call_anthropic(lead, messages)
         except Exception as e:
-            return {**_fallback(lead, messages), '_error': f'anthropic: {e}'}
+            pass
     if OPENAI_KEY:
         try:
             return _call_openai(lead, messages)
         except Exception as e:
-            return {**_fallback(lead, messages), '_error': f'openai: {e}'}
+            pass
     return _fallback(lead, messages)
 
 
@@ -172,6 +196,21 @@ def generate_text(prompt: str, max_tokens: int = 600) -> str:
     Used for weekly reports, summaries, etc.
     Returns plain text string.
     """
+    if GEMINI_KEY:
+        try:
+            import urllib.request
+            model = AI_MODEL or 'gemini-2.0-flash'
+            url = f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GEMINI_KEY}'
+            payload = json.dumps({
+                'contents': [{'parts': [{'text': prompt}]}],
+                'generationConfig': {'maxOutputTokens': max_tokens, 'temperature': 0.3},
+            }).encode()
+            req = urllib.request.Request(url, data=payload, headers={'Content-Type': 'application/json'})
+            with urllib.request.urlopen(req, timeout=20) as resp:
+                data = json.loads(resp.read())
+            return data['candidates'][0]['content']['parts'][0]['text'].strip()
+        except Exception:
+            pass
     if ANTHROPIC_KEY:
         try:
             import anthropic
