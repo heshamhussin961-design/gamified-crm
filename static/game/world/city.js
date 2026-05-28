@@ -5,7 +5,7 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
 import { RoadGraph, DIR } from '../engine/roadgraph.js';
-import { loadGLB, loadMany, sizeOf, buildInstanced } from '../engine/assets.js';
+import { loadGLB, loadMany, sizeOf, measure, buildInstanced } from '../engine/assets.js';
 
 // Building pools per district (Kenney City + Suburban kits).
 const POOLS = {
@@ -114,11 +114,11 @@ export async function buildCity(scene, { quality, onStatus = () => {} } = {}) {
   addMerged(scene, laneGeos, new THREE.MeshStandardMaterial({ color: 0xf4d35e, roughness: 0.6 }));
   addMerged(scene, crossGeos, new THREE.MeshStandardMaterial({ color: 0xf2f2f2, roughness: 0.7 }));
 
-  // ── Sidewalks (raised slab per block cell) ───────────────
+  // ── Sidewalks (raised slab per block cell, flush to road) ─
   onStatus('laying sidewalks');
   const swGeos = [];
   graph.forEachBlockCell((r, c, x, z) => {
-    const g = new THREE.BoxGeometry(cell * 0.98, 0.16, cell * 0.98);
+    const g = new THREE.BoxGeometry(cell, 0.16, cell);
     g.translate(x, 0.08, z);
     swGeos.push(g);
   });
@@ -131,32 +131,45 @@ export async function buildCity(scene, { quality, onStatus = () => {} } = {}) {
   const loaded = await loadMany(allPaths);
   allPaths.forEach((p, i) => { if (loaded[i]) gltfs[p] = loaded[i]; });
 
-  // transforms grouped by building path
+  // Target building HEIGHT per district (clearly taller than the ~1.8u player).
+  // Footprint is clamped afterwards so a building never spills into the road.
+  const HEIGHT_TARGET = { downtown: 24, commercial: 13, residential: 7.5, waterfront: 9 };
+  const MAX_FOOTPRINT = cell * 0.82;   // keep clear of the road
+  const SIDEWALK_TOP = 0.16;
+
   const byPath = {};
   graph.forEachBlockCell((r, c, x, z) => {
     const district = graph.districtAt(r, c);
     const pool = POOLS[district] || POOLS.commercial;
-    // leave some residential gaps as parks/empty for variety
+    // leave some residential gaps as small parks for variety
     if (district === 'residential' && graph.rand() < 0.22) return;
     const path = pool[Math.floor(graph.rand() * pool.length)];
     const gltf = gltfs[path];
     if (!gltf) return;
-    const size = sizeOf(gltf, path);
+
+    const box0 = measure(gltf, path);
+    const size = new THREE.Vector3(); box0.getSize(size);
     const footprint = Math.max(size.x, size.z) || 1;
-    const target = cell * (district === 'downtown' ? 0.78 : 0.66);
-    const scale = target / footprint;
+    const h = size.y || 1;
+
+    // scale to hit the height target, but never let footprint exceed MAX_FOOTPRINT
+    let scale = (HEIGHT_TARGET[district] || 10) / h;
+    scale = Math.min(scale, MAX_FOOTPRINT / footprint);
+    // base sits on the sidewalk top (account for model's own min.y)
+    const baseY = SIDEWALK_TOP - box0.min.y * scale;
+
     (byPath[path] ||= []).push({
-      position: new THREE.Vector3(x, 0, z),
+      position: new THREE.Vector3(x, baseY, z),
       rotationY: Math.floor(graph.rand() * 4) * (Math.PI / 2),
       scale,
     });
-    // collider — AABB sized to scaled footprint
-    const half = (footprint * scale) / 2;
-    const box = new THREE.Box3(
+
+    // collider — actual scaled footprint, inset 15% so the pavement stays walkable
+    const half = (footprint * scale) / 2 * 0.85;
+    colliders.push(new THREE.Box3(
       new THREE.Vector3(x - half, 0, z - half),
-      new THREE.Vector3(x + half, size.y * scale, z + half),
-    );
-    colliders.push(box);
+      new THREE.Vector3(x + half, h * scale, z + half),
+    ));
   });
 
   let buildingCount = 0;

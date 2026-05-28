@@ -47,6 +47,7 @@ async function boot() {
   const input = new Input(canvas);
   const walk = new WalkController(player, city.colliders);
   const follow = new FollowCamera(camera, player);
+  follow.setColliders(city.colliders);
 
   // Resize
   addEventListener('resize', () => {
