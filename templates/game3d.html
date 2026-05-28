@@ -1452,50 +1452,53 @@ async function buildStreetScene() {
   const colliders = [];
   const zones = [];
 
-  // ═══ ROAD NETWORK ═══
-  // Layout: cross pattern
-  //   East-West road: along Z=0, from X=-50 to X=50
-  //   North-South road: along X=0, from Z=-50 to Z=50
-  //   Player starts at (-40, 0) — west end (house exit)
-  //   Office is at (40, -40) — north-east
-  //
-  // Road is 8 units wide. Drawn as dark asphalt with white lines.
+  // ═══ ROAD NETWORK — full city grid ═══
+  // Roads run along every line in GRID on both axes, forming a 5×5 grid of
+  // streets and 4×4 blocks. The central cross (X=0 / Z=0) is preserved so the
+  // car path, spawn, and office route still work.
+  //   Player starts at (-42, 2) — west end (house exit)
+  //   Office is near (18, -12) — north-east
+  // Road is 8 units wide; dark asphalt with dashed white centre lines.
 
   const roadMat = new THREE.MeshStandardMaterial({ color: 0x383838, roughness: 0.85 });
   const lineMat = new THREE.MeshStandardMaterial({ color: 0xfdfdfd, roughness: 0.5, emissive: 0x222222, emissiveIntensity: 0.1 });
   const sidewalkMat = new THREE.MeshStandardMaterial({ color: 0xa8a29e, roughness: 0.9 });
 
-  // East-West road (Z=0)
-  const ewRoad = new THREE.Mesh(new THREE.PlaneGeometry(100, 8), roadMat);
-  ewRoad.rotation.x = -Math.PI / 2;
-  ewRoad.position.set(0, 0.01, 0);
-  ewRoad.receiveShadow = true;
-  scene.add(ewRoad);
-  // North-South road (X=0)
-  const nsRoad = new THREE.Mesh(new THREE.PlaneGeometry(8, 100), roadMat);
-  nsRoad.rotation.x = -Math.PI / 2;
-  nsRoad.position.set(0, 0.01, 0);
-  nsRoad.receiveShadow = true;
-  scene.add(nsRoad);
+  const GRID = [-40, -20, 0, 20, 40];   // road centre-lines on both axes
+  const ROAD_W = 8;
+  const SPAN = 100;                     // road length (covers -50..50)
+  // True when coordinate `a` falls on/near any cross-road (used to break dashes at junctions)
+  const nearJunction = (a) => GRID.some(g => Math.abs(a - g) < ROAD_W / 2 + 1);
 
-  // Center line dashes on EW road
-  for (let i = -45; i <= 45; i += 4) {
-    if (Math.abs(i) < 5) continue; // skip intersection
-    const dash = new THREE.Mesh(new THREE.PlaneGeometry(2, 0.2), lineMat);
-    dash.rotation.x = -Math.PI / 2;
-    dash.position.set(i, 0.02, 0);
-    scene.add(dash);
-  }
-  // Center line dashes on NS road
-  for (let i = -45; i <= 45; i += 4) {
-    if (Math.abs(i) < 5) continue;
-    const dash = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 2), lineMat);
-    dash.rotation.x = -Math.PI / 2;
-    dash.position.set(0, 0.02, i);
-    scene.add(dash);
-  }
+  // Asphalt strips — one per grid line, each axis
+  GRID.forEach(z => {
+    const r = new THREE.Mesh(new THREE.PlaneGeometry(SPAN, ROAD_W), roadMat);
+    r.rotation.x = -Math.PI / 2; r.position.set(0, 0.01, z); r.receiveShadow = true;
+    scene.add(r);
+  });
+  GRID.forEach(x => {
+    const r = new THREE.Mesh(new THREE.PlaneGeometry(ROAD_W, SPAN), roadMat);
+    r.rotation.x = -Math.PI / 2; r.position.set(x, 0.01, 0); r.receiveShadow = true;
+    scene.add(r);
+  });
 
-  // Sidewalks (raised) along both roads
+  // Dashed centre lines (skip junctions)
+  GRID.forEach(z => {
+    for (let i = -47; i <= 47; i += 4) {
+      if (nearJunction(i)) continue;
+      const dash = new THREE.Mesh(new THREE.PlaneGeometry(2, 0.2), lineMat);
+      dash.rotation.x = -Math.PI / 2; dash.position.set(i, 0.02, z); scene.add(dash);
+    }
+  });
+  GRID.forEach(x => {
+    for (let i = -47; i <= 47; i += 4) {
+      if (nearJunction(i)) continue;
+      const dash = new THREE.Mesh(new THREE.PlaneGeometry(0.2, 2), lineMat);
+      dash.rotation.x = -Math.PI / 2; dash.position.set(x, 0.02, i); scene.add(dash);
+    }
+  });
+
+  // Sidewalks flanking the central EW + NS roads (keeps the office walking route tidy)
   const sidewalkH = 0.15;
   const makeSidewalk = (w, d, x, z) => {
     const s = new THREE.Mesh(new THREE.BoxGeometry(w, sidewalkH, d), sidewalkMat);
@@ -1504,15 +1507,10 @@ async function buildStreetScene() {
     scene.add(s);
     colliders.push(new THREE.Box3().setFromObject(s));
   };
-  // EW road sidewalks (north + south)
   makeSidewalk(100, 1.2, 0, -4.6);
   makeSidewalk(100, 1.2, 0, 4.6);
-  // NS road sidewalks (east + west) — excluding intersection
-  // Actually, simpler: split into 4 corners around intersection
-  // North-west, north-east, south-west, south-east "blocks" between roads
-  // Each block is from road edge (~4) to ~45 in two directions
 
-  // ═══ BLOCKS (between roads) — fill with buildings ═══
+  // ═══ BUILDINGS — fill the 16 blocks between the grid roads ═══
   const buildingPaths = [
     '/static/game3d/assets/city/commercial/building-a.glb',
     '/static/game3d/assets/city/commercial/building-b.glb',
@@ -1525,60 +1523,27 @@ async function buildStreetScene() {
   const buildings = await Promise.all(buildingPaths.map(p => getGLB(p).catch(() => null)));
   const pickBldg = (i) => buildings[Math.abs(i * 7 + 3) % buildings.length];
 
-  // Place buildings along the four "block edges" facing the roads
-  // North side of EW road (z < -5)
-  for (let x = -45; x <= 45; x += 7) {
-    if (Math.abs(x) < 5) continue;
-    const bg = pickBldg(x);
-    if (!bg?.scene) continue;
-    const b = bg.scene.clone(true);
-    b.scale.setScalar(3.5);
-    b.position.set(x, 0, -10 - Math.random() * 3);
-    b.rotation.y = Math.PI + (Math.random() * 0.2 - 0.1);
-    b.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
-    scene.add(b);
-    colliders.push(new THREE.Box3().setFromObject(b));
-  }
-  // South side of EW road (z > 5)
-  for (let x = -45; x <= 45; x += 7) {
-    if (Math.abs(x) < 5) continue;
-    const bg = pickBldg(x * 2);
-    if (!bg?.scene) continue;
-    const b = bg.scene.clone(true);
-    b.scale.setScalar(3.5);
-    b.position.set(x, 0, 10 + Math.random() * 3);
-    b.rotation.y = Math.random() * 0.2 - 0.1;
-    b.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
-    scene.add(b);
-    colliders.push(new THREE.Box3().setFromObject(b));
-  }
-  // East side of NS road (x > 5)
-  for (let z = -45; z <= 45; z += 7) {
-    if (Math.abs(z) < 5) continue;
-    if (Math.abs(z) < 15 && z < 0) continue; // gap for office
-    const bg = pickBldg(z + 100);
-    if (!bg?.scene) continue;
-    const b = bg.scene.clone(true);
-    b.scale.setScalar(3.5);
-    b.position.set(10 + Math.random() * 3, 0, z);
-    b.rotation.y = -Math.PI / 2 + (Math.random() * 0.2 - 0.1);
-    b.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
-    scene.add(b);
-    colliders.push(new THREE.Box3().setFromObject(b));
-  }
-  // West side of NS road (x < -5)
-  for (let z = -45; z <= 45; z += 7) {
-    if (Math.abs(z) < 5) continue;
-    const bg = pickBldg(z + 200);
-    if (!bg?.scene) continue;
-    const b = bg.scene.clone(true);
-    b.scale.setScalar(3.5);
-    b.position.set(-10 - Math.random() * 3, 0, z);
-    b.rotation.y = Math.PI / 2 + (Math.random() * 0.2 - 0.1);
-    b.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
-    scene.add(b);
-    colliders.push(new THREE.Box3().setFromObject(b));
-  }
+  // Block centres sit midway between consecutive grid lines.
+  const blockCenters = [-30, -10, 10, 30];
+  let bSeed = 0;
+  blockCenters.forEach(bx => {
+    blockCenters.forEach(bz => {
+      // Keep the NE block near the office clear so the landmark + entry stay open.
+      if (bx === 10 && bz === -10) return;
+      // Two buildings per block at opposite corners, inset away from the roads.
+      for (const [ox, oz] of [[-4.5, -4.5], [4.5, 4.5]]) {
+        const bg = pickBldg(bSeed++);
+        if (!bg?.scene) continue;
+        const b = bg.scene.clone(true);
+        b.scale.setScalar(2.6);
+        b.position.set(bx + ox + (Math.random() * 1.4 - 0.7), 0, bz + oz + (Math.random() * 1.4 - 0.7));
+        b.rotation.y = Math.floor(Math.random() * 4) * (Math.PI / 2) + (Math.random() * 0.16 - 0.08);
+        b.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+        scene.add(b);
+        colliders.push(new THREE.Box3().setFromObject(b));
+      }
+    });
+  });
 
   // ═══ OFFICE BUILDING (prominent landmark, NE quadrant) ═══
   const officeBldgG = await getGLB('/static/game3d/assets/city/commercial/building-skyscraper-c.glb').catch(() => null);
