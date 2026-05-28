@@ -465,7 +465,7 @@ tailwind.config = {
         <button data-filter="negotiation" class="filter-btn chip status-negotiation">تفاوض</button>
       </div>
       <div id="leads-list" class="space-y-2"></div>
-      <button id="leads-load-more" onclick="loadMoreLeads()" class="hidden w-full mt-3 py-3 rounded-xl text-sm font-semibold bg-crm-surface border border-crm-primary/20 text-crm-primary hover:bg-crm-primary/10 transition-all cursor-pointer">تحميل المزيد...</button>
+      <button id="leads-load-more" onclick="loadMoreLeads()" class="btn btn-secondary w-full hidden" style="margin-top: var(--space-3);">تحميل المزيد...</button>
     </div>
 
     <!-- LEAD DETAIL -->
@@ -478,7 +478,7 @@ tailwind.config = {
 
     <!-- LEADERBOARD -->
     <div data-view="leaderboard" class="view hidden">
-      <select id="lb-period" class="w-full bg-crm-surface border border-crm-primary/20 rounded-lg px-3 py-2 text-sm mb-3 text-slate-100">
+      <select id="lb-period" class="select" style="margin-bottom: var(--space-3);">
         <option value="daily">يومي</option>
         <option value="weekly" selected>أسبوعي</option>
         <option value="monthly">شهري</option>
@@ -1244,14 +1244,12 @@ async function loadLeads(append = false) {
   try {
     const leads = (await api('/api/leads?' + qs.toString())).leads || [];
     const html = leads.map(l => `
-      <div class="card rounded-xl p-3 flex items-center gap-3 cursor-pointer active:scale-[.98]"
-           onclick="openLead('${l.id}')">
-        <div class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-pink-500 flex items-center justify-center font-bold">
-          ${(l.name || '?').charAt(0)}
-        </div>
-        <div class="flex-1 min-w-0">
-          <div class="font-semibold truncate">${l.name || 'مجهول'}</div>
-          <div class="text-xs text-slate-400 font-mono">${l.phone}</div>
+      <div class="card-v2" onclick="openLead('${l.id}')"
+           style="padding: var(--space-3); display: flex; align-items: center; gap: var(--space-3); cursor: pointer;">
+        <div class="avatar">${(l.name || '?').charAt(0).toUpperCase()}</div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-weight: var(--fw-semibold); color: var(--color-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${l.name || 'مجهول'}</div>
+          <div style="font-size: var(--fs-xs); color: var(--color-text-muted); font-family: var(--font-mono);">${l.phone || '—'}</div>
         </div>
         <span class="chip status-${l.status}">${STATUS_LABELS[l.status] || l.status}</span>
       </div>`).join('');
@@ -1259,7 +1257,7 @@ async function loadLeads(append = false) {
     if (append) {
       $('#leads-list').insertAdjacentHTML('beforeend', html);
     } else {
-      $('#leads-list').innerHTML = leads.length ? html : '<div class="text-slate-1000/40 text-center py-8">لا توجد ليدز في هذا القسم</div>';
+      $('#leads-list').innerHTML = leads.length ? html : '<div style="text-align: center; padding: var(--space-12) var(--space-4); color: var(--color-text-dim);"><div style="font-size: 40px; margin-bottom: var(--space-2);">🎯</div><div style="font-size: var(--fs-sm);">لا توجد ليدز في هذا القسم</div></div>';
     }
 
     // Show/hide load more
@@ -1464,15 +1462,15 @@ async function loadLeaderboard() {
     $('#leaderboard-list').innerHTML = lb.length ? lb.map((row, i) => {
       const emp = row.employees || {};
       const isMe = row.employee_id === me.id;
-      return `<div class="card rounded-xl p-3 flex items-center gap-3 ${isMe ? 'border-crm-primary/50 shadow-soft' : ''}">
-        <div class="text-xl w-8 text-center font-heading">${['🥇','🥈','🥉'][i] || `#${i+1}`}</div>
-        <div class="flex-1">
-          <div class="font-semibold text-sm ${isMe ? 'text-crm-primary' : ''}">${emp.full_name || '—'}${isMe ? ' (أنت)' : ''}</div>
-          <div class="text-[10px] text-slate-400">Lv ${emp.level||1} · ${row.deals_closed||0} صفقة</div>
+      return `<div class="card-v2" style="padding: var(--space-3); display: flex; align-items: center; gap: var(--space-3); ${isMe ? 'border-color: var(--color-primary); box-shadow: var(--shadow-glow);' : ''}">
+        <div style="font-size: var(--fs-xl); width: 32px; text-align: center; font-family: var(--font-heading);">${['🥇','🥈','🥉'][i] || `#${i+1}`}</div>
+        <div style="flex: 1; min-width: 0;">
+          <div style="font-weight: var(--fw-semibold); font-size: var(--fs-sm); color: ${isMe ? 'var(--color-primary)' : 'var(--color-text)'};">${emp.full_name || '—'}${isMe ? ' (أنت)' : ''}</div>
+          <div style="font-size: 10px; color: var(--color-text-muted);">Lv ${emp.level||1} · ${row.deals_closed||0} صفقة</div>
         </div>
-        <div class="text-crm-primary text-sm font-bold font-heading">${(row.total_xp||0).toLocaleString()}</div>
+        <div style="color: var(--color-primary); font-size: var(--fs-sm); font-weight: var(--fw-bold); font-family: var(--font-heading);">${(row.total_xp||0).toLocaleString()}</div>
       </div>`;
-    }).join('') : '<div class="text-slate-1000/40 text-center py-6">لا توجد بيانات</div>';
+    }).join('') : '<div style="text-align: center; padding: var(--space-8); color: var(--color-text-dim); font-size: var(--fs-sm);">لا توجد بيانات</div>';
   } catch (err) { toast(err.message, 'error'); }
 }
 
@@ -1481,13 +1479,13 @@ async function loadStore() {
   try {
     const data = await api('/api/store');
     $('#store-list').innerHTML = (data.items || []).map(it => `
-      <div class="card rounded-xl p-3 text-center ${!it.can_buy ? 'opacity-40' : 'border-crm-primary/15'}">
-        <div class="text-3xl mb-1" style="${it.can_buy ? 'filter: drop-shadow(0 0 8px rgba(212,168,71,0.4))' : ''}">${it.icon || '🎁'}</div>
-        <div class="font-semibold text-sm text-slate-100">${it.name}</div>
-        <div class="text-xs text-slate-400 mb-2">${it.description || ''}</div>
-        <div class="text-crm-primary text-sm font-bold mb-2 font-heading">🪙 ${it.coin_price}</div>
+      <div class="card-v2" style="padding: var(--space-3); text-align: center; ${!it.can_buy ? 'opacity: 0.45;' : ''}">
+        <div style="font-size: 30px; margin-bottom: 4px; ${it.can_buy ? 'filter: drop-shadow(0 0 8px rgba(212,168,71,0.4));' : ''}">${it.icon || '🎁'}</div>
+        <div style="font-weight: var(--fw-semibold); font-size: var(--fs-sm); color: var(--color-text);">${it.name}</div>
+        <div style="font-size: var(--fs-xs); color: var(--color-text-muted); margin-bottom: var(--space-2);">${it.description || ''}</div>
+        <div style="color: var(--color-primary); font-size: var(--fs-sm); font-weight: var(--fw-bold); margin-bottom: var(--space-2); font-family: var(--font-heading);">🪙 ${it.coin_price}</div>
         <button onclick="buyItem('${it.id}')" ${!it.can_buy ? 'disabled' : ''}
-                class="w-full ${it.can_buy ? 'bg-gradient-to-r from-crm-primary/80 to-crm-accent text-crm-bg font-bold shadow-soft' : 'bg-crm-surface text-slate-500 border border-slate-700'} rounded py-1.5 text-xs transition-all">
+                class="btn ${it.can_buy ? 'btn-primary' : 'btn-ghost'} btn-sm w-full">
           ${it.can_buy ? 'شراء' : (it.level_met ? 'عملات غير كافية' : 'Level ' + it.level_required)}
         </button>
       </div>`).join('');
