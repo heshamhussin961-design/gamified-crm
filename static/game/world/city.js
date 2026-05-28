@@ -199,22 +199,96 @@ export async function buildCity(scene, { quality, onStatus = () => {} } = {}) {
     treeTfms.forEach((tf, i) => { if (tf.length && trees[i]) { const g = buildInstanced(trees[i], tf); if (g) scene.add(g); } });
   }
 
-  // ── Street lights at intersections (instanced) ───────────
+  // ── Street lights along roads (instanced) ────────────────
   if (quality.propDensity > 0) {
     onStatus('installing lights');
     const lightGltf = await loadGLB(LIGHT_PATH).catch(() => null);
     if (lightGltf) {
       const lsz = sizeOf(lightGltf, LIGHT_PATH);
-      const scale = 4.5 / (lsz.y || 1);
+      const scale = 5 / (lsz.y || 1);
       const tfms = [];
-      for (const n of graph.nodes) {
-        if (n.degree < 3) continue;
-        if (graph.rand() > quality.propDensity) continue;
-        tfms.push({ position: new THREE.Vector3(n.x + cell * 0.38, 0.1, n.z + cell * 0.38), rotationY: graph.rand() * Math.PI * 2, scale });
-      }
+      graph.forEachRoadCell((r, c, x, z, mask) => {
+        // place lamps along straight segments, every other cell, on the curb side
+        const straightV = mask === (DIR.N | DIR.S);
+        const straightH = mask === (DIR.E | DIR.W);
+        if (!straightV && !straightH) return;
+        if ((r + c) % 2 !== 0) return;
+        if (graph.rand() > quality.propDensity) return;
+        const off = cell * 0.46;
+        if (straightV) tfms.push({ position: new THREE.Vector3(x + off, 0.1, z), rotationY: -Math.PI / 2, scale });
+        else tfms.push({ position: new THREE.Vector3(x, 0.1, z + off), rotationY: 0, scale });
+      });
       if (tfms.length) { const g = buildInstanced(lightGltf, tfms); if (g) scene.add(g); }
     }
   }
+
+  // ── Road edge lines (frame the streets) ──────────────────
+  onStatus('painting road edges');
+  const edgeGeos = [];
+  graph.forEachRoadCell((r, c, x, z, mask) => {
+    // draw a thin white line on each side that borders a block (not another road)
+    const sides = [['N', 0, -1], ['S', 0, 1], ['E', 1, 0], ['W', -1, 0]];
+    for (const [k, dx, dz] of sides) {
+      if (mask & DIR[k]) continue; // road continues this way → no edge line
+      const e = cell * 0.5 - 0.15;
+      const horizontal = (dx === 0);
+      const g = new THREE.PlaneGeometry(horizontal ? cell * 0.9 : 0.16, horizontal ? 0.16 : cell * 0.9);
+      g.rotateX(-Math.PI / 2);
+      g.translate(x + dx * e, 0.05, z + dz * e);
+      edgeGeos.push(g);
+    }
+  });
+  addMerged(scene, edgeGeos, new THREE.MeshStandardMaterial({ color: 0xe8e8e8, roughness: 0.7 }));
+
+  // ── Parks in empty residential cells (green + extra trees) ─
+  if (quality.treeDensity > 0) {
+    onStatus('growing parks');
+    const parkTrees = await loadMany(TREE_PATHS);
+    const parkGeos = [];
+    const extraTreeTfms = TREE_PATHS.map(() => []);
+    graph.forEachBlockCell((r, c, x, z) => {
+      if (graph.districtAt(r, c) !== 'residential') return;
+      // ~18% of residential cells become parks
+      if (graph.rand() > 0.18) return;
+      const g = new THREE.BoxGeometry(cell * 0.92, 0.04, cell * 0.92);
+      g.translate(x, 0.18, z);
+      parkGeos.push(g);
+      const n = 2 + Math.floor(graph.rand() * 2);
+      for (let i = 0; i < n; i++) {
+        const ti = graph.rand() < 0.5 ? 0 : 1;
+        if (!parkTrees[ti]) continue;
+        const sz = sizeOf(parkTrees[ti], TREE_PATHS[ti]);
+        const sc = (cell * 0.25) / (Math.max(sz.x, sz.z) || 1);
+        extraTreeTfms[ti].push({
+          position: new THREE.Vector3(x + (graph.rand() - 0.5) * cell * 0.6, 0.2, z + (graph.rand() - 0.5) * cell * 0.6),
+          rotationY: graph.rand() * Math.PI * 2, scale: sc,
+        });
+      }
+    });
+    addMerged(scene, parkGeos, new THREE.MeshStandardMaterial({ color: 0x6cc457, roughness: 0.95 }), { receive: true });
+    extraTreeTfms.forEach((tf, i) => { if (tf.length && parkTrees[i]) { const g = buildInstanced(parkTrees[i], tf); if (g) scene.add(g); } });
+  }
+
+  // ── AL SAEB HQ landmark (centre of downtown) ─────────────
+  onStatus('raising AL SAEB HQ');
+  const hqGltf = await loadGLB('city/commercial/building-skyscraper-c.glb').catch(() => null);
+  // place it one block north of the centre intersection so it doesn't block spawn
+  const hqCellR = Math.max(1, Math.round(graph.rows / 2) - 1);
+  const hqCellC = Math.round(graph.cols / 2) + 1;
+  const hqW = graph.cellToWorld(hqCellR, hqCellC);
+  if (hqGltf) {
+    const box0 = measure(hqGltf, 'hq');
+    const size = new THREE.Vector3(); box0.getSize(size);
+    const scale = 40 / (size.y || 1);                 // tallest in the city
+    const hq = hqGltf.scene.clone(true);
+    hq.scale.setScalar(scale);
+    hq.position.set(hqW.x, 0.16 - box0.min.y * scale, hqW.z);
+    hq.traverse(o => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
+    scene.add(hq);
+    const fp = Math.max(size.x, size.z) * scale / 2 * 0.8;
+    colliders.push(new THREE.Box3(new THREE.Vector3(hqW.x - fp, 0, hqW.z - fp), new THREE.Vector3(hqW.x + fp, size.y * scale, hqW.z + fp)));
+  }
+  scene.add(makeLabel('🏢 AL SAEB HQ', hqW.x, 46, hqW.z, 22));
 
   // ── Spawn: snap to a road intersection near the centre ───
   const snap = (v) => Math.max(0, Math.round(v / graph.roadEvery) * graph.roadEvery);
@@ -243,3 +317,33 @@ function addMerged(scene, geos, material, { receive = false, cast = false } = {}
   return mesh;
 }
 function countBits(m) { let d = 0; while (m) { d += m & 1; m >>= 1; } return d; }
+
+// Floating text label (canvas → sprite). worldY = height above ground.
+function makeLabel(text, x, worldY, z, worldWidth = 16) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512; canvas.height = 128;
+  const ctx = canvas.getContext('2d');
+  ctx.fillStyle = 'rgba(15,18,30,0.85)';
+  roundRect(ctx, 8, 8, 496, 112, 24); ctx.fill();
+  ctx.strokeStyle = 'rgba(212,168,71,0.7)'; ctx.lineWidth = 4;
+  roundRect(ctx, 8, 8, 496, 112, 24); ctx.stroke();
+  ctx.font = 'bold 56px Cairo, sans-serif';
+  ctx.fillStyle = '#F4C962'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(text, 256, 68);
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.anisotropy = 4;
+  const mat = new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false });
+  const sprite = new THREE.Sprite(mat);
+  sprite.position.set(x, worldY, z);
+  sprite.scale.set(worldWidth, worldWidth * 0.25, 1);
+  return sprite;
+}
+function roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x + r, y);
+  ctx.arcTo(x + w, y, x + w, y + h, r);
+  ctx.arcTo(x + w, y + h, x, y + h, r);
+  ctx.arcTo(x, y + h, x, y, r);
+  ctx.arcTo(x, y, x + w, y, r);
+  ctx.closePath();
+}
