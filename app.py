@@ -16,6 +16,7 @@ import hashlib
 import hmac
 import io
 import json
+import logging
 import math
 import os
 import re
@@ -30,20 +31,74 @@ from functools import wraps
 from flask import Flask, Response, jsonify, render_template, request, send_file, send_from_directory
 from flask_cors import CORS
 
+# ---- Logging -----------------------------------------------------------------
+# Structured logging — set LOG_LEVEL=DEBUG for verbose, LOG_FORMAT=json for ECS-friendly.
+logging.basicConfig(
+    level=os.getenv('LOG_LEVEL', 'INFO').upper(),
+    format='%(asctime)s %(levelname)s [%(name)s] %(message)s',
+)
+logger = logging.getLogger('alsaeb')
+
 try:
     from supabase import Client, create_client
 except ImportError:
-    print("❌ pip install supabase")
+    logger.error('supabase package missing — run: pip install -r requirements.txt')
+    raise
 
 from dotenv import load_dotenv
 
 load_dotenv()
+
+# ---- Sentry (optional) -------------------------------------------------------
+# Activates only if SENTRY_DSN env var is present. Safe to leave unset.
+SENTRY_DSN = os.getenv('SENTRY_DSN', '').strip()
+_sentry_enabled = False
+if SENTRY_DSN:
+    try:
+        import sentry_sdk
+        from sentry_sdk.integrations.flask import FlaskIntegration
+        sentry_sdk.init(
+            dsn=SENTRY_DSN,
+            integrations=[FlaskIntegration()],
+            traces_sample_rate=float(os.getenv('SENTRY_TRACES_SAMPLE_RATE', '0.1')),
+            environment=os.getenv('FLASK_ENV', 'production'),
+            release=os.getenv('SENTRY_RELEASE') or os.getenv('GIT_SHA'),
+            send_default_pii=False,
+        )
+        _sentry_enabled = True
+        logger.info('Sentry enabled')
+    except ImportError:
+        logger.warning('SENTRY_DSN set but sentry-sdk not installed — skipping')
+    except Exception as e:
+        logger.error('Sentry init failed: %s', e)
 
 import ai_client  # noqa: E402
 import whatsapp_client  # noqa: E402
 
 app = Flask(__name__)
 app.config['MAX_CONTENT_LENGTH'] = 10 * 1024 * 1024  # 10MB max upload size
+
+
+# ==================== API Versioning ====================
+# Strategy: routes are defined once at /api/<path>. A WSGI middleware rewrites
+# /api/v1/<path> → /api/<path> BEFORE Flask routing runs (before_request is too late).
+# Unversioned /api/<path> still works but gets a Deprecation header to nudge clients
+# toward /api/v1/.
+class _APIVersionMiddleware:
+    def __init__(self, wsgi_app):
+        self._app = wsgi_app
+
+    def __call__(self, environ, start_response):
+        path = environ.get('PATH_INFO', '')
+        if path.startswith('/api/v1/'):
+            environ['PATH_INFO'] = '/api/' + path[len('/api/v1/'):]
+            environ['ALSAEB_API_VERSION'] = '1'
+            environ['ALSAEB_API_VERSIONED'] = '1'
+        return self._app(environ, start_response)
+
+
+app.wsgi_app = _APIVersionMiddleware(app.wsgi_app)
+CURRENT_API_VERSION = '1'
 
 ALLOWED_ORIGINS = [
     'https://al-saeb-crm.online',
@@ -154,6 +209,13 @@ def add_security_headers(response):
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
     if request.is_secure:
         response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    # API version negotiation hint — flagged so clients can migrate to /api/v1/.
+    path = request.environ.get('PATH_INFO', '')
+    if path.startswith('/api/'):
+        response.headers['X-API-Version'] = CURRENT_API_VERSION
+        if not request.environ.get('ALSAEB_API_VERSIONED'):
+            response.headers['Deprecation'] = 'true'
+            response.headers['Link'] = '</api/v1/>; rel="alternate"'
     return response
 
 
@@ -242,9 +304,16 @@ def journey_map():
 
 
 @app.route('/game3d')
+@app.route('/game')
 def office_game_3d():
     """AlSaeb 3D Game — Three.js immersive CRM experience."""
     return render_template('game3d.html')
+
+
+@app.route('/world')
+def open_world():
+    """AL SAEB World — new open-world city engine (Phase 0 foundation)."""
+    return render_template('world.html')
 
 
 @app.route('/favicon.ico')
@@ -436,12 +505,10 @@ def require_auth(f):
 _last_seen_throttle = {}
 
 def _update_last_seen(user_id):
-    try:
+    with contextlib.suppress(Exception):
         supabase.table('employees').update({
             'last_seen_at': datetime.utcnow().isoformat()
         }).eq('id', user_id).execute()
-    except Exception:
-        pass
 
 
 def check_role(roles):
@@ -488,8 +555,41 @@ def audit_log(action_name, target_type=None):
     return decorator
 
 
+# Rate-limit backend selection — 'memory' (per-worker, fast, dev) or 'db' (shared, prod-safe).
+# In multi-worker deployments (gunicorn -w N) memory backend allows up to N× the configured
+# rate before throttling kicks in. Set RATE_LIMIT_BACKEND=db in production.
+RATE_LIMIT_BACKEND = os.getenv('RATE_LIMIT_BACKEND', 'memory').lower()
+
+# Negative cache: if a user/endpoint was throttled in the last 30s, refuse without DB lookup.
+_rate_throttle_cache = {}        # (uid, endpoint_key) -> retry_at_ts
+_rate_throttle_lock  = threading.Lock()
+_RATE_THROTTLE_TTL   = 30
+
+
+def _rate_limit_db(uid, endpoint_key, max_per_min):
+    """Authoritative DB-backed rate-limit via check_rate_limit RPC.
+    Returns True if the request is allowed, False if it should be 429'd.
+    Fails OPEN (returns True) on DB error to avoid taking the app down with the DB.
+    """
+    try:
+        res = supabase.rpc('check_rate_limit', {
+            'p_employee_id': uid,
+            'p_endpoint':    endpoint_key,
+            'p_max_per_min': max_per_min,
+        }).execute()
+        return bool(res.data)
+    except Exception as e:
+        logger.warning('rate_limit DB check failed (fail-open): %s', e)
+        return True
+
+
 def rate_limit(endpoint_key, max_per_min=60):
-    """Rate limiter using in-memory sliding window (60s). No DB call per request."""
+    """Sliding-window rate limiter.
+    Backend chosen by RATE_LIMIT_BACKEND env var:
+      - 'memory' (default): per-worker in-memory; fast but lets up to N× through
+                            on a multi-worker deployment.
+      - 'db':               authoritative across workers via check_rate_limit RPC.
+    """
     def decorator(f):
         @wraps(f)
         @require_auth
@@ -497,6 +597,28 @@ def rate_limit(endpoint_key, max_per_min=60):
             uid = getattr(request, 'user_id', None)
             if not uid:
                 return f(*args, **kwargs)
+
+            if RATE_LIMIT_BACKEND == 'db':
+                # Negative-cache: skip DB if recently throttled
+                cache_key = (uid, endpoint_key)
+                now_ts = time.time()
+                with _rate_throttle_lock:
+                    retry_at = _rate_throttle_cache.get(cache_key)
+                if retry_at and retry_at > now_ts:
+                    return error_response('Rate limit exceeded', 429)
+                allowed = _rate_limit_db(uid, endpoint_key, max_per_min)
+                if not allowed:
+                    with _rate_throttle_lock:
+                        _rate_throttle_cache[cache_key] = now_ts + _RATE_THROTTLE_TTL
+                        # Light GC
+                        if len(_rate_throttle_cache) > 5000:
+                            for k, v in list(_rate_throttle_cache.items()):
+                                if v < now_ts:
+                                    _rate_throttle_cache.pop(k, None)
+                    return error_response('Rate limit exceeded', 429)
+                return f(*args, **kwargs)
+
+            # Default: per-worker in-memory sliding window (no DB call per request).
             now_ts = time.time()
             key = (uid, endpoint_key)
             with _rate_cache_lock:
@@ -1962,7 +2084,8 @@ def admin_online_users():
                 u['minutes_ago'] = int((now - ls).total_seconds() / 60)
                 u['is_active'] = u['minutes_ago'] < 2
             except Exception:
-                u['minutes_ago'] = 99; u['is_active'] = False
+                u['minutes_ago'] = 99
+                u['is_active'] = False
         return jsonify({'users': users, 'count': len(users), 'active_count': sum(1 for u in users if u.get('is_active'))})
     except Exception as e:
         return jsonify({'users': [], 'count': 0, 'active_count': 0, 'error': str(e)})
@@ -2011,7 +2134,7 @@ def ai_coach_tip():
             if len(tip) > 140:
                 tip = tip[:140] + '...'
         except Exception as e:
-            print('AI coach failed:', e)
+            logger.warning('AI coach failed: %s', e)
 
         # Fallback tips based on player state
         if not tip:
@@ -2057,7 +2180,7 @@ def ai_npc_chat():
             if len(reply) > 240:
                 reply = reply[:240] + '...'
         except Exception as e:
-            print('NPC chat Gemini failed:', e)
+            logger.warning('NPC chat Gemini failed: %s', e)
 
         if not reply:
             replies = [
@@ -2293,7 +2416,7 @@ def send_push_to_employee(employee_id: str, title: str, body: str, url: str = '/
         return
     def _send():
         try:
-            from pywebpush import webpush, WebPushException
+            from pywebpush import WebPushException, webpush
             subs = supabase.table('push_subscriptions').select('subscription').eq(
                 'employee_id', employee_id).execute()
             for row in (subs.data or []):
@@ -3596,7 +3719,7 @@ def whatsapp_inbound():
                             f"/agent#lead-{target['id']}" if target.get('id') else '/agent',
                         )
             except Exception as bot_err:
-                print('Bot handler error:', bot_err)
+                logger.error('Bot handler error: %s', bot_err, exc_info=True)
 
             # 🎮 XP للموظف لأن العميل رد عليه
             if target.get('assigned_to'):
@@ -5275,6 +5398,147 @@ def leave_squad():
         return success_response({}, 'خرجت من السكواد')
     except Exception:
         return success_response({})
+
+
+# ==================== MAP REWARDS (AL SAEB Tower) ====================
+#
+# Server-authoritative milestone + skill-branch rewards for /map.
+# The MILESTONES array in templates/map.html is the visual mirror; this dict
+# is the trust boundary — client-supplied reward values are never honored.
+
+MAP_MILESTONES = [
+    {'idx': 0, 'key': 'deira',           'xp_req': 0,     'reward_xp': 0,    'reward_coins': 0},
+    {'idx': 1, 'key': 'bur_dubai',       'xp_req': 200,   'reward_xp': 50,   'reward_coins': 25},
+    {'idx': 2, 'key': 'karama',          'xp_req': 500,   'reward_xp': 100,  'reward_coins': 50},
+    {'idx': 3, 'key': 'al_quoz',         'xp_req': 1000,  'reward_xp': 150,  'reward_coins': 75},
+    {'idx': 4, 'key': 'business_bay',    'xp_req': 2000,  'reward_xp': 250,  'reward_coins': 150},
+    {'idx': 5, 'key': 'dubai_marina',    'xp_req': 3500,  'reward_xp': 400,  'reward_coins': 250},
+    {'idx': 6, 'key': 'downtown_dubai',  'xp_req': 5500,  'reward_xp': 600,  'reward_coins': 400},
+    {'idx': 7, 'key': 'jbr',             'xp_req': 8000,  'reward_xp': 800,  'reward_coins': 600},
+    {'idx': 8, 'key': 'palm_jumeirah',   'xp_req': 11000, 'reward_xp': 1000, 'reward_coins': 1000},
+    {'idx': 9, 'key': 'burj_khalifa',    'xp_req': 15000, 'reward_xp': 2000, 'reward_coins': 2500},
+]
+
+MAP_BRANCH_DEFAULTS = {
+    'calls':     {'target': 10, 'xp': 150,  'coins': 50},
+    'whatsapp':  {'target': 50, 'xp': 250,  'coins': 100},
+    'meetings':  {'target': 20, 'xp': 400,  'coins': 200},
+    'big_deals': {'target': 1,  'xp': 1000, 'coins': 500},
+}
+MAP_BRANCH_KEYS = tuple(MAP_BRANCH_DEFAULTS.keys())
+
+
+def _branch_view(key, row):
+    """Project a branch_progress row (or absent row) to the API shape."""
+    d = MAP_BRANCH_DEFAULTS[key]
+    if not row:
+        return {
+            'branch_key': key, 'current': 0, 'target': d['target'],
+            'xp_reward': d['xp'], 'coin_reward': d['coins'],
+            'claimed_at': None, 'claimable': False,
+        }
+    current = row.get('current_count', 0) or 0
+    target = row.get('target_count', d['target']) or d['target']
+    claimed = row.get('claimed_at') is not None
+    return {
+        'branch_key':  key,
+        'current':     current,
+        'target':      target,
+        'xp_reward':   row.get('xp_reward', d['xp']),
+        'coin_reward': row.get('coin_reward', d['coins']),
+        'claimed_at':  row.get('claimed_at'),
+        'claimable':   (not claimed) and current >= target,
+    }
+
+
+@app.route('/api/map/milestones', methods=['GET'])
+@require_auth
+def map_milestones():
+    """Milestone definitions + claim status + branch progress for current user."""
+    try:
+        emp_res = supabase.table('employees') \
+            .select('total_xp, level, syb_coins, total_deals, full_name, title') \
+            .eq('id', request.user_id).single().execute()
+        emp_data = emp_res.data or {}
+        total_xp = emp_data.get('total_xp', 0) or 0
+
+        claims_res = supabase.table('milestone_claims') \
+            .select('milestone_idx, xp_awarded, coins_awarded, claimed_at') \
+            .eq('employee_id', request.user_id).execute()
+        claimed_by_idx = {c['milestone_idx']: c for c in (claims_res.data or [])}
+
+        milestones_out = []
+        for m in MAP_MILESTONES:
+            unlocked = total_xp >= m['xp_req']
+            claimed = m['idx'] in claimed_by_idx
+            milestones_out.append({
+                **m,
+                'unlocked':   unlocked,
+                'claimed':    claimed,
+                'claimable':  unlocked and not claimed and (m['reward_xp'] > 0 or m['reward_coins'] > 0),
+                'claimed_at': claimed_by_idx.get(m['idx'], {}).get('claimed_at'),
+            })
+
+        branches_res = supabase.table('branch_progress') \
+            .select('branch_key, current_count, target_count, xp_reward, coin_reward, claimed_at') \
+            .eq('employee_id', request.user_id).execute()
+        branches_by_key = {b['branch_key']: b for b in (branches_res.data or [])}
+        branches_out = [_branch_view(k, branches_by_key.get(k)) for k in MAP_BRANCH_KEYS]
+
+        return success_response({
+            'employee':   emp_data,
+            'milestones': milestones_out,
+            'branches':   branches_out,
+        })
+    except Exception as e:
+        return error_response(str(e), 500)
+
+
+@app.route('/api/map/claim/<int:idx>', methods=['POST'])
+@rate_limit('map_claim', max_per_min=10)
+def claim_map_milestone(idx):
+    """Claim the reward for milestone <idx>. Server validates eligibility + uniqueness."""
+    if idx < 0 or idx >= len(MAP_MILESTONES):
+        return error_response('invalid milestone index', 400)
+    m = MAP_MILESTONES[idx]
+    if m['reward_xp'] <= 0 and m['reward_coins'] <= 0:
+        return error_response('no reward for this milestone', 400)
+    try:
+        result = supabase.rpc('claim_milestone_reward', {
+            'p_employee_id':   request.user_id,
+            'p_milestone_idx': m['idx'],
+            'p_milestone_key': m['key'],
+            'p_required_xp':   m['xp_req'],
+            'p_reward_xp':     m['reward_xp'],
+            'p_reward_coins':  m['reward_coins'],
+        }).execute()
+        data = result.data or {}
+        if isinstance(data, dict) and data.get('error'):
+            return error_response(data.get('error'), 400)
+        invalidate_user_cache(request.user_id)
+        return success_response(data, 'تم استلام كافأة المحطة 🏆')
+    except Exception as e:
+        return error_response(str(e), 500)
+
+
+@app.route('/api/map/branches/<branch_key>/claim', methods=['POST'])
+@rate_limit('branch_claim', max_per_min=10)
+def claim_map_branch(branch_key):
+    """Claim the reward for a completed skill branch."""
+    if branch_key not in MAP_BRANCH_KEYS:
+        return error_response('invalid branch key', 400)
+    try:
+        result = supabase.rpc('claim_branch_reward', {
+            'p_employee_id': request.user_id,
+            'p_branch_key':  branch_key,
+        }).execute()
+        data = result.data or {}
+        if isinstance(data, dict) and data.get('error'):
+            return error_response(data.get('error'), 400)
+        invalidate_user_cache(request.user_id)
+        return success_response(data, 'تم استلام كافأة الفرع 🎯')
+    except Exception as e:
+        return error_response(str(e), 500)
 
 
 # ==================== ATTENDANCE (Check-in / Check-out) ====================

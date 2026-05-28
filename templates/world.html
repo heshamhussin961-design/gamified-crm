@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<meta name="theme-color" content="#9ec9e8" />
+<title>AL SAEB World</title>
+<link rel="icon" type="image/png" href="/static/logo.png" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0c0f1a; font-family: 'Cairo', system-ui, sans-serif; color: #fff; }
+  #game-canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+
+  /* Loading */
+  #loading {
+    position: fixed; inset: 0; z-index: 100;
+    background: radial-gradient(ellipse at center, #1a2438 0%, #0c0f1a 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    transition: opacity 0.5s ease;
+  }
+  .boot-title { font-size: 30px; font-weight: 800; letter-spacing: 2px;
+    background: linear-gradient(90deg, #F4C962, #D4A847); -webkit-background-clip: text; background-clip: text; color: transparent; margin-bottom: 6px; }
+  .boot-sub { color: #64748b; font-size: 12px; margin-bottom: 26px; }
+  .boot-track { width: 280px; height: 8px; background: rgba(148,163,184,0.12); border-radius: 999px; overflow: hidden; }
+  #boot-bar { height: 100%; width: 0%; border-radius: 999px; background: linear-gradient(90deg, #D4A847, #F4C962); transition: width 0.2s; }
+  #boot-status { color: #94a3b8; font-size: 11px; margin-top: 12px; min-height: 14px; }
+
+  /* HUD */
+  #hud-top { position: fixed; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: flex-start; z-index: 50; pointer-events: none; }
+  .hud-card { background: rgba(15,18,30,0.72); backdrop-filter: blur(8px); border: 1px solid rgba(212,168,71,0.25); border-radius: 12px; padding: 8px 12px; font-size: 12px; }
+  .hud-card a { color: #F4C962; text-decoration: none; pointer-events: auto; }
+  #hud-help { position: fixed; bottom: 12px; left: 12px; z-index: 50; pointer-events: none;
+    background: rgba(15,18,30,0.72); backdrop-filter: blur(8px); border: 1px solid rgba(148,163,184,0.15);
+    border-radius: 12px; padding: 8px 12px; font-size: 11px; color: #cbd5e1; line-height: 1.7; }
+  kbd { background: rgba(212,168,71,0.18); border: 1px solid rgba(212,168,71,0.3); border-radius: 5px; padding: 1px 6px; font-size: 10px; color: #F4C962; }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+  <canvas id="game-canvas"></canvas>
+
+  <!-- HUD -->
+  <div id="hud-top">
+    <div class="hud-card"><a href="/game3d">‹ العالم القديم</a> · <a href="/admin">CRM</a></div>
+    <div class="hud-card" id="hud-stats">جاري التحميل…</div>
+  </div>
+  <div id="hud-help">
+    <kbd>WASD</kbd> حركة · <kbd>Shift</kbd> جري · اسحب الشاشة للكاميرا<br>
+    موبايل: شمال = حركة · يمين = كاميرا
+  </div>
+
+  <!-- Loading -->
+  <div id="loading">
+    <div class="boot-title">AL SAEB WORLD</div>
+    <div class="boot-sub">مدينة المبيعات — نسخة المحرك الجديد</div>
+    <div class="boot-track"><div id="boot-bar"></div></div>
+    <div id="boot-status">…</div>
+  </div>
+
+  <script type="module" src="/static/game/main.js"></script>
+</body>
+</html>
