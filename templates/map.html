@@ -356,10 +356,154 @@ document.addEventListener('DOMContentLoaded', () => {
     display: flex; align-items: center; gap: 6px;
   }
 
+  /* ── CLAIM BUTTON (on unlocked, unclaimed milestones) ── */
+  .claim-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    margin-top: 8px; padding: 7px 14px;
+    background: var(--gold-grad); color: #1a1a1a;
+    border: 0; border-radius: 999px;
+    font-weight: 800; font-size: 12px; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(212,168,71,0.45);
+    transition: transform .15s, box-shadow .15s;
+    animation: claim-pulse 2.2s ease-in-out infinite;
+  }
+  .claim-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(212,168,71,0.6); }
+  .claim-btn:active { transform: translateY(0); }
+  .claim-btn:disabled { opacity: .6; cursor: progress; animation: none; }
+  @keyframes claim-pulse {
+    0%, 100% { box-shadow: 0 4px 16px rgba(212,168,71,0.45); }
+    50% { box-shadow: 0 4px 24px rgba(244,201,98,0.85); }
+  }
+  .claimed-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    margin-top: 8px; padding: 5px 12px;
+    background: rgba(34,197,94,0.12); color: #16a34a;
+    border: 1px solid rgba(34,197,94,0.3);
+    border-radius: 999px;
+    font-weight: 700; font-size: 11px;
+  }
+  [data-theme="dark"] .claimed-badge { color: #4ade80; background: rgba(34,197,94,0.15); }
+
+  /* ── SKILL BRANCHES SECTION ── */
+  .branches-section {
+    max-width: 720px; margin: 16px auto 0; padding: 0 16px 40px;
+  }
+  .branches-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 18px; padding: 18px;
+    box-shadow: var(--shadow);
+  }
+  .branches-title { font-weight: 800; font-size: 17px; color: var(--text); margin-bottom: 4px; }
+  .branches-subtitle { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+  .branch-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--border);
+  }
+  .branch-row:last-child { border-bottom: 0; }
+  .branch-row-icon {
+    width: 44px; height: 44px; border-radius: 12px;
+    background: linear-gradient(135deg, rgba(244,201,98,0.18), rgba(212,168,71,0.1));
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .branch-row-body { flex: 1; min-width: 0; }
+  .branch-row-name { font-weight: 700; font-size: 14px; color: var(--text); margin-bottom: 2px; }
+  .branch-row-desc { font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+  .branch-bar {
+    height: 8px; background: rgba(212,168,71,0.1);
+    border-radius: 999px; overflow: hidden; position: relative;
+    border: 1px solid var(--border);
+  }
+  .branch-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #F4C962, #D4A847);
+    border-radius: 999px;
+    transition: width .8s cubic-bezier(0.4,0,0.2,1);
+  }
+  .branch-row-meta {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 5px;
+    font-size: 11px; color: var(--muted);
+  }
+  .branch-row-reward { color: var(--gold-dark); font-weight: 700; }
+  .branch-row-action { margin-inline-start: 8px; flex-shrink: 0; }
+
+  /* ── CINEMATIC CLAIM TOAST ── */
+  .claim-toast-overlay {
+    position: fixed; inset: 0; z-index: 300;
+    background: rgba(0,0,0,0.55); backdrop-filter: blur(6px);
+    display: none; align-items: center; justify-content: center;
+    padding: 20px; pointer-events: auto;
+  }
+  .claim-toast-overlay.show { display: flex; animation: fade-in .25s; }
+  @keyframes fade-in { from { opacity: 0; } }
+  .claim-toast-card {
+    background: var(--surface); border: 2px solid var(--gold);
+    border-radius: 24px; padding: 28px 24px;
+    width: 100%; max-width: 360px; text-align: center;
+    box-shadow: 0 12px 60px rgba(212,168,71,0.5);
+    animation: claim-pop .5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes claim-pop {
+    from { transform: scale(0.6); opacity: 0; }
+    50%  { transform: scale(1.08); }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  .claim-toast-icon {
+    width: 80px; height: 80px; margin: 0 auto 14px;
+    border-radius: 50%; background: var(--gold-grad);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 42px;
+    box-shadow: 0 8px 32px rgba(212,168,71,0.55);
+    animation: trophy-spin .8s ease-out;
+  }
+  @keyframes trophy-spin {
+    from { transform: rotateY(180deg) scale(0.4); }
+    to   { transform: rotateY(0) scale(1); }
+  }
+  .claim-toast-title { font-weight: 800; font-size: 20px; color: var(--gold-dark); margin-bottom: 4px; }
+  .claim-toast-sub { font-size: 13px; color: var(--muted); margin-bottom: 18px; }
+  .claim-toast-rewards { display: flex; justify-content: center; gap: 12px; margin-bottom: 16px; }
+  .claim-toast-pill {
+    background: rgba(212,168,71,0.12); border: 1px solid var(--border);
+    border-radius: 14px; padding: 10px 16px;
+    font-weight: 800; font-size: 16px; color: var(--gold-dark);
+  }
+  .claim-toast-pill small { display: block; font-size: 10px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+  .claim-toast-btn {
+    width: 100%; padding: 12px; border: 0; border-radius: 12px;
+    background: var(--gold-grad); color: #1a1a1a;
+    font-weight: 800; cursor: pointer;
+  }
+
+  /* ── CONFETTI ── */
+  .confetti-canvas {
+    position: fixed; inset: 0; z-index: 301;
+    pointer-events: none;
+  }
+
+  /* ── INLINE TOAST (errors) ── */
+  .mini-toast {
+    position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: 999px;
+    padding: 10px 18px; font-size: 13px; font-weight: 600;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+    z-index: 250; opacity: 0; transition: opacity .25s, transform .25s;
+    pointer-events: none;
+  }
+  .mini-toast.show { opacity: 1; transform: translateX(-50%) translateY(-6px); }
+  .mini-toast.error { border-color: rgba(239,68,68,0.5); color: #b91c1c; }
+  [data-theme="dark"] .mini-toast.error { color: #fca5a5; }
+
   @media (max-width: 540px) {
     .milestone-node { width: 72px; height: 72px; font-size: 28px; }
     .milestone-name { font-size: 15px; }
     .branch { margin: -12px 14px 8px 14px; }
+    .claim-toast-card { padding: 22px 18px; }
+    .branch-row-icon { width: 38px; height: 38px; font-size: 18px; }
   }
 </style>
 </head>
@@ -436,6 +580,32 @@ document.addEventListener('DOMContentLoaded', () => {
   <div id="milestones-list"></div>
 </div>
 
+<!-- SKILL BRANCHES SECTION -->
+<div class="branches-section">
+  <div class="branches-card">
+    <div class="branches-title" data-i18n="map_branches_title">🎯 فروع المهارة</div>
+    <div class="branches-subtitle" data-i18n="map_branches_subtitle">أكمل فرع وخد كافأة إضافية</div>
+    <div id="branches-list"></div>
+  </div>
+</div>
+
+<!-- CINEMATIC CLAIM TOAST -->
+<div class="claim-toast-overlay" id="claim-toast" onclick="if(event.target===this)closeClaimToast()">
+  <div class="claim-toast-card">
+    <div class="claim-toast-icon" id="claim-toast-icon">🏆</div>
+    <div class="claim-toast-title" id="claim-toast-title">Reward!</div>
+    <div class="claim-toast-sub" id="claim-toast-sub">—</div>
+    <div class="claim-toast-rewards">
+      <div class="claim-toast-pill">+<span id="claim-toast-xp">0</span><small>XP</small></div>
+      <div class="claim-toast-pill">+<span id="claim-toast-coins">0</span><small data-i18n="map_coins_reward">عملات</small></div>
+    </div>
+    <button class="claim-toast-btn" onclick="closeClaimToast()" data-i18n="close">إغلاق</button>
+  </div>
+</div>
+
+<canvas class="confetti-canvas" id="confetti-canvas"></canvas>
+<div class="mini-toast" id="mini-toast"></div>
+
 <!-- MILESTONE MODAL -->
 <div class="ms-modal" id="ms-modal" onclick="if(event.target===this)closeMsModal()">
   <div class="ms-modal-card">
@@ -474,52 +644,114 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
 // ═══════════════════════════════════════════════════════════════
 //  MILESTONES DEFINITION — Dubai districts journey
+//  Mirrored on backend (MAP_MILESTONES in app.py) which is authoritative
+//  for the reward values. Keep `key` + `xpReq` + `rewardXp` + `rewardCoins`
+//  in sync with the server, otherwise the UI will look different from the
+//  reward the server actually grants.
 // ═══════════════════════════════════════════════════════════════
 const MILESTONES = [
-  { lv: 1,  name: 'Deira',           name_ar: 'ديرة',           title: 'مبتدئ',         icon: '🌅', desc: 'بداية الرحلة من قلب دبي القديمة',           xpReq: 0,    rewardXp: 0,    rewardCoins: 0,
+  { lv: 1, key: 'deira', idx: 0,
+    name: 'Deira', name_ar: 'ديرة', name_en: 'Deira',
+    title: 'مبتدئ', title_en: 'Rookie',
+    icon: '🌅',
+    desc: 'بداية الرحلة من قلب دبي القديمة', desc_en: 'Where the journey begins, in old Dubai',
+    xpReq: 0, rewardXp: 0, rewardCoins: 0,
     streets: ['Al Maktoum Road', 'Al Rigga Road', 'Naif Street'],
     cafes: [{n:'Arabian Tea House',i:'☕'},{n:'Bayt Al Wakeel',i:'🍽️'},{n:'Al Ustad Special Kabab',i:'🥙'}] },
 
-  { lv: 2,  name: 'Bur Dubai',       name_ar: 'بر دبي',         title: 'متدرب',          icon: '🕌', desc: 'تعلم أساسيات المبيعات في السوق التراثي',     xpReq: 200,  rewardXp: 50,   rewardCoins: 25,
+  { lv: 2, key: 'bur_dubai', idx: 1,
+    name: 'Bur Dubai', name_ar: 'بر دبي', name_en: 'Bur Dubai',
+    title: 'متدرب', title_en: 'Trainee',
+    icon: '🕌',
+    desc: 'تعلم أساسيات المبيعات في السوق التراثي', desc_en: 'Learn sales basics in the historic souk',
+    xpReq: 200, rewardXp: 50, rewardCoins: 25,
     streets: ['Khalid Bin Al Waleed Road', 'Bank Street', 'Al Fahidi Street'],
     cafes: [{n:'Ravi Restaurant',i:'🍛'},{n:'XVA Cafe',i:'☕'},{n:'Local House',i:'🫖'}],
-    branch: { icon: '📞', name: 'فرع المكالمات', desc: 'اعمل 10 مكالمات' } },
+    branch: { icon: '📞', name: 'فرع المكالمات', name_en: 'Calls Branch', desc: 'اعمل 10 مكالمات', desc_en: 'Make 10 calls' } },
 
-  { lv: 3,  name: 'Karama',          name_ar: 'الكرامة',        title: 'باحث',           icon: '🏘️', desc: 'تواصل مع أول عملائك',                       xpReq: 500,  rewardXp: 100,  rewardCoins: 50,
+  { lv: 3, key: 'karama', idx: 2,
+    name: 'Karama', name_ar: 'الكرامة', name_en: 'Karama',
+    title: 'باحث', title_en: 'Seeker',
+    icon: '🏘️',
+    desc: 'تواصل مع أول عملائك', desc_en: 'Reach out to your first clients',
+    xpReq: 500, rewardXp: 100, rewardCoins: 50,
     streets: ['Trade Centre Road', '14th Street', 'Zabeel Road'],
     cafes: [{n:'Calicut Paragon',i:'🐟'},{n:'Aroos Damascus',i:'🥙'},{n:'Saravanaa Bhavan',i:'🍛'}] },
 
-  { lv: 4,  name: 'Al Quoz',         name_ar: 'القوز',          title: 'صياد ليدز',      icon: '🎯', desc: 'بدأت تصطاد ليدز بشكل احترافي',              xpReq: 1000, rewardXp: 150,  rewardCoins: 75,
+  { lv: 4, key: 'al_quoz', idx: 3,
+    name: 'Al Quoz', name_ar: 'القوز', name_en: 'Al Quoz',
+    title: 'صياد ليدز', title_en: 'Lead Hunter',
+    icon: '🎯',
+    desc: 'بدأت تصطاد ليدز بشكل احترافي', desc_en: 'You hunt leads like a pro',
+    xpReq: 1000, rewardXp: 150, rewardCoins: 75,
     streets: ['Sheikh Zayed Road', 'Al Asayel Street', 'Alserkal Avenue'],
     cafes: [{n:'Tom & Serg',i:'☕'},{n:'Common Grounds',i:'🥐'},{n:'Wild & The Moon',i:'🌿'}],
-    branch: { icon: '💬', name: 'فرع واتساب', desc: 'ابعت 50 رسالة' } },
+    branch: { icon: '💬', name: 'فرع واتساب', name_en: 'WhatsApp Branch', desc: 'ابعت 50 رسالة', desc_en: 'Send 50 messages' } },
 
-  { lv: 5,  name: 'Business Bay',    name_ar: 'الخليج التجاري',  title: 'محترف',          icon: '🏢', desc: 'دخلت قلب الأعمال في دبي',                    xpReq: 2000, rewardXp: 250,  rewardCoins: 150,
+  { lv: 5, key: 'business_bay', idx: 4,
+    name: 'Business Bay', name_ar: 'الخليج التجاري', name_en: 'Business Bay',
+    title: 'محترف', title_en: 'Pro',
+    icon: '🏢',
+    desc: 'دخلت قلب الأعمال في دبي', desc_en: 'You\'re in Dubai\'s business core',
+    xpReq: 2000, rewardXp: 250, rewardCoins: 150,
     streets: ['Marasi Drive', 'Al Abraj Street', 'Bay Avenue'],
     cafes: [{n:'% Arabica',i:'☕'},{n:'Tania\'s Teahouse',i:'🫖'},{n:'The Sum of Us',i:'🥗'}] },
 
-  { lv: 6,  name: 'Dubai Marina',    name_ar: 'دبي مارينا',     title: 'خبير',           icon: '🛥️', desc: 'تتعامل مع عملاء فاخرين على البحر',          xpReq: 3500, rewardXp: 400,  rewardCoins: 250,
+  { lv: 6, key: 'dubai_marina', idx: 5,
+    name: 'Dubai Marina', name_ar: 'دبي مارينا', name_en: 'Dubai Marina',
+    title: 'خبير', title_en: 'Expert',
+    icon: '🛥️',
+    desc: 'تتعامل مع عملاء فاخرين على البحر', desc_en: 'You handle luxury clients by the waterfront',
+    xpReq: 3500, rewardXp: 400, rewardCoins: 250,
     streets: ['Marina Walk', 'The Walk JBR', 'King Salman Bin Abdulaziz Al Saud Street'],
     cafes: [{n:'Brew & Co',i:'☕'},{n:'Stay Caffeinated',i:'☕'},{n:'PINZA!',i:'🍕'}],
-    branch: { icon: '🤝', name: 'فرع الاجتماعات', desc: 'احجز 20 اجتماع' } },
+    branch: { icon: '🤝', name: 'فرع الاجتماعات', name_en: 'Meetings Branch', desc: 'احجز 20 اجتماع', desc_en: 'Book 20 meetings' } },
 
-  { lv: 7,  name: 'Downtown Dubai',  name_ar: 'وسط مدينة دبي',  title: 'بائع نجم',       icon: '✨', desc: 'تبيع في أرقى المناطق',                       xpReq: 5500, rewardXp: 600,  rewardCoins: 400,
+  { lv: 7, key: 'downtown_dubai', idx: 6,
+    name: 'Downtown Dubai', name_ar: 'وسط مدينة دبي', name_en: 'Downtown Dubai',
+    title: 'بائع نجم', title_en: 'Star Seller',
+    icon: '✨',
+    desc: 'تبيع في أرقى المناطق', desc_en: 'You sell in the most prestigious zones',
+    xpReq: 5500, rewardXp: 600, rewardCoins: 400,
     streets: ['Mohammed Bin Rashid Boulevard', 'Burj Khalifa Boulevard', 'Emaar Boulevard'],
     cafes: [{n:'% Arabica Downtown',i:'☕'},{n:'Karak House',i:'🫖'},{n:'Boston Lane',i:'☕'}] },
 
-  { lv: 8,  name: 'JBR',             name_ar: 'شاطئ جميرا',     title: 'نخبة',           icon: '🏖️', desc: 'فاخر على فاخر — عملاؤك من النخبة',         xpReq: 8000, rewardXp: 800,  rewardCoins: 600,
+  { lv: 8, key: 'jbr', idx: 7,
+    name: 'JBR', name_ar: 'شاطئ جميرا', name_en: 'JBR Beachfront',
+    title: 'نخبة', title_en: 'Elite',
+    icon: '🏖️',
+    desc: 'فاخر على فاخر — عملاؤك من النخبة', desc_en: 'Premium on premium — your clients are elite',
+    xpReq: 8000, rewardXp: 800, rewardCoins: 600,
     streets: ['The Walk', 'The Beach', 'JBR Beachfront'],
     cafes: [{n:'PappaRoti',i:'🥐'},{n:'Bert\'s Cafe',i:'🍰'},{n:'Brew Cafe JBR',i:'☕'}],
-    branch: { icon: '💎', name: 'فرع الصفقات الكبيرة', desc: 'اقفل صفقة 1M+' } },
+    branch: { icon: '💎', name: 'فرع الصفقات الكبيرة', name_en: 'Big Deals Branch', desc: 'اقفل صفقة 1M+', desc_en: 'Close a 1M+ deal' } },
 
-  { lv: 9,  name: 'Palm Jumeirah',   name_ar: 'نخلة جميرا',     title: 'ملك المبيعات',    icon: '🌴', desc: 'الجزيرة الأشهر في العالم تحت قدميك',        xpReq: 11000, rewardXp: 1000, rewardCoins: 1000,
+  { lv: 9, key: 'palm_jumeirah', idx: 8,
+    name: 'Palm Jumeirah', name_ar: 'نخلة جميرا', name_en: 'Palm Jumeirah',
+    title: 'ملك المبيعات', title_en: 'Sales King',
+    icon: '🌴',
+    desc: 'الجزيرة الأشهر في العالم تحت قدميك', desc_en: 'The world\'s most famous island is yours',
+    xpReq: 11000, rewardXp: 1000, rewardCoins: 1000,
     streets: ['Atlantis Boulevard', 'Crescent Road', 'East Crescent'],
     cafes: [{n:'Cafe Isan',i:'🍜'},{n:'Espresso Lab',i:'☕'},{n:'101 Lounge',i:'🍽️'}] },
 
-  { lv: 10, name: 'Burj Khalifa',    name_ar: 'برج خليفة',      title: 'الأسطورة',       icon: '👑', desc: 'القمة! أعلى منصب في AL SAEB',              xpReq: 15000, rewardXp: 2000, rewardCoins: 2500,
+  { lv: 10, key: 'burj_khalifa', idx: 9,
+    name: 'Burj Khalifa', name_ar: 'برج خليفة', name_en: 'Burj Khalifa',
+    title: 'الأسطورة', title_en: 'The Legend',
+    icon: '👑',
+    desc: 'القمة! أعلى منصب في AL SAEB', desc_en: 'The summit! Highest rank at AL SAEB',
+    xpReq: 15000, rewardXp: 2000, rewardCoins: 2500,
     streets: ['At The Top — Level 124', 'Sky Lounge — Level 148', 'The Lounge — Level 152'],
     cafes: [{n:'At.mosphere Lounge',i:'🥂'},{n:'The Lounge',i:'🍾'},{n:'Armani/Caffé',i:'☕'}] },
 ];
+
+// Branch metadata mirrored from server (MAP_BRANCH_DEFAULTS in app.py).
+const BRANCH_META = {
+  calls:     { icon: '📞', name_ar: 'سيد المكالمات',          name_en: 'Master Caller',     desc_ar: 'اعمل 10 مكالمات',           desc_en: 'Make 10 calls' },
+  whatsapp:  { icon: '💬', name_ar: 'ساحر الواتساب',           name_en: 'WhatsApp Wizard',   desc_ar: 'ابعت 50 رسالة',             desc_en: 'Send 50 messages' },
+  meetings:  { icon: '🤝', name_ar: 'محترف الاجتماعات',         name_en: 'Meeting Pro',       desc_ar: 'احجز 20 اجتماع',            desc_en: 'Book 20 meetings' },
+  big_deals: { icon: '💎', name_ar: 'صائد الصفقات الكبيرة',     name_en: 'Big Deal Closer',   desc_ar: 'اقفل صفقة بقيمة 1 مليون+',  desc_en: 'Close a 1M+ deal' },
+};
 
 // ═══════════════════════════════════════════════════════════════
 //  STATE
@@ -532,6 +764,13 @@ let playerName = '';
 let playerCoins = 0;
 let playerDeals = 0;
 let currentMilestoneIdx = 0;
+// Server-authoritative state from /api/map/milestones
+let milestoneClaims = {};   // idx -> {claimed_at, ...}
+let branchStates  = [];     // [{branch_key, current, target, claimed_at, claimable, xp_reward, coin_reward}]
+
+// Helpers — pick the right localized field with safe fallback
+const _L = () => (window.getLang ? window.getLang() : 'ar');
+const _pick = (obj, base) => (obj?.[base + '_' + _L()] || obj?.[base + '_ar'] || obj?.[base] || '');
 
 // ═══════════════════════════════════════════════════════════════
 //  RENDER
@@ -551,7 +790,6 @@ function render() {
   MILESTONES.forEach((m, i) => {
     const isUnlocked = i < unlockedIdx;
     const isCurrent = i === unlockedIdx;
-    const isLocked = i > unlockedIdx;
     let stateClass = 'locked';
     if (isUnlocked) stateClass = 'unlocked';
     if (isCurrent) stateClass = 'current';
@@ -559,7 +797,6 @@ function render() {
     const ms = document.createElement('div');
     ms.className = 'milestone';
     ms.setAttribute('data-idx', i);
-    // Build chips for streets + cafes preview (first 2 only on card)
     const streetChips = (m.streets || []).slice(0, 1).map(s =>
       `<span class="chip-street">🛣️ ${s}</span>`
     ).join('');
@@ -567,29 +804,41 @@ function render() {
       `<span class="chip-cafe">${c.i} ${c.n}</span>`
     ).join('');
 
+    // Reward CTA: Claim button if unlocked+unclaimed+has-reward, "Claimed" badge if already taken.
+    const claim = milestoneClaims[i];
+    const hasReward = (m.rewardXp > 0 || m.rewardCoins > 0);
+    let ctaHtml = '';
+    if (claim) {
+      ctaHtml = `<span class="claimed-badge" data-i18n="map_claimed">✅ تم الاستلام</span>`;
+    } else if ((i <= unlockedIdx) && hasReward) {
+      ctaHtml = `<button class="claim-btn" onclick="event.stopPropagation();claimMilestone(${i}, this)" data-i18n="map_claim_reward">🎁 احصل على الكافأة</button>`;
+    }
+
     ms.innerHTML = `
       <div class="milestone-node ${stateClass}" onclick="showMilestoneModal(${i})">
         ${m.icon}
       </div>
       <div class="milestone-info">
-        <div class="milestone-num">المحطة ${i + 1} · LV ${m.lv}</div>
-        <div class="milestone-name ${stateClass}">${m.name_ar}</div>
-        <div class="milestone-desc">${m.desc}</div>
+        <div class="milestone-num">${window.t ? window.t('map_milestone_label') : 'محطة'} ${i + 1} · LV ${m.lv}</div>
+        <div class="milestone-name ${stateClass}">${_pick(m, 'name')}</div>
+        <div class="milestone-desc">${_pick(m, 'desc')}</div>
         <div class="milestone-chips">${streetChips}${cafeChips}</div>
         <span class="milestone-xp">${m.xpReq.toLocaleString()} XP</span>
+        ${ctaHtml ? `<div>${ctaHtml}</div>` : ''}
       </div>
     `;
     list.appendChild(ms);
 
-    // Branch (optional skill path)
+    // Branch teaser inside the milestone path (purely decorative — actual progress
+    // shown in the branches section at the bottom).
     if (m.branch && i > 0) {
       const br = document.createElement('div');
       br.className = 'branch';
       br.innerHTML = `
         <span class="branch-icon">${m.branch.icon}</span>
         <div class="branch-text">
-          <div class="branch-name">${m.branch.name}</div>
-          <div class="branch-desc">${m.branch.desc}</div>
+          <div class="branch-name">${_pick(m.branch, 'name')}</div>
+          <div class="branch-desc">${_pick(m.branch, 'desc')}</div>
         </div>
       `;
       list.appendChild(br);
@@ -621,6 +870,7 @@ function render() {
   document.getElementById('xp-bar').style.width = pct + '%';
 
   // HUD updates
+  const curTitle = cur ? _pick(cur, 'title') : (window.t ? window.t('map_status_locked') : 'مبتدئ');
   document.getElementById('hud-lv').textContent = playerLevel;
   document.getElementById('hud-xp').textContent = playerXP.toLocaleString();
   document.getElementById('hud-xp-next').textContent = (next?.xpReq || 0).toLocaleString();
@@ -628,17 +878,69 @@ function render() {
   document.getElementById('hud-deals').textContent = playerDeals;
   document.getElementById('hud-unlocked').textContent = (unlockedIdx + 1);
   document.getElementById('hud-total').textContent = MILESTONES.length;
-  document.getElementById('hud-name').textContent = playerName || 'اللاعب';
-  document.getElementById('hud-title').textContent = cur?.title || 'مبتدئ';
+  document.getElementById('hud-name').textContent = playerName || (window.t ? window.t('welcome') : 'اللاعب');
+  document.getElementById('hud-title').textContent = curTitle;
 
   // Next milestone preview
   if (next && next !== cur) {
-    document.getElementById('next-name').textContent = `${next.icon} ${next.name_ar} — ${next.title}`;
+    const nextTitle = _pick(next, 'title');
+    document.getElementById('next-name').textContent = `${next.icon} ${_pick(next, 'name')} — ${nextTitle}`;
     const xpRemaining = next.xpReq - playerXP;
-    document.getElementById('next-reward').textContent = `محتاج ${xpRemaining.toLocaleString()} XP · كافأة: +${next.rewardXp} XP، +${next.rewardCoins} عملة`;
+    const xpLabel = window.t ? window.t('map_current_xp') : 'XP';
+    const coinLabel = window.t ? window.t('map_coin_label') : 'عملة';
+    document.getElementById('next-reward').textContent =
+      `${xpRemaining.toLocaleString()} ${xpLabel} · +${next.rewardXp} ${xpLabel}, +${next.rewardCoins} ${coinLabel}`;
+    document.getElementById('next-preview').style.display = '';
   } else {
     document.getElementById('next-preview').style.display = 'none';
   }
+
+  renderBranches();
+  if (window.applyI18n) window.applyI18n();
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  BRANCHES RENDER
+// ═══════════════════════════════════════════════════════════════
+function renderBranches() {
+  const wrap = document.getElementById('branches-list');
+  if (!wrap) return;
+  const lang = _L();
+  if (!branchStates.length) {
+    wrap.innerHTML = `<div style="font-size:13px;color:var(--muted);padding:8px 0">—</div>`;
+    return;
+  }
+  wrap.innerHTML = branchStates.map(b => {
+    const meta = BRANCH_META[b.branch_key] || {};
+    const name = meta['name_' + lang] || meta.name_ar || b.branch_key;
+    const desc = meta['desc_' + lang] || meta.desc_ar || '';
+    const icon = meta.icon || '✨';
+    const pct = Math.min(100, (b.current / Math.max(b.target, 1)) * 100);
+    const rewardLabel = `+${b.xp_reward} XP · +${b.coin_reward}`;
+    let action;
+    if (b.claimed_at) {
+      action = `<span class="claimed-badge" data-i18n="map_claimed">✅ تم الاستلام</span>`;
+    } else if (b.claimable) {
+      action = `<button class="claim-btn" onclick="claimBranch('${b.branch_key}', this)" data-i18n="map_claim_reward">🎁 احصل على الكافأة</button>`;
+    } else {
+      action = '';
+    }
+    return `
+      <div class="branch-row">
+        <div class="branch-row-icon">${icon}</div>
+        <div class="branch-row-body">
+          <div class="branch-row-name">${name}</div>
+          <div class="branch-row-desc">${desc}</div>
+          <div class="branch-bar"><div class="branch-bar-fill" style="width:${pct}%"></div></div>
+          <div class="branch-row-meta">
+            <span>${b.current} / ${b.target}</span>
+            <span class="branch-row-reward">${rewardLabel}</span>
+          </div>
+        </div>
+        <div class="branch-row-action">${action}</div>
+      </div>
+    `;
+  }).join('');
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -647,9 +949,12 @@ function render() {
 function showMilestoneModal(idx) {
   const m = MILESTONES[idx];
   if (!m) return;
+  const lang = _L();
   document.getElementById('ms-icon').textContent = m.icon;
-  document.getElementById('ms-name').textContent = `${m.name_ar} — ${m.title}`;
-  document.getElementById('ms-status').textContent = idx < currentMilestoneIdx ? '✅ مفتوحة' : (idx === currentMilestoneIdx ? '🎯 الحالية' : '🔒 مقفولة');
+  document.getElementById('ms-name').textContent = `${_pick(m, 'name')} — ${_pick(m, 'title')}`;
+  const statusKey = idx < currentMilestoneIdx ? 'map_status_unlocked'
+    : idx === currentMilestoneIdx ? 'map_status_current' : 'map_status_locked';
+  document.getElementById('ms-status').textContent = window.t ? window.t(statusKey) : '—';
   document.getElementById('ms-district').textContent = m.name;
   document.getElementById('ms-level-req').textContent = `Level ${m.lv}`;
   document.getElementById('ms-xp-req').textContent = m.xpReq.toLocaleString();
@@ -702,6 +1007,192 @@ function jumpToCurrent() {
 }
 
 // ═══════════════════════════════════════════════════════════════
+//  CLAIM ACTIONS (milestone + branch)
+// ═══════════════════════════════════════════════════════════════
+async function _post(url) {
+  if (!accessToken) {
+    showMiniToast(window.t ? window.t('login') : 'login', true);
+    return null;
+  }
+  const r = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Authorization': 'Bearer ' + accessToken,
+      'X-Requested-With': 'XMLHttpRequest',
+      'Content-Type': 'application/json',
+    },
+    body: '{}',
+  });
+  return r.json().then(j => ({ status: r.status, body: j }));
+}
+
+async function claimMilestone(idx, btn) {
+  const m = MILESTONES[idx];
+  if (!m) return;
+  if (btn) { btn.disabled = true; }
+  const res = await _post('/api/map/claim/' + idx);
+  if (btn) { btn.disabled = false; }
+  if (!res) return;
+  if (res.status >= 400) {
+    const code = (res.body && res.body.message) || 'error';
+    showMiniToast(_claimErrorText(code), true);
+    return;
+  }
+  const data = res.body?.data || {};
+  showCinematicReward({
+    icon: m.icon,
+    title: `${_pick(m, 'name')} — ${_pick(m, 'title')}`,
+    xp: data.xp_awarded ?? m.rewardXp,
+    coins: data.coins_awarded ?? m.rewardCoins,
+  });
+  await reloadMapState();
+}
+
+async function claimBranch(key, btn) {
+  const meta = BRANCH_META[key];
+  if (btn) { btn.disabled = true; }
+  const res = await _post('/api/map/branches/' + key + '/claim');
+  if (btn) { btn.disabled = false; }
+  if (!res) return;
+  if (res.status >= 400) {
+    const code = (res.body && res.body.message) || 'error';
+    showMiniToast(_claimErrorText(code), true);
+    return;
+  }
+  const data = res.body?.data || {};
+  const lang = _L();
+  showCinematicReward({
+    icon: (meta && meta.icon) || '🎯',
+    title: (meta && (meta['name_' + lang] || meta.name_ar)) || key,
+    xp: data.xp_awarded ?? 0,
+    coins: data.coins_awarded ?? 0,
+  });
+  await reloadMapState();
+}
+
+function _claimErrorText(code) {
+  // Map backend error codes to localized strings; fall back to the raw code.
+  const k = ({
+    'already_claimed':  'map_already_claimed',
+    'not_eligible':     'map_not_eligible',
+    'not_completed':    'map_not_completed',
+  })[code] || 'map_claim_failed';
+  return window.t ? window.t(k) : code;
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  CINEMATIC REWARD TOAST + CONFETTI
+// ═══════════════════════════════════════════════════════════════
+function showCinematicReward({ icon, title, xp, coins }) {
+  document.getElementById('claim-toast-icon').textContent = icon || '🏆';
+  document.getElementById('claim-toast-title').textContent = window.t ? window.t('map_claim_success') : '🏆 تم!';
+  document.getElementById('claim-toast-sub').textContent = title || '';
+  document.getElementById('claim-toast-xp').textContent = (xp || 0).toLocaleString();
+  document.getElementById('claim-toast-coins').textContent = (coins || 0).toLocaleString();
+  document.getElementById('claim-toast').classList.add('show');
+  if (window.applyI18n) window.applyI18n();
+  fireConfetti();
+}
+function closeClaimToast() {
+  document.getElementById('claim-toast').classList.remove('show');
+}
+
+function showMiniToast(text, isError) {
+  const el = document.getElementById('mini-toast');
+  if (!el) return;
+  el.textContent = text;
+  el.classList.toggle('error', !!isError);
+  el.classList.add('show');
+  clearTimeout(showMiniToast._t);
+  showMiniToast._t = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// Lightweight canvas confetti (no external deps)
+function fireConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width  = window.innerWidth  * dpr;
+  canvas.height = window.innerHeight * dpr;
+  canvas.style.width  = window.innerWidth  + 'px';
+  canvas.style.height = window.innerHeight + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  const colors = ['#F4C962', '#D4A847', '#A88128', '#FFFFFF', '#16a34a'];
+  const N = 120;
+  const parts = [];
+  for (let i = 0; i < N; i++) {
+    parts.push({
+      x: window.innerWidth / 2,
+      y: window.innerHeight / 2 - 40,
+      vx: (Math.random() - 0.5) * 14,
+      vy: -Math.random() * 12 - 4,
+      g:  0.35 + Math.random() * 0.15,
+      size: 4 + Math.random() * 5,
+      rot: Math.random() * Math.PI * 2,
+      vr:  (Math.random() - 0.5) * 0.3,
+      color: colors[Math.floor(Math.random() * colors.length)],
+      life: 0,
+    });
+  }
+  const t0 = performance.now();
+  function frame(t) {
+    const elapsed = t - t0;
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    parts.forEach(p => {
+      p.vy += p.g;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.vr;
+      p.life = elapsed;
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      ctx.globalAlpha = Math.max(0, 1 - elapsed / 2200);
+      ctx.fillStyle = p.color;
+      ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.6);
+      ctx.restore();
+    });
+    if (elapsed < 2400) {
+      requestAnimationFrame(frame);
+    } else {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+    }
+  }
+  requestAnimationFrame(frame);
+}
+
+// ═══════════════════════════════════════════════════════════════
+//  DATA SYNC
+// ═══════════════════════════════════════════════════════════════
+async function reloadMapState() {
+  if (!accessToken) return;
+  try {
+    const res = await fetch('/api/map/milestones', {
+      headers: { 'Authorization': 'Bearer ' + accessToken, 'X-Requested-With': 'XMLHttpRequest' },
+    }).then(r => r.json());
+    const data = res?.data || {};
+    const emp = data.employee || {};
+    playerXP    = emp.total_xp     || 0;
+    playerLevel = emp.level        || 1;
+    playerCoins = emp.syb_coins    || 0;
+    playerDeals = emp.total_deals  || 0;
+    playerName  = emp.full_name    || playerName;
+
+    milestoneClaims = {};
+    (data.milestones || []).forEach(m => {
+      if (m.claimed) milestoneClaims[m.idx] = { claimed_at: m.claimed_at };
+    });
+    branchStates = data.branches || [];
+    render();
+  } catch (e) {
+    console.error('Map state reload failed:', e);
+    render();
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 //  BOOT
 // ═══════════════════════════════════════════════════════════════
 async function boot() {
@@ -714,18 +1205,9 @@ async function boot() {
     if (!session) { render(); setTimeout(jumpToCurrent, 400); return; }
     accessToken = session.access_token;
 
-    const res = await fetch('/api/me', { headers:{'Authorization':'Bearer ' + accessToken, 'X-Requested-With':'XMLHttpRequest'} }).then(r => r.json());
-    const emp = res.data?.employee || res.employee || res;
-    playerXP    = emp.total_xp || 0;
-    playerLevel = emp.level || 1;
-    playerCoins = emp.syb_coins || 0;
-    playerDeals = emp.total_deals || 0;
-    playerName  = emp.full_name || 'اللاعب';
-
-    render();
+    await reloadMapState();
     setTimeout(jumpToCurrent, 600);
 
-    // Hide help banner if dismissed
     if (localStorage.getItem('alsaeb_map_help_v2') === '1') {
       document.getElementById('help-banner').style.display = 'none';
     }
