@@ -1,7 +1,7 @@
 """Phase 9 endpoint smoke tests (no real Supabase, no real Stripe)."""
 
-import hmac
 import hashlib
+import hmac
 import json
 import time
 
@@ -29,13 +29,15 @@ def test_permissions_endpoint_returns_role_and_perms(client, fake_supabase):
 
 def test_password_reset_always_succeeds_to_avoid_enumeration(client, fake_supabase):
     res = client.post('/api/auth/password/reset-request',
-                      json={'email': 'does-not-exist@test.com'})
+                      json={'email': 'does-not-exist@test.com'},
+                      headers={'X-Requested-With': 'XMLHttpRequest'})
     assert res.status_code == 200
     assert res.get_json()['data']['sent'] is True
 
 
 def test_password_reset_requires_email(client, fake_supabase):
-    res = client.post('/api/auth/password/reset-request', json={})
+    res = client.post('/api/auth/password/reset-request', json={},
+                      headers={'X-Requested-With': 'XMLHttpRequest'})
     assert res.status_code == 400
 
 

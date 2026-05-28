@@ -1,7 +1,9 @@
 """Unit tests for ai_client (no network)."""
 
 import os
+
 import pytest
+
 import ai_client
 
 

@@ -1187,6 +1187,17 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- Rate-limit log GC. Call from a cron or run periodically — keeps the table from growing forever.
+CREATE OR REPLACE FUNCTION cleanup_rate_limit_log(p_keep_seconds INT DEFAULT 300)
+RETURNS INT AS $$
+DECLARE v_count INT;
+BEGIN
+    DELETE FROM rate_limit_log WHERE created_at < now() - (p_keep_seconds || ' seconds')::interval;
+    GET DIAGNOSTICS v_count = ROW_COUNT;
+    RETURN v_count;
+END;
+$$ LANGUAGE plpgsql;
+
 -- Competition scoring
 CREATE OR REPLACE FUNCTION refresh_competition_scores(p_comp_id UUID) RETURNS JSONB AS $$
 DECLARE v_comp RECORD;
@@ -1699,6 +1710,253 @@ DO $$ BEGIN ALTER TABLE ad_campaigns ADD COLUMN auto_assign        BOOLEAN DEFAU
 DO $$ BEGIN ALTER TABLE ad_campaigns ADD COLUMN webhook_leads_count INT DEFAULT 0;       EXCEPTION WHEN duplicate_column THEN NULL; END $$;
 CREATE INDEX IF NOT EXISTS idx_ad_campaigns_webhook_key ON ad_campaigns(webhook_key) WHERE webhook_key IS NOT NULL;
 CREATE INDEX IF NOT EXISTS idx_ad_campaigns_fb_page     ON ad_campaigns(facebook_page_id) WHERE facebook_page_id IS NOT NULL;
+
+-- =====================================================================
+-- MAP REWARDS ENGINE (Phase 1) — AL SAEB Tower milestone + skill branches
+-- Server-authoritative rewards for the journey map (/map).
+-- =====================================================================
+
+-- Each employee can claim a given milestone (0..9) exactly once.
+CREATE TABLE IF NOT EXISTS milestone_claims (
+    id            UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    employee_id   UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+    milestone_idx INT  NOT NULL,                    -- 0..9 (Deira..Burj Khalifa)
+    milestone_key TEXT NOT NULL,
+    xp_awarded    INT  NOT NULL DEFAULT 0,
+    coins_awarded INT  NOT NULL DEFAULT 0,
+    claimed_at    TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (employee_id, milestone_idx)
+);
+CREATE INDEX IF NOT EXISTS idx_milestone_claims_employee ON milestone_claims(employee_id);
+
+-- Four skill branches (calls / whatsapp / meetings / big_deals).
+-- Progress auto-increments via the trg_progress_branches trigger below.
+CREATE TABLE IF NOT EXISTS branch_progress (
+    id              UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    employee_id     UUID NOT NULL REFERENCES employees(id) ON DELETE CASCADE,
+    branch_key      TEXT NOT NULL CHECK (branch_key IN ('calls','whatsapp','meetings','big_deals')),
+    current_count   INT  NOT NULL DEFAULT 0,
+    target_count    INT  NOT NULL,
+    claimed_at      TIMESTAMPTZ,                    -- NULL = reward not claimed yet
+    xp_reward       INT  NOT NULL DEFAULT 0,
+    coin_reward     INT  NOT NULL DEFAULT 0,
+    updated_at      TIMESTAMPTZ NOT NULL DEFAULT now(),
+    UNIQUE (employee_id, branch_key)
+);
+CREATE INDEX IF NOT EXISTS idx_branch_progress_employee ON branch_progress(employee_id);
+
+-- Idempotent row ensurer with default targets/rewards (matches templates/map.html)
+CREATE OR REPLACE FUNCTION ensure_branch_row(
+    p_employee_id UUID,
+    p_branch_key  TEXT
+) RETURNS branch_progress AS $$
+DECLARE
+    v_row    branch_progress;
+    v_target INT;
+    v_xp     INT;
+    v_coins  INT;
+BEGIN
+    SELECT * INTO v_row FROM branch_progress
+     WHERE employee_id = p_employee_id AND branch_key = p_branch_key;
+    IF FOUND THEN RETURN v_row; END IF;
+
+    CASE p_branch_key
+        WHEN 'calls'     THEN v_target := 10; v_xp := 150;  v_coins := 50;
+        WHEN 'whatsapp'  THEN v_target := 50; v_xp := 250;  v_coins := 100;
+        WHEN 'meetings'  THEN v_target := 20; v_xp := 400;  v_coins := 200;
+        WHEN 'big_deals' THEN v_target := 1;  v_xp := 1000; v_coins := 500;
+        ELSE RAISE EXCEPTION 'unknown branch_key: %', p_branch_key;
+    END CASE;
+
+    INSERT INTO branch_progress (employee_id, branch_key, target_count, xp_reward, coin_reward)
+    VALUES (p_employee_id, p_branch_key, v_target, v_xp, v_coins)
+    ON CONFLICT (employee_id, branch_key) DO NOTHING;
+
+    SELECT * INTO v_row FROM branch_progress
+     WHERE employee_id = p_employee_id AND branch_key = p_branch_key;
+    RETURN v_row;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Claim a milestone reward (one-shot, atomic). Values are passed in by the
+-- backend which validates them against its canonical MILESTONES dict.
+CREATE OR REPLACE FUNCTION claim_milestone_reward(
+    p_employee_id   UUID,
+    p_milestone_idx INT,
+    p_milestone_key TEXT,
+    p_required_xp   INT,
+    p_reward_xp     INT,
+    p_reward_coins  INT
+) RETURNS JSONB AS $$
+DECLARE
+    v_total_xp BIGINT;
+    v_existing UUID;
+    v_award    JSONB;
+BEGIN
+    SELECT id INTO v_existing FROM milestone_claims
+     WHERE employee_id = p_employee_id AND milestone_idx = p_milestone_idx;
+    IF v_existing IS NOT NULL THEN
+        RETURN jsonb_build_object('error', 'already_claimed');
+    END IF;
+
+    SELECT total_xp INTO v_total_xp FROM employees WHERE id = p_employee_id FOR UPDATE;
+    IF NOT FOUND THEN
+        RETURN jsonb_build_object('error', 'employee_not_found');
+    END IF;
+    IF v_total_xp < p_required_xp THEN
+        RETURN jsonb_build_object('error', 'not_eligible',
+            'required_xp', p_required_xp, 'current_xp', v_total_xp);
+    END IF;
+
+    -- No reward to give for the starting milestone (idx 0). Still record the claim
+    -- so the UI can show "received" instead of "claim".
+    IF p_reward_xp > 0 OR p_reward_coins > 0 THEN
+        v_award := award_xp_and_coins(
+            p_employee_id, p_reward_xp, p_reward_coins,
+            'Milestone: ' || p_milestone_key, 'milestone', NULL
+        );
+    ELSE
+        v_award := jsonb_build_object('skipped', true);
+    END IF;
+
+    INSERT INTO milestone_claims (employee_id, milestone_idx, milestone_key, xp_awarded, coins_awarded)
+    VALUES (p_employee_id, p_milestone_idx, p_milestone_key, p_reward_xp, p_reward_coins);
+
+    INSERT INTO activity_feed (employee_id, event_type, title, message, icon, metadata)
+    VALUES (p_employee_id, 'milestone_claimed',
+        'Milestone unlocked: ' || p_milestone_key,
+        'فتح محطة جديدة في رحلة AL SAEB Tower',
+        '🏆',
+        jsonb_build_object('milestone_idx', p_milestone_idx, 'milestone_key', p_milestone_key,
+                           'xp', p_reward_xp, 'coins', p_reward_coins));
+
+    RETURN jsonb_build_object(
+        'success', true,
+        'milestone_idx', p_milestone_idx,
+        'xp_awarded', p_reward_xp,
+        'coins_awarded', p_reward_coins,
+        'award_result', v_award
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+-- Claim a branch reward (one-shot, atomic).
+CREATE OR REPLACE FUNCTION claim_branch_reward(
+    p_employee_id UUID,
+    p_branch_key  TEXT
+) RETURNS JSONB AS $$
+DECLARE
+    v_row   branch_progress;
+    v_award JSONB;
+BEGIN
+    v_row := ensure_branch_row(p_employee_id, p_branch_key);
+    IF v_row.claimed_at IS NOT NULL THEN
+        RETURN jsonb_build_object('error', 'already_claimed');
+    END IF;
+    IF v_row.current_count < v_row.target_count THEN
+        RETURN jsonb_build_object('error', 'not_completed',
+            'current', v_row.current_count, 'target', v_row.target_count);
+    END IF;
+
+    v_award := award_xp_and_coins(
+        p_employee_id, v_row.xp_reward, v_row.coin_reward,
+        'Branch completed: ' || p_branch_key, 'branch', NULL
+    );
+
+    UPDATE branch_progress SET claimed_at = now(), updated_at = now()
+     WHERE id = v_row.id;
+
+    INSERT INTO activity_feed (employee_id, event_type, title, message, icon, metadata)
+    VALUES (p_employee_id, 'branch_completed',
+        'Skill branch mastered: ' || p_branch_key,
+        'أكمل فرع مهارة في رحلة AL SAEB',
+        '🎯',
+        jsonb_build_object('branch', p_branch_key,
+                           'xp', v_row.xp_reward, 'coins', v_row.coin_reward));
+
+    RETURN jsonb_build_object(
+        'success', true,
+        'branch_key', p_branch_key,
+        'xp_awarded', v_row.xp_reward,
+        'coins_awarded', v_row.coin_reward,
+        'award_result', v_award
+    );
+END;
+$$ LANGUAGE plpgsql;
+
+-- Auto-progress branches when an action is logged.
+CREATE OR REPLACE FUNCTION progress_branches_for_action(
+    p_employee_id UUID,
+    p_action      TEXT,
+    p_details     JSONB
+) RETURNS void AS $$
+DECLARE
+    v_branch_key TEXT;
+    v_deal_value NUMERIC;
+BEGIN
+    v_branch_key := CASE
+        WHEN p_action = 'whatsapp_sent'  THEN 'whatsapp'
+        WHEN p_action = 'call_made'      THEN 'calls'
+        WHEN p_action = 'meeting_booked' THEN 'meetings'
+        ELSE NULL
+    END;
+
+    IF v_branch_key IS NOT NULL THEN
+        PERFORM ensure_branch_row(p_employee_id, v_branch_key);
+        UPDATE branch_progress SET
+            current_count = current_count + 1,
+            updated_at    = now()
+         WHERE employee_id = p_employee_id AND branch_key = v_branch_key;
+    END IF;
+
+    IF p_action = 'deal_closed' THEN
+        v_deal_value := COALESCE((p_details->>'deal_value')::NUMERIC, 0);
+        IF v_deal_value >= 1000000 THEN
+            PERFORM ensure_branch_row(p_employee_id, 'big_deals');
+            UPDATE branch_progress SET
+                current_count = current_count + 1,
+                updated_at    = now()
+             WHERE employee_id = p_employee_id AND branch_key = 'big_deals';
+        END IF;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION progress_branches_trigger() RETURNS TRIGGER AS $$
+BEGIN
+    PERFORM progress_branches_for_action(NEW.employee_id, NEW.action::TEXT, NEW.details);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS trg_progress_branches ON actions_log;
+CREATE TRIGGER trg_progress_branches AFTER INSERT ON actions_log
+    FOR EACH ROW EXECUTE FUNCTION progress_branches_trigger();
+
+-- RLS — owner reads + admin/manager full access; backend uses service key so it bypasses.
+ALTER TABLE milestone_claims ENABLE ROW LEVEL SECURITY;
+ALTER TABLE branch_progress  ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN
+    CREATE POLICY milestone_claims_owner ON milestone_claims FOR ALL USING (employee_id = auth.uid());
+    EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN
+    CREATE POLICY milestone_claims_admin ON milestone_claims FOR ALL USING (
+        EXISTS (SELECT 1 FROM employees WHERE id = auth.uid() AND role IN ('admin','manager'))
+    );
+    EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN
+    CREATE POLICY branch_progress_owner ON branch_progress FOR ALL USING (employee_id = auth.uid());
+    EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
+DO $$ BEGIN
+    CREATE POLICY branch_progress_admin ON branch_progress FOR ALL USING (
+        EXISTS (SELECT 1 FROM employees WHERE id = auth.uid() AND role IN ('admin','manager'))
+    );
+    EXCEPTION WHEN duplicate_object THEN NULL;
+END $$;
 
 -- =====================================================================
 -- DONE. All tables, RPCs, triggers, RLS, and seed data in one file.

@@ -175,17 +175,17 @@ def analyze_lead(lead: dict, messages: list) -> dict:
     if GEMINI_KEY:
         try:
             return _call_gemini(lead, messages)
-        except Exception as e:
+        except Exception:
             pass  # fallthrough to next provider
     if ANTHROPIC_KEY:
         try:
             return _call_anthropic(lead, messages)
-        except Exception as e:
+        except Exception:
             pass
     if OPENAI_KEY:
         try:
             return _call_openai(lead, messages)
-        except Exception as e:
+        except Exception:
             pass
     return _fallback(lead, messages)
 

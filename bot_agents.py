@@ -9,11 +9,10 @@
 كل بوت بيرد فقط على الأسئلة المتعلقة بتخصصه.
 """
 
-import os
+import contextlib
 import json
 import re
 from datetime import datetime
-from typing import Optional
 
 try:
     from ai_client import generate_text
@@ -116,7 +115,7 @@ BOT_PROFILES = {
 # Core: استدعاء البوت
 # ═══════════════════════════════════════════════════════════════
 
-def _extract_json(text: str) -> Optional[dict]:
+def _extract_json(text: str) -> dict | None:
     """يحاول يستخرج JSON من رد البوت (الـ AI ممكن يضيف نص قبل/بعد)."""
     if not text:
         return None
@@ -305,10 +304,8 @@ def handle_incoming_message(supabase, whatsapp_number: str, message_text: str) -
     # 6. Save bot reply + update conversation
     if reply_text:
         _append_message(supabase, conv['id'], 'bot', current_bot, reply_text)
-    try:
+    with contextlib.suppress(Exception):
         supabase.table('bot_conversations').update(update_fields).eq('id', conv['id']).execute()
-    except Exception:
-        pass
 
     return {
         'reply': reply_text,
@@ -321,7 +318,7 @@ def handle_incoming_message(supabase, whatsapp_number: str, message_text: str) -
 # Helpers (DB)
 # ═══════════════════════════════════════════════════════════════
 
-def _get_or_create_conversation(supabase, phone: str) -> Optional[dict]:
+def _get_or_create_conversation(supabase, phone: str) -> dict | None:
     try:
         r = supabase.table('bot_conversations').select('*').eq(
             'whatsapp_number', phone
@@ -340,16 +337,14 @@ def _get_or_create_conversation(supabase, phone: str) -> Optional[dict]:
         return None
 
 
-def _append_message(supabase, conv_id: str, role: str, bot_name: Optional[str], content: str):
-    try:
+def _append_message(supabase, conv_id: str, role: str, bot_name: str | None, content: str):
+    with contextlib.suppress(Exception):
         supabase.table('bot_messages').insert({
             'conversation_id': conv_id,
             'role': role,
             'bot_name': bot_name,
             'content': content[:2000],
         }).execute()
-    except Exception:
-        pass
 
 
 def _get_history(supabase, conv_id: str, limit: int = 20) -> list:
@@ -376,7 +371,7 @@ def _build_summary(data: dict) -> str:
     return ' | '.join(parts) if parts else 'لا توجد معلومات'
 
 
-def _pick_available_sales_agent(supabase) -> Optional[str]:
+def _pick_available_sales_agent(supabase) -> str | None:
     try:
         # Pick sales agent with fewest active leads (simple round-robin alternative)
         r = supabase.table('employees').select('id').eq(
@@ -390,7 +385,7 @@ def _pick_available_sales_agent(supabase) -> Optional[str]:
     return None
 
 
-def _find_omar(supabase) -> Optional[str]:
+def _find_omar(supabase) -> str | None:
     """Find Omar (or any admin) to receive HR handoffs."""
     try:
         # Try to find by name 'omar' first
@@ -406,7 +401,7 @@ def _find_omar(supabase) -> Optional[str]:
     return None
 
 
-def _create_lead_from_bot(supabase, phone: str, data: dict, assigned_to: Optional[str], summary: str):
+def _create_lead_from_bot(supabase, phone: str, data: dict, assigned_to: str | None, summary: str):
     """Create a lead record in the CRM from a bot handoff."""
     try:
         row = {
@@ -429,7 +424,7 @@ def _create_lead_from_bot(supabase, phone: str, data: dict, assigned_to: Optiona
 
 
 def _create_job_application(supabase, phone: str, data: dict, qualified: bool,
-                             score: int, summary: str, forwarded_to: Optional[str]):
+                             score: int, summary: str, forwarded_to: str | None):
     try:
         row = {
             'whatsapp_number': phone,

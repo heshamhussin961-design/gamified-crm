@@ -13,6 +13,9 @@ openai==1.54.0
 # --- Billing (optional; lazy-imported when STRIPE_SECRET_KEY is set) ---
 stripe==11.4.1
 
+# --- Observability (optional; activated only when SENTRY_DSN is set) ---
+sentry-sdk[flask]==2.18.0
+
 # --- dev / tests ---
 pytest==8.3.3
 ruff==0.7.4

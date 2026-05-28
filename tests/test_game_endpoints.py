@@ -88,7 +88,8 @@ def test_favicon(client, fake_supabase):
 def test_game_page(client, fake_supabase):
     res = client.get('/game')
     assert res.status_code == 200
-    assert b'Phaser' in res.data or b'phaser' in res.data
+    # Migrated to Three.js (was Phaser in v1) — assert the actual engine ships.
+    assert b'three' in res.data.lower()
 
 
 def test_map_page(client, fake_supabase):

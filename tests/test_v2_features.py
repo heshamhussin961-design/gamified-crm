@@ -55,7 +55,9 @@ def test_breakroom_minigame_logs_action(client, fake_supabase):
 
 
 def test_breakroom_requires_auth(client, fake_supabase):
-    res = client.post('/api/breakroom/coffee', json={})
+    # Send X-Requested-With so CSRF check passes; the actual auth check should then 401.
+    res = client.post('/api/breakroom/coffee', json={},
+                      headers={'X-Requested-With': 'XMLHttpRequest'})
     assert res.status_code == 401
 
 
